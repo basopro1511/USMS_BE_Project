@@ -23,8 +23,9 @@ namespace DataAccess.IRepository.ICustomerRepository
             {
                 var dbContext = new MyDbContext();
                 List<Customer> customers = dbContext.Customer.ToList();
+                // Tạo List rỗng CustomerDTO để lưu kết quả sau khi copy dữ liệu
                 List<CustomerDTO> customersDTOs = new List<CustomerDTO>();
-                foreach (var customer in customers)
+                foreach (var customer in customers) 
                 {
                     CustomerDTO customerDTO = new CustomerDTO();
                     customerDTO.CopyProperties(customer);
