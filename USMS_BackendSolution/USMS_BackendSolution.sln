@@ -43,11 +43,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2. Business Object", "2. Bu
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3. Data Access", "3. Data Access", "{44FD5D22-E255-4099-96D8-10F35B2C4856}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassService", "ClassService\ClassService.csproj", "{A54FB97E-8430-4AC9-AD49-DEFD46753961}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassService", "ClassService\ClassService.csproj", "{A54FB97E-8430-4AC9-AD49-DEFD46753961}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassBusinessObject", "ClassBusinessObject\ClassBusinessObject.csproj", "{BFBC493D-3FF6-453F-9AFF-1CE8D52833F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassBusinessObject", "ClassBusinessObject\ClassBusinessObject.csproj", "{BFBC493D-3FF6-453F-9AFF-1CE8D52833F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassDataAccess", "ClassDataAccess\ClassDataAccess.csproj", "{1816BE58-82E7-4D5E-A1D3-C9F98BBBA3BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassDataAccess", "ClassDataAccess\ClassDataAccess.csproj", "{1816BE58-82E7-4D5E-A1D3-C9F98BBBA3BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
