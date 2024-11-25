@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ClassBusinessObject.Models
 {
-    public class Subjects
+	public class Subjects
     {
         [Key]
         [StringLength(10)]
@@ -28,11 +23,13 @@ namespace ClassBusinessObject.Models
         public string Description { get; set; }
 
         [Required]
-        public DateTime CreatedAt { get; set; } 
+        public DateTime CreatedAt { get; set; }
 
         [Required]
         public DateTime UpdatedAt { get; set; } 
 
         public virtual ICollection<ClassSubjects>? ClassSubjects { get; set; }
+
+        public bool IsAvailable { get; set; } = true;
     }
 }
