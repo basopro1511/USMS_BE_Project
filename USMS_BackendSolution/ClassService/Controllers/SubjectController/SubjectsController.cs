@@ -15,7 +15,7 @@ namespace ClassService.Controllers.SubjectController
 			_subjectService = subjectService;
 		}
 
-		[HttpGet("GetSubjects")]
+		[HttpGet]
 		public APIResponse GetSubjects()
 		{
 			APIResponse aPIResponse = new APIResponse();
@@ -23,7 +23,7 @@ namespace ClassService.Controllers.SubjectController
 			return aPIResponse;
 		}
 
-		[HttpPost("CreateSubject")]
+		[HttpPost]
 		public APIResponse CreateSubject(SubjectDTO subject)
 		{
 			APIResponse aPIResponse = new APIResponse();
@@ -31,7 +31,7 @@ namespace ClassService.Controllers.SubjectController
 			return aPIResponse;
 		}
 
-		[HttpPut("UpdateSubject/{subjectId}")]
+		[HttpPut("{subjectId}")]
 		public APIResponse UpdateSubject(SubjectDTO subject)
 		{
 			APIResponse aPIResponse = new APIResponse();
@@ -39,7 +39,7 @@ namespace ClassService.Controllers.SubjectController
 			return aPIResponse;
 		}
 
-		[HttpPut("SwitchStateSubject")]
+		[HttpPut("SwitchStateSubject/{subjectId}")]
 		public APIResponse SwitchStateSubject(string subjectId)
 		{
 			APIResponse aPIResponse = new APIResponse();

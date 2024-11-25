@@ -25,7 +25,7 @@ namespace ClassDataAccess.Services.SubjectServices
 			if (subjects == null || subjects.Count == 0)
 			{
 				aPIResponse.IsSuccess = false;
-				aPIResponse.Message = "Subject is null";
+				aPIResponse.Message = "There are no available subjects";
 			}
 			aPIResponse.Result = subjects;
 			return aPIResponse;
@@ -41,8 +41,16 @@ namespace ClassDataAccess.Services.SubjectServices
 		public APIResponse CreateSubject(SubjectDTO subjectDTO)
 		{
 			APIResponse aPIResponse = new APIResponse();
-			_subjectRepository.CreateSubject(subjectDTO);
-			aPIResponse.IsSuccess = true;
+			bool result = _subjectRepository.CreateSubject(subjectDTO);
+			if (!result)
+			{
+				aPIResponse.IsSuccess = false;
+				aPIResponse.Message = "Subject ID is already existed!";
+			}
+			else
+			{
+				aPIResponse.IsSuccess = true;
+			}
 			return aPIResponse;
 		}
 		#endregion
@@ -56,8 +64,16 @@ namespace ClassDataAccess.Services.SubjectServices
 		public APIResponse UpdateSubject(SubjectDTO subjectDTO)
 		{
 			APIResponse aPIResponse = new APIResponse();
-			_subjectRepository.UpdateSubject(subjectDTO);
-			aPIResponse.IsSuccess = true;
+			bool result = _subjectRepository.UpdateSubject(subjectDTO);
+			if (!result)
+			{
+				aPIResponse.IsSuccess = false;
+				aPIResponse.Message = "Subject ID is not existed!";
+			}
+			else
+			{
+				aPIResponse.IsSuccess = true;
+			}
 			return aPIResponse;
 		}
 		#endregion
@@ -71,8 +87,16 @@ namespace ClassDataAccess.Services.SubjectServices
 		public APIResponse SwitchStateSubject(string subjectId)
 		{
 			APIResponse aPIResponse = new APIResponse();
-			_subjectRepository.SwitchStateSubject(subjectId);
-			aPIResponse.IsSuccess = true;
+			bool result = _subjectRepository.SwitchStateSubject(subjectId);
+			if (!result)
+			{
+				aPIResponse.IsSuccess = false;
+				aPIResponse.Message = "Subject ID is not existed!";
+			}
+			else
+			{
+				aPIResponse.IsSuccess = true;
+			}
 			return aPIResponse;
 		}
 		#endregion

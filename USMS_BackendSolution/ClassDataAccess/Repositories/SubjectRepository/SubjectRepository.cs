@@ -14,7 +14,7 @@ namespace ClassDataAccess.Repositories.SubjectRepository
 		/// <param name="SubjectDTO"></param>
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <exception cref="Exception"></exception>
-		public void CreateSubject(SubjectDTO SubjectDTO)
+		public bool CreateSubject(SubjectDTO SubjectDTO)
 		{
 			if (SubjectDTO == null)
 			{
@@ -22,15 +22,20 @@ namespace ClassDataAccess.Repositories.SubjectRepository
 			}
 			try
 			{
+				var checkSubject = GetAllSubjects().Find(x => x.SubjectId == SubjectDTO.SubjectId);
+				if (checkSubject != null)
+				{
+					return false;
+				}
 				var subject = new Subjects();
 				subject.CopyProperties(SubjectDTO);
 				subject.CreatedAt = DateTime.Now;
 				subject.UpdatedAt = DateTime.Now;
-
 				using (var _db = new MyDbContext())
 				{
 					_db.Add(subject);
 					_db.SaveChanges();
+					return true;
 				}
 			}
 			catch (Exception ex)
@@ -45,7 +50,7 @@ namespace ClassDataAccess.Repositories.SubjectRepository
 		/// <param name="SubjectDTO"></param>
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <exception cref="Exception"></exception>
-		public void UpdateSubject(SubjectDTO SubjectDTO)
+		public bool UpdateSubject(SubjectDTO SubjectDTO)
 		{
 			if (SubjectDTO == null)
 			{
@@ -53,14 +58,19 @@ namespace ClassDataAccess.Repositories.SubjectRepository
 			}
 			try
 			{
+				var checkSubject = GetAllSubjects().Find(x => x.SubjectId == SubjectDTO.SubjectId);
+				if (checkSubject == null)
+				{
+					return false;
+				}
 				var subject = new Subjects();
 				subject.CopyProperties(SubjectDTO);
 				subject.UpdatedAt = DateTime.Now;
-
 				using (var _db = new MyDbContext())
 				{
 					_db.Entry(subject).State = EntityState.Modified;
 					_db.SaveChanges();
+					return true;
 				}
 			}
 			catch (Exception ex)
@@ -102,9 +112,10 @@ namespace ClassDataAccess.Repositories.SubjectRepository
 		/// Switch State Subject
 		/// </summary>
 		/// <param name="subjectId"></param>
+		/// <returns></returns>
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <exception cref="Exception"></exception>
-		public void SwitchStateSubject(string subjectId)
+		public bool SwitchStateSubject(string subjectId)
 		{
 			if (subjectId == null)
 			{
@@ -115,7 +126,7 @@ namespace ClassDataAccess.Repositories.SubjectRepository
 				var checkSubject = GetAllSubjects().Find(x => x.SubjectId == subjectId);
 				if (checkSubject == null)
 				{
-					throw new Exception("Subject not exist");
+					return false;
 				}
 				Subjects subject = new Subjects();
 				subject.CopyProperties(checkSubject);
@@ -131,6 +142,7 @@ namespace ClassDataAccess.Repositories.SubjectRepository
 					}
 					_db.Entry(subject).State = EntityState.Modified;
 					_db.SaveChanges();
+					return true;
 				}
 			}
 			catch (Exception ex)
