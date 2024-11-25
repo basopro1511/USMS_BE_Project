@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ClassBusinessObject.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -89,9 +89,9 @@ namespace ClassBusinessObject.Migrations
                 columns: new[] { "SubjectId", "CreatedAt", "Description", "NumberOfSlot", "Status", "SubjectName", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { "MLN122", new DateTime(2024, 11, 25, 16, 54, 50, 613, DateTimeKind.Local).AddTicks(7741), "Description", 16, true, "Political economics of Marxism – Leninism", new DateTime(2024, 11, 25, 16, 54, 50, 613, DateTimeKind.Local).AddTicks(7742) },
-                    { "PRM392", new DateTime(2024, 11, 25, 16, 54, 50, 613, DateTimeKind.Local).AddTicks(7725), "Description", 20, true, "Mobile Programing", new DateTime(2024, 11, 25, 16, 54, 50, 613, DateTimeKind.Local).AddTicks(7737) },
-                    { "PRN231", new DateTime(2024, 11, 25, 16, 54, 50, 613, DateTimeKind.Local).AddTicks(7739), "Description", 20, true, "Building Cross-Platform Back-End Application With .NET", new DateTime(2024, 11, 25, 16, 54, 50, 613, DateTimeKind.Local).AddTicks(7740) }
+                    { "MLN122", new DateTime(2024, 11, 25, 22, 26, 35, 632, DateTimeKind.Local).AddTicks(7273), "Description", 16, true, "Political economics of Marxism – Leninism", new DateTime(2024, 11, 25, 22, 26, 35, 632, DateTimeKind.Local).AddTicks(7274) },
+                    { "PRM392", new DateTime(2024, 11, 25, 22, 26, 35, 632, DateTimeKind.Local).AddTicks(7256), "Description", 20, true, "Mobile Programing", new DateTime(2024, 11, 25, 22, 26, 35, 632, DateTimeKind.Local).AddTicks(7268) },
+                    { "PRN231", new DateTime(2024, 11, 25, 22, 26, 35, 632, DateTimeKind.Local).AddTicks(7270), "Description", 20, true, "Building Cross-Platform Back-End Application With .NET", new DateTime(2024, 11, 25, 22, 26, 35, 632, DateTimeKind.Local).AddTicks(7271) }
                 });
 
             migrationBuilder.InsertData(
