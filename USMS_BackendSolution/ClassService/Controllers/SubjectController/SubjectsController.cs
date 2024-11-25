@@ -15,7 +15,7 @@ namespace ClassService.Controllers.SubjectController
 			_subjectService = subjectService;
 		}
 
-		[HttpGet("Subject")]
+		[HttpGet("GetSubjects")]
 		public APIResponse GetSubjects()
 		{
 			APIResponse aPIResponse = new APIResponse();
