@@ -12,8 +12,8 @@ using SchedulerBusinessObject.AppDBContext;
 namespace SchedulerBusinessObject.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20241123192037_Init_Schedule")]
-    partial class Init_Schedule
+    [Migration("20241125125849_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -57,20 +57,20 @@ namespace SchedulerBusinessObject.Migrations
                         new
                         {
                             RoomId = "G304",
-                            CreateAt = new DateTime(2024, 11, 24, 2, 20, 37, 624, DateTimeKind.Local).AddTicks(3556),
+                            CreateAt = new DateTime(2024, 11, 25, 19, 58, 48, 182, DateTimeKind.Local).AddTicks(7261),
                             Location = "Grammar Room 304",
                             Status = 1,
-                            UpdateAt = new DateTime(2024, 11, 24, 2, 20, 37, 624, DateTimeKind.Local).AddTicks(3565),
+                            UpdateAt = new DateTime(2024, 11, 25, 19, 58, 48, 182, DateTimeKind.Local).AddTicks(7272),
                             isOnline = false
                         },
                         new
                         {
                             RoomId = "R.ON",
-                            CreateAt = new DateTime(2024, 11, 24, 2, 20, 37, 624, DateTimeKind.Local).AddTicks(3568),
+                            CreateAt = new DateTime(2024, 11, 25, 19, 58, 48, 182, DateTimeKind.Local).AddTicks(7276),
                             Location = "Online",
                             OnlineURL = "https://meet.google.com/koi-kghw-tsy",
                             Status = 1,
-                            UpdateAt = new DateTime(2024, 11, 24, 2, 20, 37, 624, DateTimeKind.Local).AddTicks(3568),
+                            UpdateAt = new DateTime(2024, 11, 25, 19, 58, 48, 182, DateTimeKind.Local).AddTicks(7277),
                             isOnline = true
                         });
                 });
@@ -114,6 +114,29 @@ namespace SchedulerBusinessObject.Migrations
                     b.HasIndex("SlotId");
 
                     b.ToTable("Schedules");
+                });
+
+            modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.Semesters", b =>
+                {
+                    b.Property<string>("SemesterId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateOnly>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("SemesterName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.HasKey("SemesterId");
+
+                    b.ToTable("Semesters");
                 });
 
             modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.TimeSlots", b =>

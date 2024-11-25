@@ -1,14 +1,23 @@
-using SchedulerDataAccess.Core;
+using Microsoft.EntityFrameworkCore;
+using SchedulerBusinessObject.AppDBContext;
+using SchedulerDataAccess.Repositories.SemesterRepository;
+using SchedulerDataAccess.Services.SemesterServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add DbContext registration using the connection string from appsettings.json
+builder.Services.AddDbContext<MyDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("HoangConnection"))
+);
 
+// Add services to the container.
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.ConfigureDependencyInjection();
+
+// Register the repository and service
+builder.Services.AddScoped<ISemesterRepository, SemesterRepository>();
+builder.Services.AddScoped<SemesterService>();
 
 var app = builder.Build();
 
