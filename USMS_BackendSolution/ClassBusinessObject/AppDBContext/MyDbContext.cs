@@ -27,19 +27,19 @@ namespace ClassBusinessObject.AppDBContext
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Subjects>().HasData(
-             new Subjects { SubjectId = "PRM392", SubjectName = "Mobile Programing", NumberOfSlot = 20, Description = "Description", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
-             new Subjects { SubjectId = "PRN231", SubjectName = "Building Cross-Platform Back-End Application With .NET", NumberOfSlot = 20, Description = "Description", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
-             new Subjects { SubjectId = "MLN122", SubjectName = "Political economics of Marxism – Leninism", NumberOfSlot = 16, Description = "Description", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now }
+             new Subjects { SubjectId = "PRM392", SubjectName = "Mobile Programing", NumberOfSlot = 20, Description = "Description", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now , Status = true },
+             new Subjects { SubjectId = "PRN231", SubjectName = "Building Cross-Platform Back-End Application With .NET", NumberOfSlot = 20, Description = "Description", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now, Status = true },
+             new Subjects { SubjectId = "MLN122", SubjectName = "Political economics of Marxism – Leninism", NumberOfSlot = 16, Description = "Description", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now, Status = true }
           );
             modelBuilder.Entity<Semesters>().HasData(
-              new Semesters { SemesterId = "SP25", SemesterName = "Spring2025", StartDate = new DateOnly(2025, 01, 05), EndDate = new DateOnly(2025, 03, 24), Status = 1 },
-              new Semesters { SemesterId = "SU25", SemesterName = "Summer2025", StartDate = new DateOnly(2025, 05, 08), EndDate = new DateOnly(2025, 08, 11), Status = 1 },
-              new Semesters { SemesterId = "FA25", SemesterName = "Fall2025", StartDate = new DateOnly(2025, 09, 05), EndDate = new DateOnly(2025, 11, 25), Status = 1 }
+              new Semesters { SemesterId = "SP25", SemesterName = "Spring2025", StartDate = new DateOnly(2025, 01, 05), EndDate = new DateOnly(2025, 03, 24), Status = true },
+              new Semesters { SemesterId = "SU25", SemesterName = "Summer2025", StartDate = new DateOnly(2025, 05, 08), EndDate = new DateOnly(2025, 08, 11), Status = true },
+              new Semesters { SemesterId = "FA25", SemesterName = "Fall2025", StartDate = new DateOnly(2025, 09, 05), EndDate = new DateOnly(2025, 11, 25), Status = true }
            );
             modelBuilder.Entity<ClassSubjects>().HasData(
-               new ClassSubjects { ClassSubjectId = 1, ClassId = "SE1702", SubjectId = "PRM392", SemesterId = "SP25", CreatedAt = new DateTime(2024, 11, 25) },
-               new ClassSubjects { ClassSubjectId = 2, ClassId = "SE1702", SubjectId = "PRN231", SemesterId = "SP25", CreatedAt = new DateTime(2024, 11, 25) },
-               new ClassSubjects { ClassSubjectId = 3, ClassId = "SE1702", SubjectId = "MLN122", SemesterId = "SP25", CreatedAt = new DateTime(2024, 11, 25) }
+               new ClassSubjects { ClassSubjectId = 1, ClassId = "SE1702", SubjectId = "PRM392", SemesterId = "SP25", CreatedAt = new DateTime(2024, 11, 25), Status = true},
+               new ClassSubjects { ClassSubjectId = 2, ClassId = "SE1702", SubjectId = "PRN231", SemesterId = "SP25", CreatedAt = new DateTime(2024, 11, 25), Status = true},
+               new ClassSubjects { ClassSubjectId = 3, ClassId = "SE1702", SubjectId = "MLN122", SemesterId = "SP25", CreatedAt = new DateTime(2024, 11, 25), Status = true}
             );
 
         }

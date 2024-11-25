@@ -30,6 +30,7 @@ namespace ClassBusinessObject.Models
 
         [Required]
         public DateTime CreatedAt { get; set; }
+        public bool Status { get; set; }
 
         [ForeignKey("SubjectId")]
         public virtual Subjects? Subject { get; set; }

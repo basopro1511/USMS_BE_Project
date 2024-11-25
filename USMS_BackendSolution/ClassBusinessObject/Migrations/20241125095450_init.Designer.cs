@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClassBusinessObject.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20241124195631_Init_Classes")]
-    partial class Init_Classes
+    [Migration("20241125095450_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,6 +46,9 @@ namespace ClassBusinessObject.Migrations
                         .HasMaxLength(4)
                         .HasColumnType("nvarchar(4)");
 
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
                     b.Property<string>("SubjectId")
                         .IsRequired()
                         .HasMaxLength(10)
@@ -66,6 +69,7 @@ namespace ClassBusinessObject.Migrations
                             ClassId = "SE1702",
                             CreatedAt = new DateTime(2024, 11, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             SemesterId = "SP25",
+                            Status = true,
                             SubjectId = "PRM392"
                         },
                         new
@@ -74,6 +78,7 @@ namespace ClassBusinessObject.Migrations
                             ClassId = "SE1702",
                             CreatedAt = new DateTime(2024, 11, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             SemesterId = "SP25",
+                            Status = true,
                             SubjectId = "PRN231"
                         },
                         new
@@ -82,6 +87,7 @@ namespace ClassBusinessObject.Migrations
                             ClassId = "SE1702",
                             CreatedAt = new DateTime(2024, 11, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             SemesterId = "SP25",
+                            Status = true,
                             SubjectId = "MLN122"
                         });
                 });
@@ -103,8 +109,8 @@ namespace ClassBusinessObject.Migrations
                     b.Property<DateOnly>("StartDate")
                         .HasColumnType("date");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
 
                     b.HasKey("SemesterId");
 
@@ -117,7 +123,7 @@ namespace ClassBusinessObject.Migrations
                             EndDate = new DateOnly(2025, 3, 24),
                             SemesterName = "Spring2025",
                             StartDate = new DateOnly(2025, 1, 5),
-                            Status = 1
+                            Status = true
                         },
                         new
                         {
@@ -125,7 +131,7 @@ namespace ClassBusinessObject.Migrations
                             EndDate = new DateOnly(2025, 8, 11),
                             SemesterName = "Summer2025",
                             StartDate = new DateOnly(2025, 5, 8),
-                            Status = 1
+                            Status = true
                         },
                         new
                         {
@@ -133,7 +139,7 @@ namespace ClassBusinessObject.Migrations
                             EndDate = new DateOnly(2025, 11, 25),
                             SemesterName = "Fall2025",
                             StartDate = new DateOnly(2025, 9, 5),
-                            Status = 1
+                            Status = true
                         });
                 });
 
@@ -154,6 +160,9 @@ namespace ClassBusinessObject.Migrations
                     b.Property<int>("NumberOfSlot")
                         .HasColumnType("int");
 
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
                     b.Property<string>("SubjectName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -170,29 +179,32 @@ namespace ClassBusinessObject.Migrations
                         new
                         {
                             SubjectId = "PRM392",
-                            CreatedAt = new DateTime(2024, 11, 25, 2, 56, 30, 850, DateTimeKind.Local).AddTicks(8389),
+                            CreatedAt = new DateTime(2024, 11, 25, 16, 54, 50, 613, DateTimeKind.Local).AddTicks(7725),
                             Description = "Description",
                             NumberOfSlot = 20,
+                            Status = true,
                             SubjectName = "Mobile Programing",
-                            UpdatedAt = new DateTime(2024, 11, 25, 2, 56, 30, 850, DateTimeKind.Local).AddTicks(8410)
+                            UpdatedAt = new DateTime(2024, 11, 25, 16, 54, 50, 613, DateTimeKind.Local).AddTicks(7737)
                         },
                         new
                         {
                             SubjectId = "PRN231",
-                            CreatedAt = new DateTime(2024, 11, 25, 2, 56, 30, 850, DateTimeKind.Local).AddTicks(8413),
+                            CreatedAt = new DateTime(2024, 11, 25, 16, 54, 50, 613, DateTimeKind.Local).AddTicks(7739),
                             Description = "Description",
                             NumberOfSlot = 20,
+                            Status = true,
                             SubjectName = "Building Cross-Platform Back-End Application With .NET",
-                            UpdatedAt = new DateTime(2024, 11, 25, 2, 56, 30, 850, DateTimeKind.Local).AddTicks(8413)
+                            UpdatedAt = new DateTime(2024, 11, 25, 16, 54, 50, 613, DateTimeKind.Local).AddTicks(7740)
                         },
                         new
                         {
                             SubjectId = "MLN122",
-                            CreatedAt = new DateTime(2024, 11, 25, 2, 56, 30, 850, DateTimeKind.Local).AddTicks(8414),
+                            CreatedAt = new DateTime(2024, 11, 25, 16, 54, 50, 613, DateTimeKind.Local).AddTicks(7741),
                             Description = "Description",
                             NumberOfSlot = 16,
+                            Status = true,
                             SubjectName = "Political economics of Marxism – Leninism",
-                            UpdatedAt = new DateTime(2024, 11, 25, 2, 56, 30, 850, DateTimeKind.Local).AddTicks(8415)
+                            UpdatedAt = new DateTime(2024, 11, 25, 16, 54, 50, 613, DateTimeKind.Local).AddTicks(7742)
                         });
                 });
 

@@ -27,7 +27,7 @@ namespace ClassBusinessObject.Models
         public DateOnly EndDate { get; set; }
 
         [Required]
-        public int Status { get; set; }
+        public bool Status { get; set; }
 
         public virtual ICollection<ClassSubjects>? ClassSubjects { get; set; }
     }
