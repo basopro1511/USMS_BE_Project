@@ -32,7 +32,7 @@ namespace ClassBusinessObject.Models
 
         [Required]
         public DateTime UpdatedAt { get; set; }
-        public bool Status { get; set; }
+        public bool Status { get; set; } = true;
 
         public virtual ICollection<ClassSubjects>? ClassSubjects { get; set; }
     }
