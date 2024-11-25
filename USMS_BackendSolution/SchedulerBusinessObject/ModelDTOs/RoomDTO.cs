@@ -6,7 +6,15 @@ using System.Threading.Tasks;
 
 namespace SchedulerBusinessObject.ModelDTOs
 {
-    internal class RoomDTO
+    public class RoomDTO
     {
+        public string RoomId { get; set; } 
+        public string? Location { get; set; } 
+        public bool IsOnline { get; set; } 
+        public string? OnlineURL { get; set; }
+        public int Status { get; set; } 
+        public DateTime CreateAt { get; set; } 
+        public DateTime UpdateAt { get; set; }
     }
+
 }
