@@ -22,13 +22,15 @@ namespace ClassBusinessObject.ModelDTOs
             }
         }
         public DateTime CreatedAt { get; set; }
+        public bool Status { get; set; }
     }
-    public class AddClassSubjectDTO
+    public class AddUpdateClassSubjectDTO
     {
         public int ClassSubjectId { get; set; }
         public string ClassId { get; set; }
         public string SubjectId { get; set; }
         public string SemesterId { get; set; }
         public DateTime CreatedAt { get; set; }
+        public bool Status { get; set; }
     }
 }

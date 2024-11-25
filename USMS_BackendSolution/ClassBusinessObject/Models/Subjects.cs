@@ -31,7 +31,8 @@ namespace ClassBusinessObject.Models
         public DateTime CreatedAt { get; set; } 
 
         [Required]
-        public DateTime UpdatedAt { get; set; } 
+        public DateTime UpdatedAt { get; set; }
+        public bool Status { get; set; }
 
         public virtual ICollection<ClassSubjects>? ClassSubjects { get; set; }
     }

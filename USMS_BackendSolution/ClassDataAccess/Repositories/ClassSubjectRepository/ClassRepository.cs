@@ -2,6 +2,7 @@
 using ClassBusinessObject.ModelDTOs;
 using ClassBusinessObject.Models;
 using ISUZU_NEXT.Server.Core.Extentions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -22,16 +23,18 @@ namespace ClassDataAccess.Repositories.ClassSubjectRepository
         {
             try
             {
-                var dbContext = new MyDbContext();
-                List<ClassSubjects> classSubjects = dbContext.ClassSubjects.ToList();
-                List<ClassSubjectDTO> classSubjectDTOs = new List<ClassSubjectDTO>();
-                foreach (var classSubject in classSubjects)
+                using (var dbContext = new MyDbContext())
                 {
-                    ClassSubjectDTO ClassSubjectDTO = new ClassSubjectDTO();
-                    ClassSubjectDTO.CopyProperties(classSubject);
-                    classSubjectDTOs.Add(ClassSubjectDTO);
+                    List<ClassSubjects> classSubjects = dbContext.ClassSubjects.ToList();
+                    List<ClassSubjectDTO> classSubjectDTOs = new List<ClassSubjectDTO>();
+                    foreach (var classSubject in classSubjects)
+                    {
+                        ClassSubjectDTO ClassSubjectDTO = new ClassSubjectDTO();
+                        ClassSubjectDTO.CopyProperties(classSubject);
+                        classSubjectDTOs.Add(ClassSubjectDTO);
+                    }
+                    return classSubjectDTOs;
                 }
-                return classSubjectDTOs;
             }
             catch (Exception ex)
             {
@@ -68,10 +71,6 @@ namespace ClassDataAccess.Repositories.ClassSubjectRepository
         /// <exception cref="Exception"></exception>
         public List<ClassSubjectDTO> GetClassSubjectByClassId(string classId)
         {
-            if (string.IsNullOrEmpty(classId))
-            {
-                throw new ArgumentNullException(nameof(classId), "Class ID cannot be null or empty.");
-            }
             try
             {
                 var classSubjects = GetAllClassSubjects();
@@ -81,6 +80,118 @@ namespace ClassDataAccess.Repositories.ClassSubjectRepository
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
+            }
+        }
+
+        public ClassSubjectDTO GetExistingClassSubject(string classId, string subjectId, string semesterId)
+        {
+            try
+            {
+                var classSubjects = GetAllClassSubjects();
+                ClassSubjectDTO classSubjectDTO = classSubjects.FirstOrDefault(x => x.ClassId == classId && x.SubjectId == subjectId && x.SemesterId == semesterId);
+                return classSubjectDTO;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Create new ClassSubject 
+        /// </summary>
+        /// <param name="classSubjectDTO"></param>
+        /// <returns>true if success</returns>
+        public bool AddNewClassSubject(AddUpdateClassSubjectDTO classSubjectDTO)
+        {
+            try
+            {
+                using (var dbContext = new MyDbContext())
+                {
+                    var classSubject = new ClassSubjects();
+                    classSubject.CopyProperties(classSubjectDTO);
+                    dbContext.ClassSubjects.Add(classSubject);
+                    dbContext.SaveChanges();
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Update Class Subject
+        /// </summary>
+        /// <param name="updateClassSubjectDTO"></param>
+        /// <returns></returns>
+        public bool UpdateClassSubject(AddUpdateClassSubjectDTO updateClassSubjectDTO)
+        {
+            try
+            {
+                using (var dbContext = new MyDbContext())
+                {
+                    var existingClassSubject = GetClassSubjectToUpdate(updateClassSubjectDTO.ClassSubjectId);
+                    if (existingClassSubject == null)
+                    {
+                        return false;
+                    }
+                    existingClassSubject.CopyProperties(updateClassSubjectDTO);
+                    dbContext.Entry(existingClassSubject).State = EntityState.Modified;
+                    dbContext.SaveChanges();
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Method use to get ClassSubject to update
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public ClassSubjects GetClassSubjectToUpdate(int id)
+        {
+            try
+            {
+                using (var dbContext = new MyDbContext())
+                {
+                    var existingClassSubject = dbContext.ClassSubjects.FirstOrDefault(cs => cs.ClassSubjectId == id);
+                    return existingClassSubject;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+
+        /// <summary>
+        /// Update Status of Class Subject
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool ChangeStatusClassSubject(int id)
+        {
+            try
+            {
+                using (var dbContext = new MyDbContext())
+                {
+                    ClassSubjects classSubject = dbContext.ClassSubjects.FirstOrDefault(x => x.ClassSubjectId == id);
+                    classSubject.Status = !classSubject.Status;
+                    dbContext.SaveChanges();
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
             }
         }
     }

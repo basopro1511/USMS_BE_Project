@@ -1,4 +1,5 @@
 ﻿using ClassBusinessObject;
+using ClassBusinessObject.ModelDTOs;
 using ClassDataAccess.Services.ClassServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -39,6 +40,32 @@ namespace ClassService.Controllers.ClassSubjectController
         {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse = _classSubjectService.GetClassSubjectByClassId(classId);
+            return aPIResponse;
+        }
+
+        // POST: api/ClassSubject
+        [HttpPost]
+        public APIResponse AddNewClassSubject(AddUpdateClassSubjectDTO classSubjectDTO)
+        {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse = _classSubjectService.AddNewClassSubject(classSubjectDTO);
+            return aPIResponse;
+        }
+
+        // PUT: api/ClassSubject
+        [HttpPut]
+        public APIResponse UpdateClassSubject(AddUpdateClassSubjectDTO classSubjectDTO)
+        {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse = _classSubjectService.UpdateClassSubject(classSubjectDTO);
+            return aPIResponse;
+        }
+
+        [HttpPut("ChangeStatus/{id}")]
+        public APIResponse ChangeStatusClassSubject(int id)
+        {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse = _classSubjectService.ChangeStatusClassSubject(id);
             return aPIResponse;
         }
     }

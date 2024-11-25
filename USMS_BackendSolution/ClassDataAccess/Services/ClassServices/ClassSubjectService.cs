@@ -1,5 +1,6 @@
 ﻿using ClassBusinessObject;
 using ClassBusinessObject.ModelDTOs;
+using ClassBusinessObject.Models;
 using ClassDataAccess.Repositories.ClassSubjectRepository;
 using System;
 using System.Collections.Generic;
@@ -16,9 +17,6 @@ namespace ClassDataAccess.Services.ClassServices
         {
             _classRepository = new ClassRepository();
         }
-        //Copy Paste 
-        #region Copy + Pase  
-        #endregion
 
         #region Get All Schedule
         /// <summary>
@@ -78,5 +76,111 @@ namespace ClassDataAccess.Services.ClassServices
             return aPIResponse;
         }
         #endregion
+
+        #region Add New ClassSubject
+        /// <summary>
+        /// Add New ClassSubject to databse
+        /// </summary>
+        /// <param name="ClassSubject"></param>
+        public APIResponse AddNewClassSubject(AddUpdateClassSubjectDTO classSubject)
+        {
+            APIResponse aPIResponse = new APIResponse();
+            ClassSubjectDTO existingClassSubject = _classRepository.GetExistingClassSubject(classSubject.ClassId,classSubject.SubjectId,classSubject.SemesterId);
+            if (existingClassSubject != null)
+            {
+                return new APIResponse
+                {
+                    IsSuccess = false,
+                    Message = "Class Subject with the given ClassId, SubjectId, SemesterId already exists."
+                };
+            }
+            bool isAdded = _classRepository.AddNewClassSubject(classSubject);
+            if (isAdded)
+            {
+                return new APIResponse
+                {
+                    IsSuccess = true,
+                    Message = "Class Subject added successfully."
+                };
+            }
+            return new APIResponse
+            {
+                IsSuccess = false,
+                Message = "Failed to add Class Subject."
+            };
+        }
+        #endregion
+
+        #region Update ClassSubject
+        /// <summary>
+        /// Udate ClassSubject in databse
+        /// </summary>
+        /// <param name="ClassSubject"></param>
+        public APIResponse UpdateClassSubject(AddUpdateClassSubjectDTO classSubject)
+        {
+            APIResponse aPIResponse = new APIResponse();
+            ClassSubjectDTO existingClassSubject = _classRepository.GetClassSubjectById(classSubject.ClassSubjectId);
+            if (existingClassSubject == null)
+            {
+                return new APIResponse
+                {
+                    IsSuccess = false,
+                    Message = "Class Subject with the given ID is not exists."
+                };
+            }
+            bool isAdded = _classRepository.UpdateClassSubject(classSubject);
+            if (isAdded)
+            {
+                return new APIResponse
+                {
+                    IsSuccess = true,
+                    Message = "Class Subject updated successfully."
+                };
+            }
+            return new APIResponse
+            {
+                IsSuccess = false,
+                Message = "Failed to updated Class Subject."
+            };
+        }
+        #endregion
+
+        #region Change Class Subject Status
+        /// <summary>
+        /// Change Status of Class Subject
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public APIResponse ChangeStatusClassSubject(int id)
+        {
+            var response = new APIResponse();
+            ClassSubjectDTO existingClassSubject = _classRepository.GetClassSubjectById(id);
+            if (existingClassSubject == null)
+            {
+                return new APIResponse
+                {
+                    IsSuccess = false,
+                    Message = "Class Subject with the given ID is not exists."
+                };
+            }
+            bool isSuccess = _classRepository.ChangeStatusClassSubject(id);
+            if (isSuccess)
+            {
+                return new APIResponse
+                {
+                    IsSuccess = true,
+                    Message = "Class Subject change status successfully."
+                };
+            }
+            return new APIResponse
+            {
+                IsSuccess = false,
+                Message = "Failed to change status of Class Subject."
+            };
+        }
+        #endregion
     }
 }
+//Copy Paste 
+#region Copy + Pase  
+#endregion
