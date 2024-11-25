@@ -130,7 +130,7 @@ namespace SchedulerDataAccess.Repositories.SemesterRepository
             }
         }
         /// <summary>
-        /// Get all active semesters asynchronously
+        /// Get all active semesters   asynchronously
         /// </summary>
         /// <returns>List of active SemesterDTO</returns>
         public async Task<IEnumerable<SemesterDTO>> GetActiveSemestersAsync()
