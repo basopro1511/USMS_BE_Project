@@ -11,19 +11,21 @@ namespace SchedulerBusinessObject.Services
     public class SemesterService
     {
         private readonly ISemesterRepository _semesterRepository;
+
         public SemesterService()
         {
             _semesterRepository = new SemesterRepository();
         }
+
         #region Get All Semesters
         /// <summary>
         /// Retrieve all Semesters in Database
         /// </summary>
         /// <returns>A list of all Semesters in DB</returns>
-        public async Task<APIResponse> GetAllSemestersAsync()
+        public APIResponse GetAllSemesters()
         {
             APIResponse response = new APIResponse();
-            var semesters = await _semesterRepository.GetAllSemestersAsync();
+            List<SemesterDTO> semesters = _semesterRepository.GetAllSemesters();
             if (semesters == null || !semesters.Any())
             {
                 response.IsSuccess = false;
@@ -33,16 +35,17 @@ namespace SchedulerBusinessObject.Services
             return response;
         }
         #endregion
+
         #region Get Semester By ID
         /// <summary>
         /// Retrieve a Semester with SemesterId
         /// </summary>
         /// <param name="id"></param>
         /// <returns>A Semester by ID</returns>
-        public async Task<APIResponse> GetSemesterByIdAsync(string id)
+        public APIResponse GetSemesterById(string id)
         {
             APIResponse response = new APIResponse();
-            var semester = await _semesterRepository.GetSemesterByIdAsync(id);
+            SemesterDTO semester = _semesterRepository.GetSemesterById(id);
             if (semester == null)
             {
                 response.IsSuccess = false;
@@ -52,16 +55,17 @@ namespace SchedulerBusinessObject.Services
             return response;
         }
         #endregion
+
         #region Add New Semester
         /// <summary>
         /// Add a new Semester to the database
         /// </summary>
         /// <param name="semesterDto"></param>
-        public async Task<APIResponse> AddSemesterAsync(SemesterDTO semesterDto)
+        public APIResponse AddSemester(SemesterDTO semesterDto)
         {
             APIResponse response = new APIResponse();
-            var existingSemesters = await _semesterRepository.GetActiveSemestersAsync();
-            if (existingSemesters.Any(s => s.SemesterName == semesterDto.SemesterName))
+            SemesterDTO existingSemester = _semesterRepository.GetSemesterById(semesterDto.SemesterId);
+            if (existingSemester != null)
             {
                 return new APIResponse
                 {
@@ -69,29 +73,30 @@ namespace SchedulerBusinessObject.Services
                     Message = "A semester with the same name already exists."
                 };
             }
-            try
+            bool isAdded = _semesterRepository.AddNewSemester(semesterDto);
+            if (isAdded)
             {
-                await _semesterRepository.AddSemesterAsync(semesterDto);
                 response.IsSuccess = true;
                 response.Message = "Semester added successfully.";
             }
-            catch (Exception ex)
+            else
             {
                 response.IsSuccess = false;
-                response.Message = $"Failed to add semester: {ex.Message}";
+                response.Message = "Failed to add semester.";
             }
             return response;
         }
         #endregion
+
         #region Update Semester
         /// <summary>
         /// Update an existing Semester
         /// </summary>
         /// <param name="semesterDto"></param>
-        public async Task<APIResponse> UpdateSemesterAsync(SemesterDTO semesterDto)
+        public APIResponse UpdateSemester(SemesterDTO semesterDto)
         {
             APIResponse response = new APIResponse();
-            var existingSemester = await _semesterRepository.GetSemesterByIdAsync(semesterDto.SemesterId);
+            SemesterDTO existingSemester = _semesterRepository.GetSemesterById(semesterDto.SemesterId);
             if (existingSemester == null)
             {
                 return new APIResponse
@@ -100,68 +105,84 @@ namespace SchedulerBusinessObject.Services
                     Message = "Semester with the given ID does not exist."
                 };
             }
-            try
+            bool isUpdated = _semesterRepository.UpdateSemester(semesterDto);
+            if (isUpdated)
             {
-                await _semesterRepository.UpdateSemesterAsync(semesterDto);
                 response.IsSuccess = true;
                 response.Message = "Semester updated successfully.";
             }
-            catch (Exception ex)
+            else
             {
                 response.IsSuccess = false;
-                response.Message = $"Failed to update semester: {ex.Message}";
+                response.Message = "Failed to update semester.";
             }
             return response;
         }
         #endregion
+
+        #region Change Semester Status
+        /// <summary>
+        /// Change the status of a Semester
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public APIResponse ChangeStatusSemester(string id)
+        {
+            APIResponse response = new APIResponse();
+            SemesterDTO existingSemester = _semesterRepository.GetSemesterById(id);
+            if (existingSemester == null)
+            {
+                return new APIResponse
+                {
+                    IsSuccess = false,
+                    Message = "Semester with the given ID does not exist."
+                };
+            }
+            bool isSuccess = _semesterRepository.ChangeStatusSemester(id);
+            if (isSuccess)
+            {
+                response.IsSuccess = true;
+                response.Message = "Semester status changed successfully.";
+            }
+            else
+            {
+                response.IsSuccess = false;
+                response.Message = "Failed to change semester status.";
+            }
+            return response;
+        }
+        #endregion
+
         #region Delete Semester
         /// <summary>
         /// Delete a Semester by ID
         /// </summary>
         /// <param name="id"></param>
-        public async Task<APIResponse> DeleteSemesterAsync(string id)
-        {
-            APIResponse response = new APIResponse();
-            var existingSemester = await _semesterRepository.GetSemesterByIdAsync(id);
-            if (existingSemester == null)
-            {
-                return new APIResponse
-                {
-                    IsSuccess = false,
-                    Message = "Semester with the given ID does not exist."
-                };
-            }
-            try
-            {
-                await _semesterRepository.DeleteSemesterAsync(id);
-                response.IsSuccess = true;
-                response.Message = "Semester deleted successfully.";
-            }
-            catch (Exception ex)
-            {
-                response.IsSuccess = false;
-                response.Message = $"Failed to delete semester: {ex.Message}";
-            }
-            return response;
-        }
-        #endregion
-        #region Get Active Semesters
-        /// <summary>
-        /// Retrieve all active Semesters
-        /// </summary>
-        /// <returns>List of active Semesters</returns>
-        public async Task<APIResponse> GetActiveSemestersAsync()
-        {
-            APIResponse response = new APIResponse();
-            var activeSemesters = await _semesterRepository.GetActiveSemestersAsync();
-            if (activeSemesters == null || !activeSemesters.Any())
-            {
-                response.IsSuccess = false;
-                response.Message = "No active semesters found!";
-            }
-            response.Result = activeSemesters;
-            return response;
-        }
+        //public APIResponse DeleteSemester(string id)
+        //{
+        //    APIResponse response = new APIResponse();
+        //    SemesterDTO existingSemester = _semesterRepository.GetSemesterById(id);
+        //    if (existingSemester == null)
+        //    {
+        //        return new APIResponse
+        //        {
+        //            IsSuccess = false,
+        //            Message = "Semester with the given ID does not exist."
+        //        };
+        //    }
+        //    bool isDeleted = _semesterRepository.DeleteSemester(id);
+        //    if (isDeleted)
+        //    {
+        //        response.IsSuccess = true;
+        //        response.Message = "Semester deleted successfully.";
+        //    }
+        //    else
+        //    {
+        //        response.IsSuccess = false;
+        //        response.Message = "Failed to delete semester.";
+        //    }
+        //    return response;
+        //}
         #endregion
     }
 }

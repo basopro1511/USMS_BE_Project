@@ -18,19 +18,21 @@ namespace SchedulerDataAccess.Repositories.SemesterRepository
         /// Get all semesters asynchronously
         /// </summary>
         /// <returns>List of SemesterDTO</returns>
-        public async Task<IEnumerable<SemesterDTO>> GetAllSemestersAsync()
+        public List<SemesterDTO> GetAllSemesters()
         {
             try
             {
                 using (var dbContext = new MyDbContext())
                 {
-                    var semesters = await dbContext.Semesters.ToListAsync();
-                    return semesters.Select(semester =>
+                    List <Semesters> semesters = dbContext.Semesters.ToList();
+                    List<SemesterDTO> semesterDTOs = new List<SemesterDTO>();
+                    foreach (var semester in semesters)
                     {
-                        var semesterDto = new SemesterDTO();
-                        semesterDto.CopyProperties(semester);
-                        return semesterDto;
-                    });
+                        SemesterDTO SemesterDTO = new SemesterDTO();
+                        SemesterDTO.CopyProperties(semester);
+                        semesterDTOs.Add(SemesterDTO);
+                    }
+                    return semesterDTOs;
                 }
             }
             catch (Exception ex)
@@ -43,109 +45,112 @@ namespace SchedulerDataAccess.Repositories.SemesterRepository
         /// </summary>
         /// <param name="semesterId"></param>
         /// <returns>SemesterDTO with the given ID</returns>
-        public async Task<SemesterDTO> GetSemesterByIdAsync(string semesterId)
+        public SemesterDTO GetSemesterById(string semesterId)
         {
             try
             {
-                using (var dbContext = new MyDbContext())
-                {
-                    var semester = await dbContext.Semesters.FirstOrDefaultAsync(s => s.SemesterId == semesterId);
-                    if (semester == null) return null;
-
-                    var semesterDto = new SemesterDTO();
-                    semesterDto.CopyProperties(semester);
-                    return semesterDto;
-                }
+                var semesters = GetAllSemesters();
+                SemesterDTO semesterDTO = semesters.FirstOrDefault(x => x.SemesterId == semesterId);
+                return semesterDTO;
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message, ex);
+                throw new Exception(ex.Message);
             }
         }
         /// <summary>
         /// Add a new semester asynchronously
         /// </summary>
         /// <param name="semesterDto"></param>
-        public async Task AddSemesterAsync(SemesterDTO semesterDto)
+        public bool AddNewSemester(SemesterDTO semesterDTO)
         {
             try
             {
                 using (var dbContext = new MyDbContext())
                 {
                     var semester = new Semesters();
-                    semester.CopyProperties(semesterDto);
-
-                    await dbContext.Semesters.AddAsync(semester);
-                    await dbContext.SaveChangesAsync();
+                    semester.CopyProperties(semesterDTO);
+                    dbContext.Semesters.Add(semester);
+                    dbContext.SaveChanges();
+                    return true;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw new Exception(ex.Message, ex);
+                return false;
             }
         }
         /// <summary>
         /// Update an existing semester asynchronously
         /// </summary>
         /// <param name="semesterDto"></param>
-        public async Task UpdateSemesterAsync(SemesterDTO semesterDto)
+        public bool UpdateSemester(SemesterDTO updateSemesterDTO)
         {
             try
             {
                 using (var dbContext = new MyDbContext())
                 {
-                    var existingSemester = await dbContext.Semesters.FirstOrDefaultAsync(s => s.SemesterId == semesterDto.SemesterId);
-                    if (existingSemester == null) throw new Exception("Semester not found.");
-
-                    existingSemester.CopyProperties(semesterDto);
+                    var existingSemester = GetSemesterById(updateSemesterDTO.SemesterId);
+                    if (existingSemester == null)
+                    {
+                        return false;
+                    }
+                    existingSemester.CopyProperties(updateSemesterDTO);
                     dbContext.Entry(existingSemester).State = EntityState.Modified;
-                    await dbContext.SaveChangesAsync();
+                    dbContext.SaveChanges();
+                    return true;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw new Exception(ex.Message, ex);
+                return false;
             }
         }
+        #region Delete Semester
         /// <summary>
         /// Delete a semester by ID asynchronously
         /// </summary>
         /// <param name="semesterId"></param>
-        public async Task DeleteSemesterAsync(string semesterId)
-        {
-            try
-            {
-                using (var dbContext = new MyDbContext())
-                {
-                    var semester = await dbContext.Semesters.FirstOrDefaultAsync(s => s.SemesterId == semesterId);
-                    if (semester == null) throw new Exception("Semester not found.");
-
-                    dbContext.Semesters.Remove(semester);
-                    await dbContext.SaveChangesAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message, ex);
-            }
-        }
+        //public bool DeleteSemester(string semesterId)
+        //{
+        //    try
+        //    {
+        //        using (var dbContext = new MyDbContext())
+        //        {
+        //            var semester = dbContext.Semesters.FirstOrDefault(x => x.SemesterId == semesterId);
+        //            if (semester == null)
+        //            {
+        //                return false;
+        //            }
+        //            dbContext.Semesters.Remove(semester);
+        //            dbContext.SaveChanges();
+        //            return true;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception(ex.Message, ex);
+        //    }
+        //}
         /// <summary>
         /// Get all active semesters   asynchronously
         /// </summary>
         /// <returns>List of active SemesterDTO</returns>
-        public async Task<IEnumerable<SemesterDTO>> GetActiveSemestersAsync()
+        #endregion
+        public bool ChangeStatusSemester(string semesterId)
         {
             try
             {
                 using (var dbContext = new MyDbContext())
                 {
-                    var activeSemesters = await dbContext.Semesters.Where(s => s.Status).ToListAsync();
-                    return activeSemesters.Select(semester =>
+                    var semester = GetSemesterById(semesterId);
+                    if (semester == null)
                     {
-                        var semesterDto = new SemesterDTO();
-                        semesterDto.CopyProperties(semester);
-                        return semesterDto;
-                    });
+                        return false; // Không tìm thấy Semester
+                    }
+                    semester.Status = !semester.Status;
+                    dbContext.SaveChanges();
+                    return true;
                 }
             }
             catch (Exception ex)

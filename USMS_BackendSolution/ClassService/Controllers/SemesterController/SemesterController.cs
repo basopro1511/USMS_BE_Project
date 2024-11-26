@@ -3,6 +3,8 @@ using SchedulerBusinessObject.ModelDTOs;
 using SchedulerBusinessObject.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ClassDataAccess.Services.ClassServices;
+using ClassBusinessObject.ModelDTOs;
 
 namespace SchedulerService.Controllers.SemesterController
 {
@@ -18,59 +20,44 @@ namespace SchedulerService.Controllers.SemesterController
         }
         // GET: api/Semester
         [HttpGet]
-        public async Task<APIResponse> GetAllSemesters()
+        public APIResponse GetAllSemesters()
         {
-            return await _semesterService.GetAllSemestersAsync();
+            APIResponse response = new APIResponse();
+            response = _semesterService.GetAllSemesters();
+            return response;
         }
         // GET: api/Semester/{id}
         [HttpGet("{id}")]
-        public async Task<APIResponse> GetSemesterById(string id)
+        public APIResponse GetSemesterById(string id)
         {
-            return await _semesterService.GetSemesterByIdAsync(id);
-        }
-        // GET: api/Semester/Active
-        [HttpGet("Active")]
-        public async Task<APIResponse> GetActiveSemesters()
-        {
-            return await _semesterService.GetActiveSemestersAsync();
+            APIResponse response = new APIResponse();
+            response = _semesterService.GetSemesterById(id);
+            return response;
         }
         // POST: api/Semester
         [HttpPost]
-        public async Task<APIResponse> AddNewSemester([FromBody] SemesterDTO semesterDTO)
+        public APIResponse AddNewSemester(SemesterDTO semesterDTO)
         {
-            return await _semesterService.AddSemesterAsync(semesterDTO);
+            APIResponse response = new APIResponse();
+            response = _semesterService.AddSemester(semesterDTO);
+            return response;
         }
-        // PUT: api/Semester
+        // PUT: api/ClassSubject
+        [HttpPut]
+        public APIResponse UpdateSemester(SemesterDTO semesterDTO)
+        {
+            APIResponse response = new APIResponse();
+            response = _semesterService.UpdateSemester(semesterDTO);
+            return response;
+        }
         // PUT: api/Semester/ChangeStatus/{id}
         [HttpPut("ChangeStatus/{id}")]
-        public async Task<APIResponse> ChangeStatusSemester(string id)
+        public APIResponse ChangeStatusSemester(string id)
         {
-            var response = await _semesterService.GetSemesterByIdAsync(id);
-            if (!response.IsSuccess || response.Result == null)
-            {
-                return new APIResponse
-                {
-                    IsSuccess = false,
-                    Message = "Semester not found."
-                };
-            }
-            var semester = response.Result as SemesterDTO;
-            if (semester == null)
-            {
-                return new APIResponse
-                {
-                    IsSuccess = false,
-                    Message = "Failed to parse semester data."
-                };
-            }
-            semester.Status = !semester.Status;
-            return await _semesterService.UpdateSemesterAsync(semester);
+            APIResponse response = new APIResponse();
+            response = _semesterService.GetSemesterById(id);
+            return response;
         }
-        // DELETE: api/Semester/{id}
-        [HttpDelete("{id}")]
-        public async Task<APIResponse> DeleteSemester(string id)
-        {
-            return await _semesterService.DeleteSemesterAsync(id);
-        }
+
     }
 }

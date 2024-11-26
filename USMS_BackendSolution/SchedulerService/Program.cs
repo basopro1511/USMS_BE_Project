@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SchedulerBusinessObject.AppDBContext;
-using SchedulerDataAccess.Repositories.SemesterRepository;
-using SchedulerDataAccess.Services.SemesterServices;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,8 +16,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Register the repository and service
-builder.Services.AddScoped<ISemesterRepository, SemesterRepository>();
-builder.Services.AddScoped<SemesterService>();
+
 
 var app = builder.Build();
 
