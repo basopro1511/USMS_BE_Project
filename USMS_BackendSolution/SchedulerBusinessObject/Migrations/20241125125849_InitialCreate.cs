@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SchedulerBusinessObject.Migrations
 {
     /// <inheritdoc />
-    public partial class Init_Schedule : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -28,6 +28,21 @@ namespace SchedulerBusinessObject.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Rooms", x => x.RoomId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Semesters",
+                columns: table => new
+                {
+                    SemesterId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SemesterName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StartDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    EndDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Semesters", x => x.SemesterId);
                 });
 
             migrationBuilder.CreateTable(
@@ -80,8 +95,8 @@ namespace SchedulerBusinessObject.Migrations
                 columns: new[] { "RoomId", "CreateAt", "Location", "OnlineURL", "Status", "UpdateAt", "isOnline" },
                 values: new object[,]
                 {
-                    { "G304", new DateTime(2024, 11, 24, 2, 20, 37, 624, DateTimeKind.Local).AddTicks(3556), "Grammar Room 304", null, 1, new DateTime(2024, 11, 24, 2, 20, 37, 624, DateTimeKind.Local).AddTicks(3565), false },
-                    { "R.ON", new DateTime(2024, 11, 24, 2, 20, 37, 624, DateTimeKind.Local).AddTicks(3568), "Online", "https://meet.google.com/koi-kghw-tsy", 1, new DateTime(2024, 11, 24, 2, 20, 37, 624, DateTimeKind.Local).AddTicks(3568), true }
+                    { "G304", new DateTime(2024, 11, 25, 19, 58, 48, 182, DateTimeKind.Local).AddTicks(7261), "Grammar Room 304", null, 1, new DateTime(2024, 11, 25, 19, 58, 48, 182, DateTimeKind.Local).AddTicks(7272), false },
+                    { "R.ON", new DateTime(2024, 11, 25, 19, 58, 48, 182, DateTimeKind.Local).AddTicks(7276), "Online", "https://meet.google.com/koi-kghw-tsy", 1, new DateTime(2024, 11, 25, 19, 58, 48, 182, DateTimeKind.Local).AddTicks(7277), true }
                 });
 
             migrationBuilder.InsertData(
@@ -112,6 +127,9 @@ namespace SchedulerBusinessObject.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Schedules");
+
+            migrationBuilder.DropTable(
+                name: "Semesters");
 
             migrationBuilder.DropTable(
                 name: "Rooms");

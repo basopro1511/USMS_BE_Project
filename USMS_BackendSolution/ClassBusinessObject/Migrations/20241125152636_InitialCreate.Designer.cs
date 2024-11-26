@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClassBusinessObject.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20241125095450_init")]
-    partial class init
+    [Migration("20241125152636_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -179,32 +179,32 @@ namespace ClassBusinessObject.Migrations
                         new
                         {
                             SubjectId = "PRM392",
-                            CreatedAt = new DateTime(2024, 11, 25, 16, 54, 50, 613, DateTimeKind.Local).AddTicks(7725),
+                            CreatedAt = new DateTime(2024, 11, 25, 22, 26, 35, 632, DateTimeKind.Local).AddTicks(7256),
                             Description = "Description",
                             NumberOfSlot = 20,
                             Status = true,
                             SubjectName = "Mobile Programing",
-                            UpdatedAt = new DateTime(2024, 11, 25, 16, 54, 50, 613, DateTimeKind.Local).AddTicks(7737)
+                            UpdatedAt = new DateTime(2024, 11, 25, 22, 26, 35, 632, DateTimeKind.Local).AddTicks(7268)
                         },
                         new
                         {
                             SubjectId = "PRN231",
-                            CreatedAt = new DateTime(2024, 11, 25, 16, 54, 50, 613, DateTimeKind.Local).AddTicks(7739),
+                            CreatedAt = new DateTime(2024, 11, 25, 22, 26, 35, 632, DateTimeKind.Local).AddTicks(7270),
                             Description = "Description",
                             NumberOfSlot = 20,
                             Status = true,
                             SubjectName = "Building Cross-Platform Back-End Application With .NET",
-                            UpdatedAt = new DateTime(2024, 11, 25, 16, 54, 50, 613, DateTimeKind.Local).AddTicks(7740)
+                            UpdatedAt = new DateTime(2024, 11, 25, 22, 26, 35, 632, DateTimeKind.Local).AddTicks(7271)
                         },
                         new
                         {
                             SubjectId = "MLN122",
-                            CreatedAt = new DateTime(2024, 11, 25, 16, 54, 50, 613, DateTimeKind.Local).AddTicks(7741),
+                            CreatedAt = new DateTime(2024, 11, 25, 22, 26, 35, 632, DateTimeKind.Local).AddTicks(7273),
                             Description = "Description",
                             NumberOfSlot = 16,
                             Status = true,
                             SubjectName = "Political economics of Marxism – Leninism",
-                            UpdatedAt = new DateTime(2024, 11, 25, 16, 54, 50, 613, DateTimeKind.Local).AddTicks(7742)
+                            UpdatedAt = new DateTime(2024, 11, 25, 22, 26, 35, 632, DateTimeKind.Local).AddTicks(7274)
                         });
                 });
 

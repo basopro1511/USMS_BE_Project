@@ -1,3 +1,4 @@
+using SchedulerBusinessObject.Services;
 using SchedulerDataAccess.Core;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureDependencyInjection();
+builder.Services.AddScoped<SemesterService>();
 
 var app = builder.Build();
 
