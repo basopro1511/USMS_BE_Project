@@ -10,21 +10,12 @@ namespace SchedulerBusinessObject.ModelDTOs
     {
         public string RoomId { get; set; }
         public string? Location { get; set; }
-        public bool IsOnline { get; set; }
-        public string? OnlineURL { get; set; }
-        public int Status { get; set; }
-        public DateTime CreateAt { get; set; }
-        public DateTime UpdateAt { get; set; }
-    }
-
-    public class AddUpdateRoomDTO
-    {
-        public string RoomId { get; set; }
-        public string? Location { get; set; }
         public bool isOnline { get; set; }
         public string? OnlineURL { get; set; }
         public int Status { get; set; }
         public DateTime CreateAt { get; set; }
         public DateTime UpdateAt { get; set; }
     }
+
+   
 }

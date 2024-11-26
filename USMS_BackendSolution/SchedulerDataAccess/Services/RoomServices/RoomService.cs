@@ -61,7 +61,7 @@ namespace SchedulerDataAccess.Services.RoomServices
         /// Add New Room to databse
         /// </summary>
         /// <param name="room"></param>
-        public APIResponse AddNewRoom(AddUpdateRoomDTO room)
+        public APIResponse AddNewRoom(RoomDTO room)
         {
             APIResponse aPIResponse = new APIResponse();
             RoomDTO existingRoom = _roomRepository.GetExistingRoom(room.RoomId);
@@ -95,7 +95,7 @@ namespace SchedulerDataAccess.Services.RoomServices
         /// Udate Room in databse
         /// </summary>
         /// <param name="room"></param>
-        public APIResponse UpdateRoom(AddUpdateRoomDTO room)
+        public APIResponse UpdateRoom(RoomDTO room)
         {
             APIResponse aPIResponse = new APIResponse();
             RoomDTO existingRoom = _roomRepository.GetRoomById(room.RoomId);

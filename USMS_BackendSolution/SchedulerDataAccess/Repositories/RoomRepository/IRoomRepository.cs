@@ -14,8 +14,8 @@ namespace SchedulerDataAccess.Repositories.RoomRepository
         public RoomDTO GetRoomById(string id);
         public RoomDTO GetExistingRoom(string roomId);
 
-        public bool AddNewRoom(AddUpdateRoomDTO roomDTO);
-        public bool UpdateRoom(AddUpdateRoomDTO updateRoomDTO);
+        public bool AddNewRoom(RoomDTO roomDTO);
+        public bool UpdateRoom(RoomDTO updateRoomDTO);
         public bool ChangeStatusRoom(string id);
     }
 }

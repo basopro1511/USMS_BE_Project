@@ -29,7 +29,7 @@ namespace SchedulerDataAccess.Repositories.RoomRepository
                     foreach (var room in rooms)
                     {
                         RoomDTO RoomDTO = new RoomDTO();
-                        RoomDTO.CopyProperties(RoomDTO);
+                        RoomDTO.CopyProperties(room);
                         roomDTOs.Add(RoomDTO);
                     }
                     return roomDTOs;
@@ -77,7 +77,7 @@ namespace SchedulerDataAccess.Repositories.RoomRepository
         /// </summary>
         /// <param name="roomDTO"></param>
         /// <returns>>true if success</returns>
-        public bool AddNewRoom(AddUpdateRoomDTO roomDTO)
+        public bool AddNewRoom(RoomDTO roomDTO)
         {
             try
             {
@@ -100,7 +100,7 @@ namespace SchedulerDataAccess.Repositories.RoomRepository
         /// </summary>
         /// <param name="updateRoomDTO"></param>
         /// <returns>true if success</returns>
-        public bool UpdateRoom(AddUpdateRoomDTO updateRoomDTO)
+        public bool UpdateRoom(RoomDTO updateRoomDTO)
         {
             try
             {
