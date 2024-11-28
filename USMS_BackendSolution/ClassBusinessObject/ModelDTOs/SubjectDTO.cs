@@ -5,7 +5,6 @@ namespace ClassBusinessObject.ModelDTOs
 {
 	public class SubjectDTO
 	{
-		[Key]
 		[StringLength(10)]
 		[Column(TypeName = "nvarchar(10)")]
 		public string SubjectId { get; set; }

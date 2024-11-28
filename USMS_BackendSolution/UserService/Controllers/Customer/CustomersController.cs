@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using BusinessObject.AppDBContext;
-using BusinessObject.Models;
+﻿using BusinessObject;
 using BusinessObject.ModelDTOs;
 using DataAccess.Services.CustomerService;
-using BusinessObject;
+using Microsoft.AspNetCore.Mvc;
 
 namespace UserService.Controllers.Customer
 {
-    [Route("api/[controller]")]
+	[Route("api/[controller]")]
     [ApiController]
     public class CustomersController : ControllerBase
     {
