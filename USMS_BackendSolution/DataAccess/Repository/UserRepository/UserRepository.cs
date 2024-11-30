@@ -13,6 +13,11 @@ namespace DataAccess.Repository.UserRepository
 {
     public class UserRepository : IUserRepository
     {
+        /// <summary>
+        /// show a list full of user
+        /// </summary>
+        /// <returns>true if success</returns>
+        /// <exception cref="Exception"></exception>
         public List<UserDTO> GetAllUser()
         {
             try
@@ -35,6 +40,12 @@ namespace DataAccess.Repository.UserRepository
                 throw new Exception(ex.Message);
             }
         }
+        /// <summary>
+        /// admin use to retrive a user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>true if success</returns>
+        /// <exception cref="Exception"></exception>
         public UserDTO GetUserById(string id)
         {
             try
@@ -48,6 +59,12 @@ namespace DataAccess.Repository.UserRepository
                 throw new Exception(ex.Message);
             }
         }
+        /// <summary>
+        /// admin add a new user
+        /// </summary>
+        /// <param name="userDTO"></param>
+        /// <returns>true if success</returns>
+        /// <exception cref="Exception"></exception>
         public bool AddNewUser(UserDTO userDTO)
         {
             try
@@ -67,6 +84,12 @@ namespace DataAccess.Repository.UserRepository
             }
             return false;
         }
+        /// <summary>
+        /// admin update a user
+        /// </summary>
+        /// <param name="UpdateUserDTO"></param>
+        /// <returns>true if success</returns>
+        /// <exception cref="Exception"></exception>
         public bool UpdateUser(UserDTO UpdateUserDTO)
         {
             try
@@ -104,7 +127,12 @@ namespace DataAccess.Repository.UserRepository
                 throw new Exception(ex.Message, ex);
             }
         }
-
+        /// <summary>
+        /// Disable a student
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>true if success</returns>
+        /// <exception cref="Exception"></exception>
         public bool DisableStudent(string id)
         {
             try
@@ -122,6 +150,12 @@ namespace DataAccess.Repository.UserRepository
                 throw new Exception(ex.Message, ex);
             }
         }
+        /// <summary>
+        /// Mark a student learning on schedule
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>true if success</returns>
+        /// <exception cref="Exception"></exception>
         public bool OnScheduleStudent(string id)
         {
             try
@@ -139,6 +173,12 @@ namespace DataAccess.Repository.UserRepository
                 throw new Exception(ex.Message, ex);
             }
         }
+        /// <summary>
+        /// Set a student Deferment
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returnstrue if success></returns>
+        /// <exception cref="Exception"></exception>
         public bool DefermentStudent(string id)
         {
             try
@@ -157,6 +197,12 @@ namespace DataAccess.Repository.UserRepository
             }
 
         }
+        /// <summary>
+        /// Mark a student graduated
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>true if success</returns>
+        /// <exception cref="Exception"></exception>
         public bool GraduatedStudent(string id)
         {
             try
