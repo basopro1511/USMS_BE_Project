@@ -27,7 +27,7 @@ namespace ClassDataAccess.Repositories.SubjectRepository
 				{
 					return false;
 				}
-				var subject = new Subjects();
+				var subject = new Subject();
 				subject.CopyProperties(SubjectDTO);
 				subject.CreatedAt = DateTime.Now;
 				subject.UpdatedAt = DateTime.Now;
@@ -63,7 +63,7 @@ namespace ClassDataAccess.Repositories.SubjectRepository
 				{
 					return false;
 				}
-				var subject = new Subjects();
+				var subject = new Subject();
 				subject.CopyProperties(SubjectDTO);
 				subject.UpdatedAt = DateTime.Now;
 				using (var _db = new MyDbContext())
@@ -89,10 +89,10 @@ namespace ClassDataAccess.Repositories.SubjectRepository
 			try
 			{
 				var result = new List<SubjectDTO>();
-				var subjects = new List<Subjects>();
+				var subjects = new List<Subject>();
 				using (var _db = new MyDbContext())
 				{
-					subjects = _db.Subjects.ToList();
+					subjects = _db.Subject.ToList();
 				}
 				foreach (var item in subjects)
 				{
@@ -128,7 +128,7 @@ namespace ClassDataAccess.Repositories.SubjectRepository
 				{
 					return false;
 				}
-				Subjects subject = new Subjects();
+				Subject subject = new Subject();
 				subject.CopyProperties(checkSubject);
 				using (var _db = new MyDbContext())
 				{

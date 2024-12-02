@@ -8,13 +8,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ClassBusinessObject.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Init_ClassService : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Semesters",
+                name: "Semester",
                 columns: table => new
                 {
                     SemesterId = table.Column<string>(type: "nvarchar(4)", maxLength: 4, nullable: false),
@@ -25,28 +25,29 @@ namespace ClassBusinessObject.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Semesters", x => x.SemesterId);
+                    table.PrimaryKey("PK_Semester", x => x.SemesterId);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Subjects",
+                name: "Subject",
                 columns: table => new
                 {
                     SubjectId = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     SubjectName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     NumberOfSlot = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Term = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Subjects", x => x.SubjectId);
+                    table.PrimaryKey("PK_Subject", x => x.SubjectId);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ClassSubjects",
+                name: "ClassSubject",
                 columns: table => new
                 {
                     ClassSubjectId = table.Column<int>(type: "int", nullable: false)
@@ -59,23 +60,23 @@ namespace ClassBusinessObject.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ClassSubjects", x => x.ClassSubjectId);
+                    table.PrimaryKey("PK_ClassSubject", x => x.ClassSubjectId);
                     table.ForeignKey(
-                        name: "FK_ClassSubjects_Semesters_SemesterId",
+                        name: "FK_ClassSubject_Semester_SemesterId",
                         column: x => x.SemesterId,
-                        principalTable: "Semesters",
+                        principalTable: "Semester",
                         principalColumn: "SemesterId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ClassSubjects_Subjects_SubjectId",
+                        name: "FK_ClassSubject_Subject_SubjectId",
                         column: x => x.SubjectId,
-                        principalTable: "Subjects",
+                        principalTable: "Subject",
                         principalColumn: "SubjectId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
-                table: "Semesters",
+                table: "Semester",
                 columns: new[] { "SemesterId", "EndDate", "SemesterName", "StartDate", "Status" },
                 values: new object[,]
                 {
@@ -85,17 +86,17 @@ namespace ClassBusinessObject.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Subjects",
-                columns: new[] { "SubjectId", "CreatedAt", "Description", "NumberOfSlot", "Status", "SubjectName", "UpdatedAt" },
+                table: "Subject",
+                columns: new[] { "SubjectId", "CreatedAt", "Description", "NumberOfSlot", "Status", "SubjectName", "Term", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { "MLN122", new DateTime(2024, 11, 25, 22, 26, 35, 632, DateTimeKind.Local).AddTicks(7273), "Description", 16, true, "Political economics of Marxism – Leninism", new DateTime(2024, 11, 25, 22, 26, 35, 632, DateTimeKind.Local).AddTicks(7274) },
-                    { "PRM392", new DateTime(2024, 11, 25, 22, 26, 35, 632, DateTimeKind.Local).AddTicks(7256), "Description", 20, true, "Mobile Programing", new DateTime(2024, 11, 25, 22, 26, 35, 632, DateTimeKind.Local).AddTicks(7268) },
-                    { "PRN231", new DateTime(2024, 11, 25, 22, 26, 35, 632, DateTimeKind.Local).AddTicks(7270), "Description", 20, true, "Building Cross-Platform Back-End Application With .NET", new DateTime(2024, 11, 25, 22, 26, 35, 632, DateTimeKind.Local).AddTicks(7271) }
+                    { "MLN122", new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6097), "Description", 16, true, "Political economics of Marxism – Leninism", 8, new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6097) },
+                    { "PRM392", new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6082), "Description", 20, true, "Mobile Programing", 8, new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6092) },
+                    { "PRN231", new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6095), "Description", 20, true, "Building Cross-Platform Back-End Application With .NET", 8, new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6095) }
                 });
 
             migrationBuilder.InsertData(
-                table: "ClassSubjects",
+                table: "ClassSubject",
                 columns: new[] { "ClassSubjectId", "ClassId", "CreatedAt", "SemesterId", "Status", "SubjectId" },
                 values: new object[,]
                 {
@@ -105,13 +106,13 @@ namespace ClassBusinessObject.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClassSubjects_SemesterId",
-                table: "ClassSubjects",
+                name: "IX_ClassSubject_SemesterId",
+                table: "ClassSubject",
                 column: "SemesterId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClassSubjects_SubjectId",
-                table: "ClassSubjects",
+                name: "IX_ClassSubject_SubjectId",
+                table: "ClassSubject",
                 column: "SubjectId");
         }
 
@@ -119,13 +120,13 @@ namespace ClassBusinessObject.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ClassSubjects");
+                name: "ClassSubject");
 
             migrationBuilder.DropTable(
-                name: "Semesters");
+                name: "Semester");
 
             migrationBuilder.DropTable(
-                name: "Subjects");
+                name: "Subject");
         }
     }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ClassBusinessObject.Models
 {
-    public class Semesters
+    public class Semester
     {
         [Key]
         [StringLength(4)]
@@ -27,8 +27,9 @@ namespace ClassBusinessObject.Models
         public DateOnly EndDate { get; set; }
 
         [Required]
+        [Column(TypeName = "bit")]
         public bool Status { get; set; }
 
-        public virtual ICollection<ClassSubjects>? ClassSubjects { get; set; }
+        public virtual ICollection<ClassSubject>? ClassSubjects { get; set; }
     }
 }

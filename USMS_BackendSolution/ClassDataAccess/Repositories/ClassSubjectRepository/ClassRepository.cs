@@ -25,7 +25,7 @@ namespace ClassDataAccess.Repositories.ClassSubjectRepository
             {
                 using (var dbContext = new MyDbContext())
                 {
-                    List<ClassSubjects> classSubjects = dbContext.ClassSubjects.ToList();
+                    List<ClassSubject> classSubjects = dbContext.ClassSubject.ToList();
                     List<ClassSubjectDTO> classSubjectDTOs = new List<ClassSubjectDTO>();
                     foreach (var classSubject in classSubjects)
                     {
@@ -108,9 +108,9 @@ namespace ClassDataAccess.Repositories.ClassSubjectRepository
             {
                 using (var dbContext = new MyDbContext())
                 {
-                    var classSubject = new ClassSubjects();
+                    var classSubject = new ClassSubject();
                     classSubject.CopyProperties(classSubjectDTO);
-                    dbContext.ClassSubjects.Add(classSubject);
+                    dbContext.ClassSubject.Add(classSubject);
                     dbContext.SaveChanges();
                     return true;
                 }
@@ -155,13 +155,13 @@ namespace ClassDataAccess.Repositories.ClassSubjectRepository
         /// <param name="id"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public ClassSubjects GetClassSubjectToUpdate(int id)
+        public ClassSubject GetClassSubjectToUpdate(int id)
         {
             try
             {
                 using (var dbContext = new MyDbContext())
                 {
-                    var existingClassSubject = dbContext.ClassSubjects.FirstOrDefault(cs => cs.ClassSubjectId == id);
+                    var existingClassSubject = dbContext.ClassSubject.FirstOrDefault(cs => cs.ClassSubjectId == id);
                     return existingClassSubject;
                 }
             }
@@ -183,7 +183,7 @@ namespace ClassDataAccess.Repositories.ClassSubjectRepository
             {
                 using (var dbContext = new MyDbContext())
                 {
-                    ClassSubjects classSubject = dbContext.ClassSubjects.FirstOrDefault(x => x.ClassSubjectId == id);
+                    ClassSubject classSubject = GetClassSubjectToUpdate(id);
                     classSubject.Status = !classSubject.Status;
                     dbContext.SaveChanges();
                     return true;

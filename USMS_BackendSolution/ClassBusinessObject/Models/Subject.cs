@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ClassBusinessObject.Models
 {
-    public class Subjects
+    public class Subject
     {
         [Key]
         [StringLength(10)]
@@ -21,6 +21,7 @@ namespace ClassBusinessObject.Models
         public string SubjectName { get; set; }
 
         [Required]
+        [Column(TypeName = "int")]
         public int NumberOfSlot { get; set; } 
 
         [StringLength(200)]
@@ -28,12 +29,17 @@ namespace ClassBusinessObject.Models
         public string Description { get; set; }
 
         [Required]
+        [Column(TypeName = "int")]
+        public int Term {  get; set; }
+
+        [Required]
         public DateTime CreatedAt { get; set; } 
 
         [Required]
         public DateTime UpdatedAt { get; set; }
+        [Column(TypeName = "bit")]
         public bool Status { get; set; }
 
-        public virtual ICollection<ClassSubjects>? ClassSubjects { get; set; }
+        public virtual ICollection<ClassSubject>? ClassSubjects { get; set; }
     }
 }

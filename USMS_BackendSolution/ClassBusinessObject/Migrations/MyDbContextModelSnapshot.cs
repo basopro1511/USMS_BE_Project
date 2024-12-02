@@ -22,7 +22,7 @@ namespace ClassBusinessObject.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ClassBusinessObject.Models.ClassSubjects", b =>
+            modelBuilder.Entity("ClassBusinessObject.Models.ClassSubject", b =>
                 {
                     b.Property<int>("ClassSubjectId")
                         .ValueGeneratedOnAdd()
@@ -57,7 +57,7 @@ namespace ClassBusinessObject.Migrations
 
                     b.HasIndex("SubjectId");
 
-                    b.ToTable("ClassSubjects");
+                    b.ToTable("ClassSubject");
 
                     b.HasData(
                         new
@@ -89,7 +89,7 @@ namespace ClassBusinessObject.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ClassBusinessObject.Models.Semesters", b =>
+            modelBuilder.Entity("ClassBusinessObject.Models.Semester", b =>
                 {
                     b.Property<string>("SemesterId")
                         .HasMaxLength(4)
@@ -111,7 +111,7 @@ namespace ClassBusinessObject.Migrations
 
                     b.HasKey("SemesterId");
 
-                    b.ToTable("Semesters");
+                    b.ToTable("Semester");
 
                     b.HasData(
                         new
@@ -140,7 +140,7 @@ namespace ClassBusinessObject.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ClassBusinessObject.Models.Subjects", b =>
+            modelBuilder.Entity("ClassBusinessObject.Models.Subject", b =>
                 {
                     b.Property<string>("SubjectId")
                         .HasMaxLength(10)
@@ -165,55 +165,61 @@ namespace ClassBusinessObject.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int>("Term")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("SubjectId");
 
-                    b.ToTable("Subjects");
+                    b.ToTable("Subject");
 
                     b.HasData(
                         new
                         {
                             SubjectId = "PRM392",
-                            CreatedAt = new DateTime(2024, 11, 25, 22, 26, 35, 632, DateTimeKind.Local).AddTicks(7256),
+                            CreatedAt = new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6082),
                             Description = "Description",
                             NumberOfSlot = 20,
                             Status = true,
                             SubjectName = "Mobile Programing",
-                            UpdatedAt = new DateTime(2024, 11, 25, 22, 26, 35, 632, DateTimeKind.Local).AddTicks(7268)
+                            Term = 8,
+                            UpdatedAt = new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6092)
                         },
                         new
                         {
                             SubjectId = "PRN231",
-                            CreatedAt = new DateTime(2024, 11, 25, 22, 26, 35, 632, DateTimeKind.Local).AddTicks(7270),
+                            CreatedAt = new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6095),
                             Description = "Description",
                             NumberOfSlot = 20,
                             Status = true,
                             SubjectName = "Building Cross-Platform Back-End Application With .NET",
-                            UpdatedAt = new DateTime(2024, 11, 25, 22, 26, 35, 632, DateTimeKind.Local).AddTicks(7271)
+                            Term = 8,
+                            UpdatedAt = new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6095)
                         },
                         new
                         {
                             SubjectId = "MLN122",
-                            CreatedAt = new DateTime(2024, 11, 25, 22, 26, 35, 632, DateTimeKind.Local).AddTicks(7273),
+                            CreatedAt = new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6097),
                             Description = "Description",
                             NumberOfSlot = 16,
                             Status = true,
                             SubjectName = "Political economics of Marxism – Leninism",
-                            UpdatedAt = new DateTime(2024, 11, 25, 22, 26, 35, 632, DateTimeKind.Local).AddTicks(7274)
+                            Term = 8,
+                            UpdatedAt = new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6097)
                         });
                 });
 
-            modelBuilder.Entity("ClassBusinessObject.Models.ClassSubjects", b =>
+            modelBuilder.Entity("ClassBusinessObject.Models.ClassSubject", b =>
                 {
-                    b.HasOne("ClassBusinessObject.Models.Semesters", "Semester")
+                    b.HasOne("ClassBusinessObject.Models.Semester", "Semester")
                         .WithMany("ClassSubjects")
                         .HasForeignKey("SemesterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ClassBusinessObject.Models.Subjects", "Subject")
+                    b.HasOne("ClassBusinessObject.Models.Subject", "Subject")
                         .WithMany("ClassSubjects")
                         .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -224,12 +230,12 @@ namespace ClassBusinessObject.Migrations
                     b.Navigation("Subject");
                 });
 
-            modelBuilder.Entity("ClassBusinessObject.Models.Semesters", b =>
+            modelBuilder.Entity("ClassBusinessObject.Models.Semester", b =>
                 {
                     b.Navigation("ClassSubjects");
                 });
 
-            modelBuilder.Entity("ClassBusinessObject.Models.Subjects", b =>
+            modelBuilder.Entity("ClassBusinessObject.Models.Subject", b =>
                 {
                     b.Navigation("ClassSubjects");
                 });
