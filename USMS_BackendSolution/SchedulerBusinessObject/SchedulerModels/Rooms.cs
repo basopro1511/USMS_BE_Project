@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SchedulerBusinessObject.SchedulerModels
 {
-    public class Rooms
+    public class Room
     {
         [Key]
         [StringLength(6)] 
@@ -16,11 +16,14 @@ namespace SchedulerBusinessObject.SchedulerModels
         public string RoomId { get; set; }
         [Column(TypeName = "NVARCHAR(100)")]
         public string? Location { get; set; }
+        [Column(TypeName = "BIT")]
         public bool isOnline { get; set; }
+        [Column(TypeName = "NVARCHAR(MAX)")]
         public string? OnlineURL { get; set; }
+        [Column(TypeName = "INT")]
         public int Status   { get; set; }
         public DateTime CreateAt { get; set; }
         public DateTime UpdateAt { get; set; }
-        public virtual ICollection<Schedules> Schedules { get; set; } = new List<Schedules>();
+        public virtual ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
     }
 }

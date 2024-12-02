@@ -23,7 +23,7 @@ namespace SchedulerDataAccess.Repositories.ScheduleRepository
 			try
 			{
                 var dbContext = new MyDbContext();
-                List<Schedules> schedules = dbContext.Schedules.ToList();
+                List<Schedule> schedules = dbContext.Schedule.ToList();
                 List<ScheduleDTO> scheduleDTOs = new List<ScheduleDTO>();
                 foreach (var schedule in schedules)
                 {
