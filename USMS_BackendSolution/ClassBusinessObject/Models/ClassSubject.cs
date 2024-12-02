@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ClassBusinessObject.Models
 {
-    public class ClassSubjects
+    public class ClassSubject
     {
         [Key]
         public int ClassSubjectId { get; set; }
@@ -30,12 +30,14 @@ namespace ClassBusinessObject.Models
 
         [Required]
         public DateTime CreatedAt { get; set; }
+        [Required]
+        [Column(TypeName = "bit")]
         public bool Status { get; set; }
 
         [ForeignKey("SubjectId")]
-        public virtual Subjects? Subject { get; set; }
+        public virtual Subject? Subject { get; set; }
 
         [ForeignKey("SemesterId")]
-        public virtual Semesters? Semester { get; set; }
+        public virtual Semester? Semester { get; set; }
     }
 }

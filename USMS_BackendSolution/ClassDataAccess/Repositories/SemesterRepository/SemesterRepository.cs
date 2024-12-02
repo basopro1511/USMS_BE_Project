@@ -24,7 +24,7 @@ namespace SchedulerDataAccess.Repositories.SemesterRepository
             {
                 using (var dbContext = new MyDbContext())
                 {
-                    List <Semesters> semesters = dbContext.Semesters.ToList();
+                    List <Semester> semesters = dbContext.Semester.ToList();
                     List<SemesterDTO> semesterDTOs = new List<SemesterDTO>();
                     foreach (var semester in semesters)
                     {
@@ -68,9 +68,9 @@ namespace SchedulerDataAccess.Repositories.SemesterRepository
             {
                 using (var dbContext = new MyDbContext())
                 {
-                    var semester = new Semesters();
+                    var semester = new Semester();
                     semester.CopyProperties(semesterDTO);
-                    dbContext.Semesters.Add(semester);
+                    dbContext.Semester.Add(semester);
                     dbContext.SaveChanges();
                     return true;
                 }

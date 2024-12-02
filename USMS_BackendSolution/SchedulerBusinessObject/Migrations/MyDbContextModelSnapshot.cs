@@ -54,20 +54,20 @@ namespace SchedulerBusinessObject.Migrations
                         new
                         {
                             RoomId = "G304",
-                            CreateAt = new DateTime(2024, 12, 2, 9, 57, 0, 221, DateTimeKind.Local).AddTicks(1425),
+                            CreateAt = new DateTime(2024, 12, 2, 10, 33, 22, 46, DateTimeKind.Local).AddTicks(4802),
                             Location = "Grammar Room 304",
                             Status = 1,
-                            UpdateAt = new DateTime(2024, 12, 2, 9, 57, 0, 221, DateTimeKind.Local).AddTicks(1435),
+                            UpdateAt = new DateTime(2024, 12, 2, 10, 33, 22, 46, DateTimeKind.Local).AddTicks(4812),
                             isOnline = false
                         },
                         new
                         {
                             RoomId = "R.ON",
-                            CreateAt = new DateTime(2024, 12, 2, 9, 57, 0, 221, DateTimeKind.Local).AddTicks(1437),
+                            CreateAt = new DateTime(2024, 12, 2, 10, 33, 22, 46, DateTimeKind.Local).AddTicks(4813),
                             Location = "Online",
                             OnlineURL = "https://meet.google.com/koi-kghw-tsy",
                             Status = 1,
-                            UpdateAt = new DateTime(2024, 12, 2, 9, 57, 0, 221, DateTimeKind.Local).AddTicks(1437),
+                            UpdateAt = new DateTime(2024, 12, 2, 10, 33, 22, 46, DateTimeKind.Local).AddTicks(4814),
                             isOnline = true
                         });
                 });

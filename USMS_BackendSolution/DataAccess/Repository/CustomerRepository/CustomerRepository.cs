@@ -20,18 +20,20 @@ namespace DataAccess.IRepository.ICustomerRepository
         public List<CustomerDTO> getAllCustomer()
         {
             try
-            {
-                var dbContext = new MyDbContext();
-                List<Customer> customers = dbContext.Customer.ToList();
-                // Tạo List rỗng CustomerDTO để lưu kết quả sau khi copy dữ liệu
-                List<CustomerDTO> customersDTOs = new List<CustomerDTO>();
-                foreach (var customer in customers) 
+            {             
+                using (var dbContext = new MyDbContext())
                 {
-                    CustomerDTO customerDTO = new CustomerDTO();
-                    customerDTO.CopyProperties(customer);
-                    customersDTOs.Add(customerDTO);
+                    List<Customer> customers = dbContext.Customer.ToList();
+                    // Tạo List rỗng CustomerDTO để lưu kết quả sau khi copy dữ liệu
+                    List<CustomerDTO> customersDTOs = new List<CustomerDTO>();
+                    foreach (var customer in customers)
+                    {
+                        CustomerDTO customerDTO = new CustomerDTO();
+                        customerDTO.CopyProperties(customer);
+                        customersDTOs.Add(customerDTO);
+                    }
+                    return customersDTOs;
                 }
-                return customersDTOs;
             }
             catch (Exception ex)
             {
@@ -72,12 +74,14 @@ namespace DataAccess.IRepository.ICustomerRepository
         {
             try
             {
-                var dbContext = new MyDbContext();
-                Customer customer = new Customer();
-                customer.CopyProperties(customerDTO);
-                dbContext.Customer.Add(customer);
-                dbContext.SaveChanges();
-                return true;
+                using (var dbContext = new MyDbContext())
+                {
+                    Customer customer = new Customer();
+                    customer.CopyProperties(customerDTO);
+                    dbContext.Customer.Add(customer);
+                    dbContext.SaveChanges();
+                    return true;
+                }
             }
             catch (Exception)
             {
@@ -93,13 +97,15 @@ namespace DataAccess.IRepository.ICustomerRepository
         {
             try
             {
-                var dbContext = new MyDbContext();
-                var existingCustomer = GetCustomerById(id);
-                Customer customer = new Customer();
-                customer.CopyProperties(existingCustomer);
-                dbContext.Customer.Remove(customer);             
-                dbContext.SaveChanges();
-                return true;
+                using (var dbContext = new MyDbContext())
+                {
+                    var existingCustomer = GetCustomerById(id);
+                    Customer customer = new Customer();
+                    customer.CopyProperties(existingCustomer);
+                    dbContext.Customer.Remove(customer);
+                    dbContext.SaveChanges();
+                    return true;
+                }
             }
             catch (Exception)
             {
