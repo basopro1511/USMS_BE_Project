@@ -12,8 +12,8 @@ using SchedulerBusinessObject.AppDBContext;
 namespace SchedulerBusinessObject.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20241125125849_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20241202025700_Init_SchedulerService")]
+    partial class Init_SchedulerService
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace SchedulerBusinessObject.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.Rooms", b =>
+            modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.Room", b =>
                 {
                     b.Property<string>("RoomId")
                         .HasMaxLength(6)
@@ -38,44 +38,44 @@ namespace SchedulerBusinessObject.Migrations
                         .HasColumnType("NVARCHAR(100)");
 
                     b.Property<string>("OnlineURL")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR(MAX)");
 
                     b.Property<int>("Status")
-                        .HasColumnType("int");
+                        .HasColumnType("INT");
 
                     b.Property<DateTime>("UpdateAt")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("isOnline")
-                        .HasColumnType("bit");
+                        .HasColumnType("BIT");
 
                     b.HasKey("RoomId");
 
-                    b.ToTable("Rooms");
+                    b.ToTable("Room");
 
                     b.HasData(
                         new
                         {
                             RoomId = "G304",
-                            CreateAt = new DateTime(2024, 11, 25, 19, 58, 48, 182, DateTimeKind.Local).AddTicks(7261),
+                            CreateAt = new DateTime(2024, 12, 2, 9, 57, 0, 221, DateTimeKind.Local).AddTicks(1425),
                             Location = "Grammar Room 304",
                             Status = 1,
-                            UpdateAt = new DateTime(2024, 11, 25, 19, 58, 48, 182, DateTimeKind.Local).AddTicks(7272),
+                            UpdateAt = new DateTime(2024, 12, 2, 9, 57, 0, 221, DateTimeKind.Local).AddTicks(1435),
                             isOnline = false
                         },
                         new
                         {
                             RoomId = "R.ON",
-                            CreateAt = new DateTime(2024, 11, 25, 19, 58, 48, 182, DateTimeKind.Local).AddTicks(7276),
+                            CreateAt = new DateTime(2024, 12, 2, 9, 57, 0, 221, DateTimeKind.Local).AddTicks(1437),
                             Location = "Online",
                             OnlineURL = "https://meet.google.com/koi-kghw-tsy",
                             Status = 1,
-                            UpdateAt = new DateTime(2024, 11, 25, 19, 58, 48, 182, DateTimeKind.Local).AddTicks(7277),
+                            UpdateAt = new DateTime(2024, 12, 2, 9, 57, 0, 221, DateTimeKind.Local).AddTicks(1437),
                             isOnline = true
                         });
                 });
 
-            modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.Schedules", b =>
+            modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.Schedule", b =>
                 {
                     b.Property<int>("ScheduleId")
                         .ValueGeneratedOnAdd()
@@ -86,8 +86,8 @@ namespace SchedulerBusinessObject.Migrations
                     b.Property<int>("ClassSubjectId")
                         .HasColumnType("INT");
 
-                    b.Property<DateOnly>("EndDate")
-                        .HasColumnType("date");
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("DATE");
 
                     b.Property<string>("RoomId")
                         .IsRequired()
@@ -96,9 +96,6 @@ namespace SchedulerBusinessObject.Migrations
 
                     b.Property<int>("SlotId")
                         .HasColumnType("INT");
-
-                    b.Property<DateOnly>("StartDate")
-                        .HasColumnType("date");
 
                     b.Property<int>("Status")
                         .HasColumnType("INT");
@@ -113,49 +110,26 @@ namespace SchedulerBusinessObject.Migrations
 
                     b.HasIndex("SlotId");
 
-                    b.ToTable("Schedules");
+                    b.ToTable("Schedule");
                 });
 
-            modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.Semesters", b =>
-                {
-                    b.Property<string>("SemesterId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateOnly>("EndDate")
-                        .HasColumnType("date");
-
-                    b.Property<string>("SemesterName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateOnly>("StartDate")
-                        .HasColumnType("date");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
-                    b.HasKey("SemesterId");
-
-                    b.ToTable("Semesters");
-                });
-
-            modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.TimeSlots", b =>
+            modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.TimeSlot", b =>
                 {
                     b.Property<int>("SlotId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("INT");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SlotId"));
 
                     b.Property<TimeOnly>("EndTime")
-                        .HasColumnType("time");
+                        .HasColumnType("TIME(7)");
 
                     b.Property<TimeOnly>("StartTime")
-                        .HasColumnType("time");
+                        .HasColumnType("TIME(7)");
 
                     b.HasKey("SlotId");
 
-                    b.ToTable("TimeSlots");
+                    b.ToTable("TimeSlot");
 
                     b.HasData(
                         new
@@ -190,15 +164,15 @@ namespace SchedulerBusinessObject.Migrations
                         });
                 });
 
-            modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.Schedules", b =>
+            modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.Schedule", b =>
                 {
-                    b.HasOne("SchedulerBusinessObject.SchedulerModels.Rooms", "Room")
+                    b.HasOne("SchedulerBusinessObject.SchedulerModels.Room", "Room")
                         .WithMany("Schedules")
                         .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SchedulerBusinessObject.SchedulerModels.TimeSlots", "Slot")
+                    b.HasOne("SchedulerBusinessObject.SchedulerModels.TimeSlot", "Slot")
                         .WithMany("Schedules")
                         .HasForeignKey("SlotId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -209,12 +183,12 @@ namespace SchedulerBusinessObject.Migrations
                     b.Navigation("Slot");
                 });
 
-            modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.Rooms", b =>
+            modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.Room", b =>
                 {
                     b.Navigation("Schedules");
                 });
 
-            modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.TimeSlots", b =>
+            modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.TimeSlot", b =>
                 {
                     b.Navigation("Schedules");
                 });

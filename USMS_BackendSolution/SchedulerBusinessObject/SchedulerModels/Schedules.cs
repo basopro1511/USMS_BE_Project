@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SchedulerBusinessObject.SchedulerModels
 {
-    public class Schedules
+    public class Schedule
     {
         [Key]
         public int ScheduleId { get; set; }
@@ -27,18 +27,17 @@ namespace SchedulerBusinessObject.SchedulerModels
         public string RoomId { get; set; }
         [StringLength(8)]
         [Column(TypeName = "NVARCHAR(8)")]
-        public string? TeacherId    { get; set; }
+        public string? TeacherId { get; set; }
         [Required]
-        public DateOnly StartDate { get; set; } 
-        [Required]
-        public DateOnly EndDate { get; set; }
+        [Column(TypeName = "DATE")]
+        public DateOnly Date { get; set; } 
         [Required]
         [Column(TypeName = "INT")]
         public int Status { get; set; }
         [JsonIgnore]
-        public virtual TimeSlots Slot { get; set; }
+        public virtual TimeSlot Slot { get; set; }
         [JsonIgnore]
-        public virtual Rooms? Room { get; set; }
+        public virtual Room? Room { get; set; }
 
     }
 }

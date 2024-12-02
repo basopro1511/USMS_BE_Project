@@ -8,59 +8,44 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SchedulerBusinessObject.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Init_SchedulerService : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Rooms",
+                name: "Room",
                 columns: table => new
                 {
                     RoomId = table.Column<string>(type: "NVARCHAR(6)", maxLength: 6, nullable: false),
                     Location = table.Column<string>(type: "NVARCHAR(100)", nullable: true),
-                    isOnline = table.Column<bool>(type: "bit", nullable: false),
-                    OnlineURL = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false),
+                    isOnline = table.Column<bool>(type: "BIT", nullable: false),
+                    OnlineURL = table.Column<string>(type: "NVARCHAR(MAX)", nullable: true),
+                    Status = table.Column<int>(type: "INT", nullable: false),
                     CreateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdateAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Rooms", x => x.RoomId);
+                    table.PrimaryKey("PK_Room", x => x.RoomId);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Semesters",
+                name: "TimeSlot",
                 columns: table => new
                 {
-                    SemesterId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    SemesterName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StartDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    EndDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    Status = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Semesters", x => x.SemesterId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TimeSlots",
-                columns: table => new
-                {
-                    SlotId = table.Column<int>(type: "int", nullable: false)
+                    SlotId = table.Column<int>(type: "INT", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
-                    EndTime = table.Column<TimeOnly>(type: "time", nullable: false)
+                    StartTime = table.Column<TimeOnly>(type: "TIME(7)", nullable: false),
+                    EndTime = table.Column<TimeOnly>(type: "TIME(7)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TimeSlots", x => x.SlotId);
+                    table.PrimaryKey("PK_TimeSlot", x => x.SlotId);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Schedules",
+                name: "Schedule",
                 columns: table => new
                 {
                     ScheduleId = table.Column<int>(type: "int", nullable: false)
@@ -69,38 +54,37 @@ namespace SchedulerBusinessObject.Migrations
                     SlotId = table.Column<int>(type: "INT", nullable: false),
                     RoomId = table.Column<string>(type: "NVARCHAR(6)", maxLength: 6, nullable: false),
                     TeacherId = table.Column<string>(type: "NVARCHAR(8)", maxLength: 8, nullable: true),
-                    StartDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    EndDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    Date = table.Column<DateOnly>(type: "DATE", nullable: false),
                     Status = table.Column<int>(type: "INT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Schedules", x => x.ScheduleId);
+                    table.PrimaryKey("PK_Schedule", x => x.ScheduleId);
                     table.ForeignKey(
-                        name: "FK_Schedules_Rooms_RoomId",
+                        name: "FK_Schedule_Room_RoomId",
                         column: x => x.RoomId,
-                        principalTable: "Rooms",
+                        principalTable: "Room",
                         principalColumn: "RoomId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Schedules_TimeSlots_SlotId",
+                        name: "FK_Schedule_TimeSlot_SlotId",
                         column: x => x.SlotId,
-                        principalTable: "TimeSlots",
+                        principalTable: "TimeSlot",
                         principalColumn: "SlotId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
-                table: "Rooms",
+                table: "Room",
                 columns: new[] { "RoomId", "CreateAt", "Location", "OnlineURL", "Status", "UpdateAt", "isOnline" },
                 values: new object[,]
                 {
-                    { "G304", new DateTime(2024, 11, 25, 19, 58, 48, 182, DateTimeKind.Local).AddTicks(7261), "Grammar Room 304", null, 1, new DateTime(2024, 11, 25, 19, 58, 48, 182, DateTimeKind.Local).AddTicks(7272), false },
-                    { "R.ON", new DateTime(2024, 11, 25, 19, 58, 48, 182, DateTimeKind.Local).AddTicks(7276), "Online", "https://meet.google.com/koi-kghw-tsy", 1, new DateTime(2024, 11, 25, 19, 58, 48, 182, DateTimeKind.Local).AddTicks(7277), true }
+                    { "G304", new DateTime(2024, 12, 2, 9, 57, 0, 221, DateTimeKind.Local).AddTicks(1425), "Grammar Room 304", null, 1, new DateTime(2024, 12, 2, 9, 57, 0, 221, DateTimeKind.Local).AddTicks(1435), false },
+                    { "R.ON", new DateTime(2024, 12, 2, 9, 57, 0, 221, DateTimeKind.Local).AddTicks(1437), "Online", "https://meet.google.com/koi-kghw-tsy", 1, new DateTime(2024, 12, 2, 9, 57, 0, 221, DateTimeKind.Local).AddTicks(1437), true }
                 });
 
             migrationBuilder.InsertData(
-                table: "TimeSlots",
+                table: "TimeSlot",
                 columns: new[] { "SlotId", "EndTime", "StartTime" },
                 values: new object[,]
                 {
@@ -112,13 +96,13 @@ namespace SchedulerBusinessObject.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Schedules_RoomId",
-                table: "Schedules",
+                name: "IX_Schedule_RoomId",
+                table: "Schedule",
                 column: "RoomId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Schedules_SlotId",
-                table: "Schedules",
+                name: "IX_Schedule_SlotId",
+                table: "Schedule",
                 column: "SlotId");
         }
 
@@ -126,16 +110,13 @@ namespace SchedulerBusinessObject.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Schedules");
+                name: "Schedule");
 
             migrationBuilder.DropTable(
-                name: "Semesters");
+                name: "Room");
 
             migrationBuilder.DropTable(
-                name: "Rooms");
-
-            migrationBuilder.DropTable(
-                name: "TimeSlots");
+                name: "TimeSlot");
         }
     }
 }
