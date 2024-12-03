@@ -17,6 +17,7 @@ namespace BusinessObject.Models
         [StringLength(50)]
         [Column(TypeName = "NVARCHAR(50)")]
         public string RoleName { get; set; }
+        public ICollection<User> Users { get; set; }
     }
 
 }

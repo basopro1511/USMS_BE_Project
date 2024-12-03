@@ -61,6 +61,9 @@ namespace BusinessObject.AppDBContext
                     PhoneNumber = "0123456789",
                     RoleId = 5, // Student
                     Status = 1,
+                    MajorId = "IT",
+                    UserAvartar ="123",
+                    DateOfBirth = new DateOnly(2002, 4, 30),
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now
                 },
@@ -74,6 +77,9 @@ namespace BusinessObject.AppDBContext
                     Email = "BTTIB0001.b@university.edu",
                     PersonalEmail = "thi.b@gmail.com",
                     PhoneNumber = "0987654321",
+                    MajorId = "IB",
+                    UserAvartar = "123",
+                    DateOfBirth = new DateOnly(2002, 9, 30),
                     RoleId = 5, // Student
                     Status = 1,
                     CreatedAt = DateTime.Now,
@@ -89,6 +95,9 @@ namespace BusinessObject.AppDBContext
                     Email = "admin0001@university.edu",
                     PersonalEmail = "admin0001@gmail.edu",
                     PhoneNumber = "0123456780",
+                    MajorId = null,
+                    UserAvartar = "123",
+                    DateOfBirth = new DateOnly(2000, 9, 30),
                     RoleId = 1, // Admin
                     Status = 1,
                     CreatedAt = DateTime.Now,

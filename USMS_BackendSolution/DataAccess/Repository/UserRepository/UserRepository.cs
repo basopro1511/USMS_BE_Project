@@ -24,13 +24,18 @@ namespace DataAccess.Repository.UserRepository
             {
                 using (var dbContext = new MyDbContext())
                 {
-                    List<User> users = dbContext.User.ToList();
+                    List<User> users = dbContext.User
+                        .Include(u => u.Role)
+                        .Include(u => u.Major)
+                        .ToList();
                     List<UserDTO> userDTOs = new List<UserDTO>();
                     foreach (var user in users)
                     {
-                        UserDTO UserDTO = new UserDTO();
-                        UserDTO.CopyProperties(user);
-                        userDTOs.Add(UserDTO);
+                        UserDTO userDTO = new UserDTO();
+                        userDTO.CopyProperties(user);
+                        userDTO.RoleName = user.Role?.RoleName;
+                        userDTO.MajorName = user.Major?.MajorName;
+                        userDTOs.Add(userDTO);
                     }
                     return userDTOs;
                 }
@@ -50,7 +55,7 @@ namespace DataAccess.Repository.UserRepository
         {
             try
             {
-                var users = GetAllUser();
+                var users = GetAllUser(); 
                 UserDTO userDTO = users.FirstOrDefault(x => x.UserId == id);
                 return userDTO;
             }
@@ -137,13 +142,19 @@ namespace DataAccess.Repository.UserRepository
         {
             try
             {
-                using (var dbContext = new MyDbContext())
+                var existingUser = GetUserToUpdate(id);
+                if (existingUser != null)
                 {
-                    var existingUser = dbContext.User.FirstOrDefault(cs => cs.UserId == id);
                     existingUser.Status = 0;
-                    dbContext.SaveChanges();
+                    using (var dbContext = new MyDbContext())
+                    {
+                        dbContext.User.Attach(existingUser);
+                        dbContext.Entry(existingUser).State = EntityState.Modified;
+                        dbContext.SaveChanges();
+                    }
                     return true;
                 }
+                return false;
             }
             catch (Exception ex)
             {
@@ -160,19 +171,25 @@ namespace DataAccess.Repository.UserRepository
         {
             try
             {
-                using (var dbContext = new MyDbContext())
+                var existingUser = GetUserToUpdate(id);
+                if (existingUser != null)
                 {
-                    var existingUser = dbContext.User.FirstOrDefault(cs => cs.UserId == id);
                     existingUser.Status = 1;
-                    dbContext.SaveChanges();
+                    using (var dbContext = new MyDbContext())
+                    {
+                        dbContext.User.Attach(existingUser);
+                        dbContext.Entry(existingUser).State = EntityState.Modified;
+                        dbContext.SaveChanges();
+                    }
                     return true;
                 }
+                return false;
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message, ex);
             }
-        }
+        }  
         /// <summary>
         /// Set a student Deferment
         /// </summary>
@@ -183,13 +200,19 @@ namespace DataAccess.Repository.UserRepository
         {
             try
             {
-                using (var dbContext = new MyDbContext())
+                var existingUser = GetUserToUpdate(id);
+                if (existingUser != null)
                 {
-                    var existingUser = dbContext.User.FirstOrDefault(cs => cs.UserId == id);
                     existingUser.Status = 2;
-                    dbContext.SaveChanges();
+                    using (var dbContext = new MyDbContext())
+                    {
+                        dbContext.User.Attach(existingUser);
+                        dbContext.Entry(existingUser).State = EntityState.Modified;
+                        dbContext.SaveChanges();
+                    }
                     return true;
                 }
+                return false;
             }
             catch (Exception ex)
             {
@@ -207,10 +230,38 @@ namespace DataAccess.Repository.UserRepository
         {
             try
             {
+                var existingUser = GetUserToUpdate(id);
+                if (existingUser != null)
+                {
+                    existingUser.Status = 3;
+                    using (var dbContext = new MyDbContext())
+                    {
+                        dbContext.User.Attach(existingUser);
+                        dbContext.Entry(existingUser).State = EntityState.Modified;
+                        dbContext.SaveChanges();
+                    }
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+        public bool UpdateInfor(UserDTO UpdateInforDTO)
+        {
+            try
+            {
                 using (var dbContext = new MyDbContext())
                 {
-                    var existingUser = dbContext.User.FirstOrDefault(cs => cs.UserId == id);
-                    existingUser.Status = 3;
+                    var existingUser = GetUserToUpdate(UpdateInforDTO.UserId);
+                    if (existingUser == null)
+                    {
+                        return false;
+                    }
+                    existingUser.CopyProperties(UpdateInforDTO);
+                    dbContext.Entry(existingUser).State = EntityState.Modified;
                     dbContext.SaveChanges();
                     return true;
                 }

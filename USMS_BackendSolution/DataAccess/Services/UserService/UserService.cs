@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using ISUZU_NEXT;
+using ISUZU_NEXT.Server.Core.Extentions;
 
 namespace DataAccess.Services.UserService
 {
@@ -38,21 +40,20 @@ namespace DataAccess.Services.UserService
         /// <returns></returns>
         private string GenerateNextUserId(string majorId)
         {
+            //Select a list of User with the same MajorId
             var allUsers = _userRepository.GetAllUser();
             var filteredUsers = allUsers.Where(u => u.UserId.StartsWith(majorId)).ToList();
-
             if (filteredUsers.Count == 0)
             {
                 return majorId + "0001";
             }
+            //Get the max number in UserId of the list
             int maxNumber = filteredUsers
                 .Select(u => int.Parse(u.UserId.Substring(majorId.Length)))
                 .Max();
             int nextNumber = maxNumber + 1;
-
-            return majorId + nextNumber.ToString("D4");
+            return majorId + nextNumber.ToString("D4"); // Format as MajorId_xxxx
         }
-
         /// <summary>
         /// Generate next UserId without major (for other roles)
         /// </summary>
@@ -60,24 +61,21 @@ namespace DataAccess.Services.UserService
         /// <returns></returns>
         private string GenerateNextUserIdWithoutMajor(int roleId)
         {
+            //Select a list of User with the same RoleId
             var allUsers = _userRepository.GetAllUser();
             var filteredUsers = allUsers.Where(u => u.UserId.StartsWith(roleId.ToString() + "_")).ToList();
-
             if (filteredUsers.Count == 0)
             {
                 return $"{roleId}_0001";
             }
-
             int maxNumber = filteredUsers
                 .Select(u => int.Parse(u.UserId.Split('_')[1])) // Split by "_" to get the numeric part
                 .Max();
-
             int nextNumber = maxNumber + 1;
-
             return $"{roleId}_{nextNumber.ToString("D4")}"; // Format as RoleId_xxxx
         }
         /// <summary>
-        /// generate email theo format truong
+        /// generate email like the format of FPT Email
         /// </summary>
         /// <param name="first"></param>
         /// <param name="mid"></param>
@@ -86,10 +84,9 @@ namespace DataAccess.Services.UserService
         /// <returns></returns>
         private string GenerateEmail(string first, string mid, string last, string userId)
         {
-            char firstCharacterFirstName = first[0];
+            char firstCharacterLastName = last[0];
             char firstCharacterMidName = mid[0];
-
-            return $"{last}{firstCharacterFirstName}{firstCharacterMidName}{userId}@gmail.com";
+            return $"{first}{firstCharacterLastName}{firstCharacterMidName}{userId}@gmail.com";
         }
         /// <summary>
         /// Add new a user
@@ -153,7 +150,7 @@ namespace DataAccess.Services.UserService
                 RoleId = addUserDTO.RoleId,
                 RoleName = roleName,
                 MajorId = addUserDTO.RoleId == 5 ? addUserDTO.MajorId : null,
-                Status = 1
+                Status = 1,
             };
             UserDTO existingUser = _userRepository.GetUserById(userDTO.UserId);
             if (existingUser != null)
@@ -179,6 +176,7 @@ namespace DataAccess.Services.UserService
                 Message = "Failed to add User."
             };
         }
+        //Validate Email Format
         private bool IsValidEmail(string email)
         {
             try
@@ -191,6 +189,7 @@ namespace DataAccess.Services.UserService
                 return false;
             }
         }
+        //Validate Phonenumber Format
         private bool IsValidPhoneNumber(string phoneNumber)
         {
             return phoneNumber.All(char.IsDigit) && phoneNumber.Length >= 10 && phoneNumber.Length <= 15 && phoneNumber.StartsWith("0");
@@ -421,6 +420,54 @@ namespace DataAccess.Services.UserService
                 aPIResponse.Message = "Failed to update student graduated status.";
             }
             return aPIResponse;
+        }
+        public APIResponse UpdateInfor(string userId, UpdateInforDTO updateInfor)
+        {
+            UserDTO existingUser = _userRepository.GetUserById(userId);
+            if (existingUser == null)
+            {
+                return new APIResponse
+                {
+                    IsSuccess = false,
+                    Message = "User not found."
+                };
+            }
+            if (!string.IsNullOrEmpty(updateInfor.PersonalEmail) && !IsValidEmail(updateInfor.PersonalEmail))
+            {
+                return new APIResponse
+                {
+                    IsSuccess = false,
+                    Message = "Invalid email format."
+                };
+            }
+            if (!string.IsNullOrEmpty(updateInfor.PhoneNumber) && !IsValidPhoneNumber(updateInfor.PhoneNumber))
+            {
+                return new APIResponse
+                {
+                    IsSuccess = false,
+                    Message = "Invalid phone number format."
+                };
+            }
+            existingUser.FirstName = updateInfor.FirstName ?? existingUser.FirstName;
+            existingUser.MiddleName = updateInfor.MiddleName ?? existingUser.MiddleName;
+            existingUser.LastName = updateInfor.LastName ?? existingUser.LastName;
+            existingUser.UserAvartar = updateInfor.UserAvartar ?? existingUser.UserAvartar;
+            existingUser.PersonalEmail = updateInfor.PersonalEmail ?? existingUser.PersonalEmail;
+            existingUser.PhoneNumber = updateInfor.PhoneNumber ?? existingUser.PhoneNumber;
+            bool isUpdated = _userRepository.UpdateInfor(existingUser);
+            if (isUpdated)
+            {
+                return new APIResponse
+                {
+                    IsSuccess = true,
+                    Message = "User updated successfully."
+                };
+            }
+            return new APIResponse
+            {
+                IsSuccess = false,
+                Message = "Failed to update User."
+            };
         }
     }
 }

@@ -14,6 +14,7 @@ namespace DataAccess.Repository.UserRepository
         public UserDTO GetUserById(string id);
         public bool AddNewUser(UserDTO userDTO);
         public bool UpdateUser(UserDTO UpdateUserDTO);
+        public bool UpdateInfor(UserDTO UpdateInforDTO);
         public bool OnScheduleStudent(string id);
         public bool GraduatedStudent(string id);
         public bool DefermentStudent(string id);
