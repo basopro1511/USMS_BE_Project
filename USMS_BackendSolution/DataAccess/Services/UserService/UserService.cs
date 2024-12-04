@@ -84,7 +84,9 @@ namespace DataAccess.Services.UserService
         /// <returns></returns>
         private string GenerateEmail(string first, string mid, string last, string userId)
         {
+            //Take the first letter of lastname
             char firstCharacterLastName = last[0];
+            //Take the first letter of middlename
             char firstCharacterMidName = mid[0];
             return $"{first}{firstCharacterLastName}{firstCharacterMidName}{userId}@gmail.com";
         }
@@ -112,6 +114,7 @@ namespace DataAccess.Services.UserService
                     Message = "Invalid RoleId."
                 };
             }
+            // Require MajorID for Student
             if (addUserDTO.RoleId == 5 && string.IsNullOrEmpty(addUserDTO.MajorId))
             {
                 return new APIResponse
@@ -120,6 +123,7 @@ namespace DataAccess.Services.UserService
                     Message = "MajorId is required for RoleId = 5 (Student)."
                 };
             }
+            // Validate Email
             if (!IsValidEmail(addUserDTO.PersonalEmail))
             {
                 return new APIResponse
@@ -128,6 +132,7 @@ namespace DataAccess.Services.UserService
                     Message = "Invalid email format."
                 };
             }
+            // Validate PhoneNumber
             if (!IsValidPhoneNumber(addUserDTO.PhoneNumber))
             {
                 return new APIResponse
@@ -286,144 +291,75 @@ namespace DataAccess.Services.UserService
             return aPIResponse;
         }
         /// <summary>
-        /// Disable a student
+        /// Change status of a student
         /// </summary>
         /// <param name="userId"></param>
+        /// <param name="status"></param>
         /// <returns></returns>
-        public APIResponse DisableStudent(string userId)
+        public APIResponse UpdateStudentStatus(string userId, int status)
         {
             APIResponse aPIResponse = new APIResponse();
+            // Validate status input
+            if (status < 0 || status > 3)
+            {
+                aPIResponse.IsSuccess = false;
+                aPIResponse.Message = "Invalid status. Status must be between 0 and 3.";
+                return aPIResponse;
+            }
             UserDTO user = _userRepository.GetUserById(userId);
+            // Check if the user exists
             if (user == null)
             {
                 aPIResponse.IsSuccess = false;
                 aPIResponse.Message = "User not found.";
                 return aPIResponse;
             }
+            // Check if the user is a student
             if (user.RoleId != 5)
             {
                 aPIResponse.IsSuccess = false;
                 aPIResponse.Message = "Only students can have this status changed.";
                 return aPIResponse;
             }
-            bool isUpdated = _userRepository.DisableStudent(userId);
+            // Update the student's status
+            bool isUpdated = _userRepository.UpdateStudentStatus(userId, status);
             if (isUpdated)
             {
                 aPIResponse.IsSuccess = true;
-                aPIResponse.Message = "Student disabled successfully.";
+                // Provide the message based on the status value
+                switch (status)
+                {
+                    case 0:
+                        aPIResponse.Message = "Disable student successfully.";
+                        break;
+                    case 1:
+                        aPIResponse.Message = "Set student on schedule successfully.";
+                        break;
+                    case 2:
+                        aPIResponse.Message = "Set student deferment successfully.";
+                        break;
+                    case 3:
+                        aPIResponse.Message = "Set student graduated successfully.";
+                        break;
+                }
             }
             else
             {
                 aPIResponse.IsSuccess = false;
-                aPIResponse.Message = "Failed to disable student.";
+                aPIResponse.Message = "Failed to update student status.";
             }
             return aPIResponse;
         }
         /// <summary>
-        /// Mark a student On schedule
+        /// User Sefl-update their infor
         /// </summary>
         /// <param name="userId"></param>
+        /// <param name="updateInfor"></param>
         /// <returns></returns>
-        public APIResponse OnScheduleStudent(string userId)
-        {
-            APIResponse aPIResponse = new APIResponse();
-            UserDTO user = _userRepository.GetUserById(userId);
-            if (user == null)
-            {
-                aPIResponse.IsSuccess = false;
-                aPIResponse.Message = "User not found.";
-                return aPIResponse;
-            }
-            if (user.RoleId != 5)
-            {
-                aPIResponse.IsSuccess = false;
-                aPIResponse.Message = "Only students can have this status changed.";
-                return aPIResponse;
-            }
-            bool isUpdated = _userRepository.OnScheduleStudent(userId);
-            if (isUpdated)
-            {
-                aPIResponse.IsSuccess = true;
-                aPIResponse.Message = "Student marked as on schedule successfully.";
-            }
-            else
-            {
-                aPIResponse.IsSuccess = false;
-                aPIResponse.Message = "Failed to update student status to on schedule.";
-            }
-            return aPIResponse;
-        }
-        /// <summary>
-        /// Mark a student Deferement
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        public APIResponse DefermentStudent(string userId)
-        {
-            APIResponse aPIResponse = new APIResponse();
-            UserDTO user = _userRepository.GetUserById(userId);
-            if (user == null)
-            {
-                aPIResponse.IsSuccess = false;
-                aPIResponse.Message = "User not found.";
-                return aPIResponse;
-            }
-            if (user.RoleId != 5)
-            {
-                aPIResponse.IsSuccess = false;
-                aPIResponse.Message = "Only students can have this status changed.";
-                return aPIResponse;
-            }
-            bool isUpdated = _userRepository.DefermentStudent(userId);
-            if (isUpdated)
-            {
-                aPIResponse.IsSuccess = true;
-                aPIResponse.Message = "Student deferment status updated successfully.";
-            }
-            else
-            {
-                aPIResponse.IsSuccess = false;
-                aPIResponse.Message = "Failed to update student deferment status.";
-            }
-            return aPIResponse;
-        }
-        /// <summary>
-        /// Mark a student Graduated
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        public APIResponse GraduatedStudent(string userId)
-        {
-            APIResponse aPIResponse = new APIResponse();
-            UserDTO user = _userRepository.GetUserById(userId);
-            if (user == null)
-            {
-                aPIResponse.IsSuccess = false;
-                aPIResponse.Message = "User not found.";
-                return aPIResponse;
-            }
-            if (user.RoleId != 5)
-            {
-                aPIResponse.IsSuccess = false;
-                aPIResponse.Message = "Only students can have this status changed.";
-                return aPIResponse;
-            }
-            bool isUpdated = _userRepository.GraduatedStudent(userId);
-            if (isUpdated)
-            {
-                aPIResponse.IsSuccess = true;
-                aPIResponse.Message = "Student graduated status updated successfully.";
-            }
-            else
-            {
-                aPIResponse.IsSuccess = false;
-                aPIResponse.Message = "Failed to update student graduated status.";
-            }
-            return aPIResponse;
-        }
         public APIResponse UpdateInfor(string userId, UpdateInforDTO updateInfor)
         {
             UserDTO existingUser = _userRepository.GetUserById(userId);
+            // Check if the user exists
             if (existingUser == null)
             {
                 return new APIResponse
@@ -432,6 +368,7 @@ namespace DataAccess.Services.UserService
                     Message = "User not found."
                 };
             }
+            // Check valid Email
             if (!string.IsNullOrEmpty(updateInfor.PersonalEmail) && !IsValidEmail(updateInfor.PersonalEmail))
             {
                 return new APIResponse
@@ -440,6 +377,7 @@ namespace DataAccess.Services.UserService
                     Message = "Invalid email format."
                 };
             }
+            // Check valid PhoneNumber
             if (!string.IsNullOrEmpty(updateInfor.PhoneNumber) && !IsValidPhoneNumber(updateInfor.PhoneNumber))
             {
                 return new APIResponse

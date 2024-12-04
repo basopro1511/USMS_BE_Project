@@ -71,5 +71,9 @@ namespace BusinessObject.ModelDTOs
         public string PersonalEmail { get; set; }
         public string PhoneNumber { get; set; }
     }
+    public class UpdateStudentStatusDTO
+    {
+        public int Status { get; set; }
+    }
 }
 

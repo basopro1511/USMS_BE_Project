@@ -48,36 +48,12 @@ namespace UserService.Controllers.User
             aPIResponse = _userService.UpdateUser(id, updateUserDTO);
             return aPIResponse;
         }
-        // GET: api/User/{id}
-        [HttpGet("/Disable/{id}")]
-        public APIResponse DisableStudent (string id)
+        //PUT: api/User/{id}
+        [HttpPut("/UpdateStudentStatus/{id}")]
+        public APIResponse UpdateStudentStatus(string id, int status)
         {
-            APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _userService.DisableStudent(id);
-            return aPIResponse;
-        }
-        // GET: api/User/{id}
-        [HttpGet("/OnSchedule/{id}")]
-        public APIResponse OnScheduleStudent (string id)
-        {
-            APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _userService.OnScheduleStudent(id);
-            return aPIResponse;
-        }
-        // GET: api/User/{id}
-        [HttpGet("/Deferment/{id}")]
-        public APIResponse DefermentStudent(string id)
-        {
-            APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _userService.DefermentStudent(id);
-            return aPIResponse;
-        }
-        // GET: api/User/{id}
-        [HttpGet("/Graduated/{id}")]
-        public APIResponse GraduatedStudent(string id)
-        {
-            APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _userService.GraduatedStudent(id);
+            APIResponse aPIResponse= new APIResponse();
+            aPIResponse = _userService.UpdateStudentStatus(id, status);
             return aPIResponse;
         }
         //PUT: api/User/{id}

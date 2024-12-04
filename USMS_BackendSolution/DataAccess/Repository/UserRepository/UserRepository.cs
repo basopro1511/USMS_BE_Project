@@ -117,6 +117,12 @@ namespace DataAccess.Repository.UserRepository
                 throw new Exception(ex.Message);
             }
         }
+        /// <summary>
+        /// Get a User by ID to provide UserUpdate
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public User GetUserToUpdate(string id)
         {
             try
@@ -133,77 +139,19 @@ namespace DataAccess.Repository.UserRepository
             }
         }
         /// <summary>
-        /// Disable a student
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns>true if success</returns>
-        /// <exception cref="Exception"></exception>
-        public bool DisableStudent(string id)
-        {
-            try
-            {
-                var existingUser = GetUserToUpdate(id);
-                if (existingUser != null)
-                {
-                    existingUser.Status = 0;
-                    using (var dbContext = new MyDbContext())
-                    {
-                        dbContext.User.Attach(existingUser);
-                        dbContext.Entry(existingUser).State = EntityState.Modified;
-                        dbContext.SaveChanges();
-                    }
-                    return true;
-                }
-                return false;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message, ex);
-            }
-        }
-        /// <summary>
-        /// Mark a student learning on schedule
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns>true if success</returns>
-        /// <exception cref="Exception"></exception>
-        public bool OnScheduleStudent(string id)
-        {
-            try
-            {
-                var existingUser = GetUserToUpdate(id);
-                if (existingUser != null)
-                {
-                    existingUser.Status = 1;
-                    using (var dbContext = new MyDbContext())
-                    {
-                        dbContext.User.Attach(existingUser);
-                        dbContext.Entry(existingUser).State = EntityState.Modified;
-                        dbContext.SaveChanges();
-                    }
-                    return true;
-                }
-                return false;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message, ex);
-            }
-        }  
-        /// <summary>
-        /// Set a student Deferment
+        /// Update status for student
         /// </summary>
         /// <param name="id"></param>
         /// <returnstrue if success></returns>
         /// <exception cref="Exception"></exception>
-        public bool DefermentStudent(string id)
+        public bool UpdateStudentStatus(string id, int status)
         {
             try
             {
                 var existingUser = GetUserToUpdate(id);
                 if (existingUser != null)
                 {
-                    existingUser.Status = 2;
+                    existingUser.Status = status;
                     using (var dbContext = new MyDbContext())
                     {
                         dbContext.User.Attach(existingUser);
@@ -218,37 +166,13 @@ namespace DataAccess.Repository.UserRepository
             {
                 throw new Exception(ex.Message, ex);
             }
-
         }
         /// <summary>
-        /// Mark a student graduated
+        /// User Sefl-update their infor
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns>true if success</returns>
+        /// <param name="UpdateInforDTO"></param>
+        /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public bool GraduatedStudent(string id)
-        {
-            try
-            {
-                var existingUser = GetUserToUpdate(id);
-                if (existingUser != null)
-                {
-                    existingUser.Status = 3;
-                    using (var dbContext = new MyDbContext())
-                    {
-                        dbContext.User.Attach(existingUser);
-                        dbContext.Entry(existingUser).State = EntityState.Modified;
-                        dbContext.SaveChanges();
-                    }
-                    return true;
-                }
-                return false;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message, ex);
-            }
-        }
         public bool UpdateInfor(UserDTO UpdateInforDTO)
         {
             try
