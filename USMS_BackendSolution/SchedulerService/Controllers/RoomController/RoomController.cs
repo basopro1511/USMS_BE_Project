@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SchedulerBusinessObject;
 using SchedulerBusinessObject.ModelDTOs;
-using SchedulerDataAccess.Services.RoomServices;
+using Services.RoomServices;
 
 namespace SchedulerService.Controllers.RoomController
 {

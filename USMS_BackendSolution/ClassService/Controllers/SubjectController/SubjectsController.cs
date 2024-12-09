@@ -1,6 +1,6 @@
 ﻿using ClassBusinessObject;
 using ClassBusinessObject.ModelDTOs;
-using ClassDataAccess.Services.SubjectServices;
+using Services.SubjectServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClassService.Controllers.SubjectController

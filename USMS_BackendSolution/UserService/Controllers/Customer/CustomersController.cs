@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using BusinessObject.AppDBContext;
 using BusinessObject.Models;
 using BusinessObject.ModelDTOs;
-using DataAccess.Services.CustomerService;
+using Services.CustomerService;
 using BusinessObject;
 
 namespace UserService.Controllers.Customer

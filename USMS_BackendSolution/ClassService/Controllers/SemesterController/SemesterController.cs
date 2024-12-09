@@ -1,10 +1,10 @@
 ﻿using ClassBusinessObject;
 using SchedulerBusinessObject.ModelDTOs;
-using SchedulerBusinessObject.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ClassDataAccess.Services.ClassServices;
+using Services.ClassServices;
 using ClassBusinessObject.ModelDTOs;
+using Services.SemesterServices;
 
 namespace SchedulerService.Controllers.SemesterController
 {

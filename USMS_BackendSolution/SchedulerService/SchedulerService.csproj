@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SchedulerDataAccess\SchedulerDataAccess.csproj" />
+    <ProjectReference Include="..\SchedulerBusinessObject\SchedulerBusinessObject.csproj" />
   </ItemGroup>
 
 </Project>

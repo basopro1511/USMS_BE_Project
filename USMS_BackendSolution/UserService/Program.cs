@@ -1,6 +1,6 @@
 using BusinessObject.AppDBContext;
-using DataAccess.Core;
-using DataAccess.Services.CustomerService;
+using Core;
+using Services.CustomerService;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

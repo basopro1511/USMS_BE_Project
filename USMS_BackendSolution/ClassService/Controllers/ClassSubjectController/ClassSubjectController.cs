@@ -1,6 +1,6 @@
 ﻿using ClassBusinessObject;
 using ClassBusinessObject.ModelDTOs;
-using ClassDataAccess.Services.ClassServices;
+using Services.ClassServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

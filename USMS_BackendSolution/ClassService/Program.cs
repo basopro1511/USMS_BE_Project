@@ -1,4 +1,3 @@
-using SchedulerBusinessObject.Services;
 using SchedulerDataAccess.Core;
 
 var builder = WebApplication.CreateBuilder(args);
