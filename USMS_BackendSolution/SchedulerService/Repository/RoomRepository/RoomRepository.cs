@@ -72,6 +72,7 @@ namespace Repositories.RoomRepository
                 {
                     var room = new Room();
                     room.CopyProperties(roomDTO);
+                    room.CreateAt = DateTime.Now;
                     dbContext.Room.Add(room);
                     dbContext.SaveChanges();
                     return true;
@@ -94,13 +95,14 @@ namespace Repositories.RoomRepository
                 using (var dbContext = new MyDbContext())
                 {
                     var existingRoom = GetRoomById(updateRoomDTO.RoomId);
-                    Room rooms = new Room();
-                    rooms.CopyProperties(updateRoomDTO);
+                    Room room = new Room();
+                    room.CopyProperties(updateRoomDTO);
                     if (existingRoom == null)
                     {
                         return false;
                     }
-                    dbContext.Entry(rooms).State = EntityState.Modified;
+                    room.UpdateAt = DateTime.Now;                            
+                    dbContext.Entry(room).State = EntityState.Modified;
                     dbContext.SaveChanges();
                     return true;
                 }
@@ -111,42 +113,41 @@ namespace Repositories.RoomRepository
             }
         }
         /// <summary>
-        /// Set room to disable
+        /// Delete a Room by its ID
         /// </summary>
-        /// <param name="roomId"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public bool ChangeStatusRoomDisable(string roomId)
+        /// <param name="id">Room ID</param>
+        /// <returns>true if success</returns>
+        public bool DeleteRoom(string id)
         {
             try
             {
                 using (var dbContext = new MyDbContext())
                 {
-                    var existingRoom = GetRoomById(roomId);
+                    var existingRoom = GetRoomById(id);
                     Room rooms = new Room();
                     rooms.CopyProperties(existingRoom);
-                    if (rooms == null)
+                    if (existingRoom == null)
                     {
                         return false;
                     }
-                    rooms.Status = 0;
-                    dbContext.Entry(rooms).State = EntityState.Modified;
+                    dbContext.Room.Remove(rooms);
                     dbContext.SaveChanges();
                     return true;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw new Exception(ex.Message, ex);
+                return false;
             }
         }
         /// <summary>
-        /// Set room to available
+        /// Change the status of a room
         /// </summary>
-        /// <param name="roomId"></param>
-        /// <returns></returns>
+        /// <param name="roomId">Room ID</param>
+        /// <param name="newStatus">New status to set ( 0 = Disable, 1 = Available, 2 = Maintenance)</param>
+        /// <returns>true if success</returns>
         /// <exception cref="Exception"></exception>
-        public bool ChangeStatusRoomAvailable(string roomId)
+        public bool ChangeRoomStatus(string roomId, int newStatus)
         {
             try
             {
@@ -155,41 +156,11 @@ namespace Repositories.RoomRepository
                     var existingRoom = GetRoomById(roomId);
                     Room rooms = new Room();
                     rooms.CopyProperties(existingRoom);
-                    if (rooms == null)
+                    if (existingRoom == null)
                     {
                         return false;
                     }
-                    rooms.Status = 1;
-                    dbContext.Entry(rooms).State = EntityState.Modified;
-                    dbContext.SaveChanges();
-                    return true;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message, ex);
-            }
-        }
-        /// <summary>
-        /// Set room to maintenance
-        /// </summary>
-        /// <param name="roomId"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public bool ChangeStatusRoomMaintenance(string roomId)
-        {
-            try
-            {
-                using (var dbContext = new MyDbContext())
-                {
-                    var existingRoom = GetRoomById(roomId);
-                    Room rooms = new Room();
-                    rooms.CopyProperties(existingRoom);
-                    if (rooms == null)
-                    {
-                        return false;
-                    }
-                    rooms.Status = 2;
+                    rooms.Status = newStatus;
                     dbContext.Entry(rooms).State = EntityState.Modified;
                     dbContext.SaveChanges();
                     return true;

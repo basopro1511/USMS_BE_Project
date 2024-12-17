@@ -13,8 +13,7 @@ namespace Repositories.RoomRepository
         public RoomDTO GetRoomById(string id);
         public bool AddNewRoom(RoomDTO roomDTO);
         public bool UpdateRoom(RoomDTO updateRoomDTO);
-        public bool ChangeStatusRoomDisable(string roomId);
-        public bool ChangeStatusRoomAvailable(string roomId);
-        public bool ChangeStatusRoomMaintenance(string roomId);
+        public bool DeleteRoom(string id);
+        public bool ChangeRoomStatus(string roomId, int newStatus);
     }
 }

@@ -13,6 +13,8 @@ namespace SchedulerBusinessObject.ModelDTOs
         public bool isOnline { get; set; }
         public string? OnlineURL { get; set; }
         public int Status { get; set; }
+        public string UpdateAtFormatted => UpdateAt.ToString("dd/MM/yyyy HH:mm");
+        public string CreateAtFormatted => CreateAt.ToString("dd/MM/yyyy HH:mm");
         public DateTime CreateAt { get; set; }
         public DateTime UpdateAt { get; set; }
     }

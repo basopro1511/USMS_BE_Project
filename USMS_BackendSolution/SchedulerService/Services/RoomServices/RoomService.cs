@@ -70,11 +70,19 @@ namespace Services.RoomServices
                 return new APIResponse
                 {
                     IsSuccess = false,
-                    Message = "Room with the given Room Id already exists."
+                    Message = "Mã phòng học được cung cấp đã tồn tại!"
                 };
             }
             if (room.isOnline == false) { // Check If isOnlnie is false the Online URL will be null 
                 room.OnlineURL = null;
+            }
+            if (room.RoomId.Length > 6 )
+            {
+                return new APIResponse
+                {
+                    IsSuccess = false,
+                    Message = "Mã phòng học không thể dài hơn 6 ký tự"
+                };
             }
             bool isAdded = _roomRepository.AddNewRoom(room);
             if (isAdded)
@@ -82,13 +90,13 @@ namespace Services.RoomServices
                 return new APIResponse
                 {
                     IsSuccess = true,
-                    Message = "Room added successfully."
+                    Message = "Thêm phòng học thành công!"
                 };
             }
             return new APIResponse
             {
                 IsSuccess = false,
-                Message = "Failed to add Room."
+                Message = "Thêm phòng học thất bại !"
             };
         }
         #endregion
@@ -107,7 +115,7 @@ namespace Services.RoomServices
                 return new APIResponse
                 {
                     IsSuccess = false,
-                    Message = "Room with the given ID is not exists."
+                    Message = "Mã phòng học được cung cấp đã tồn tại!"
                 };
             }
             if (room.isOnline == false)
@@ -120,24 +128,61 @@ namespace Services.RoomServices
                 return new APIResponse
                 {
                     IsSuccess = true,
-                    Message = "Room updated successfully."
+                    Message = "Cập nhật phòng học thành công!"
                 };
             }
             return new APIResponse
             {
                 IsSuccess = false,
-                Message = "Failed to updated Room."
+                Message = "Cập nhật phòng học thất bại!"
             };
         }
         #endregion
 
-        #region Change Room Status to Disable
+        #region Delete Room
         /// <summary>
-        /// Change Status to Disable
+        /// Delete Room from database
         /// </summary>
-        /// <param name="room"></param>
-        /// <returns></returns>
-        public APIResponse ChangeStatusRoomDisable(string id)
+        /// <param name="roomId"></param>
+        /// <returns>APIResponse</returns>
+        public APIResponse DeleteRoom(string roomId)
+        {
+            APIResponse aPIResponse = new APIResponse();
+            RoomDTO existingRoom = _roomRepository.GetRoomById(roomId);
+            if (existingRoom == null)
+            {
+                return new APIResponse
+                {
+                    IsSuccess = false,
+                    Message = "Mã phòng học được cung cấp đã tồn tại!"
+                };
+            }
+            bool isDeleted = _roomRepository.DeleteRoom(roomId);
+            if (isDeleted)
+            {
+                return new APIResponse
+                {
+                    IsSuccess = true,
+                    Message = "Xóa phòng học thành công !"
+                };
+            }
+            return new APIResponse
+            {
+                IsSuccess = false,
+                Message = "Xóa phòng học thất bại !"
+            };
+        }
+        #endregion
+
+
+        #region Change Room Status
+        /// <summary>
+        /// Change the status of a room
+        /// </summary>
+        /// <param name="id">Room ID</param>
+        /// <param name="newStatus">New status to set ( 0 = Disable, 1 = Available, 2 = Maintenance)</param>
+        /// <returns>APIResponse</returns>
+        public APIResponse ChangeRoomStatus(string id, int newStatus)
         {
             APIResponse aPIResponse = new APIResponse();
             RoomDTO existingRoom = _roomRepository.GetRoomById(id);
@@ -146,92 +191,45 @@ namespace Services.RoomServices
                 return new APIResponse
                 {
                     IsSuccess = false,
-                    Message = "Room with the given ID is not exists."
+                    Message = "Mã phòng học được cung cấp không tồn tại."
                 };
             }
-            bool isSuccess = _roomRepository.ChangeStatusRoomDisable(id);
+            bool isSuccess = _roomRepository.ChangeRoomStatus(id, newStatus);
             if (isSuccess)
             {
-                return new APIResponse
+                if (newStatus == 0)
                 {
-                    IsSuccess = true,
-                    Message = "Room change status to disable successfully."
-                };
+                    return new APIResponse
+                    {
+                        IsSuccess = true,
+                        Message = $"Phòng học với mã: {id} đã được vô hiệu hóa."
+                    };
+                }
+                else if (newStatus == 1)
+                {
+                    return new APIResponse
+                    {
+                        IsSuccess = true,
+                        Message = $"Phòng học với mã: {id} đang khả dụng."
+                    };
+                }
+                else if (newStatus == 2)
+                {
+                    return new APIResponse
+                    {
+                        IsSuccess = true,
+                        Message = $"Phòng học với mã: {id} đang được bảo trì."
+                    };
+                }
             }
+            // Trường hợp thay đổi trạng thái không thành công
             return new APIResponse
             {
                 IsSuccess = false,
-                Message = "Failed to change status to disable."
+                Message = "Thay đổi trạng thái phòng thất bại."
             };
         }
         #endregion
-        #region Change Room Status to Available
-        /// <summary>
-        /// Change Status to Available
-        /// </summary>
-        /// <param name="room"></param>
-        /// <returns></returns>
-        public APIResponse ChangeStatusRoomAvailable(string id)
-        {
-            APIResponse aPIResponse = new APIResponse();
-            RoomDTO existingRoom = _roomRepository.GetRoomById(id);
-            if (existingRoom == null)
-            {
-                return new APIResponse
-                {
-                    IsSuccess = false,
-                    Message = "Room with the given ID is not exists."
-                };
-            }
-            bool isSuccess = _roomRepository.ChangeStatusRoomAvailable(id);
-            if (isSuccess)
-            {
-                return new APIResponse
-                {
-                    IsSuccess = true,
-                    Message = "Room change status to available successfully."
-                };
-            }
-            return new APIResponse
-            {
-                IsSuccess = false,
-                Message = "Failed to change status to avaiable."
-            };
-        }
-        #endregion
-        #region Change Room Status to Maintenance
-        /// <summary>
-        /// Change Status to Maintenance
-        /// </summary>
-        /// <param name="room"></param>
-        /// <returns></returns>
-        public APIResponse ChangeStatusRoomMaintenance(string id)
-        {
-            APIResponse aPIResponse = new APIResponse();
-            RoomDTO existingRoom = _roomRepository.GetRoomById(id);
-            if (existingRoom == null)
-            {
-                return new APIResponse
-                {
-                    IsSuccess = false,
-                    Message = "Room with the given ID is not exists."
-                };
-            }
-            bool isSuccess = _roomRepository.ChangeStatusRoomMaintenance(id);
-            if (isSuccess)
-            {
-                return new APIResponse
-                {
-                    IsSuccess = true,
-                    Message = "Room change status to maintenance successfully."
-                };
-            }
-            return new APIResponse
-            {
-                IsSuccess = false,
-                Message = "Failed to change status to maintenance."
-            };
-        }
-        #endregion
+
     }
 }
