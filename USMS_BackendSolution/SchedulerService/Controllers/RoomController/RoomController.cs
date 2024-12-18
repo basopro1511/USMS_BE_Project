@@ -51,31 +51,20 @@ namespace SchedulerService.Controllers.RoomController
             aPIResponse = _roomService.UpdateRoom(room);
             return aPIResponse;
         }
-
-        //Get: api/Rooms/Disable/{Id}
-        [HttpGet("Disable/{id}")]
-        public APIResponse ChangeStatusRoomDisable(string id)
+        //PUT: api/Rooms
+        [HttpDelete("{id}")]
+        public APIResponse DeleteRoom(string id)
         {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _roomService.ChangeStatusRoomDisable(id);
+            aPIResponse = _roomService.DeleteRoom(id);
             return aPIResponse;
         }
 
-        //Get: api/Rooms/Available/{Id}
-        [HttpGet("Available/{id}")]
-        public APIResponse ChangeStatusRoomAvailable(string id)
+        [HttpGet("ChangeStatus/{id}/{status}")]
+        public APIResponse ChangeStatusRoomDisable(string id, int status)
         {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _roomService.ChangeStatusRoomAvailable(id);
-            return aPIResponse;
-        }
-
-        //Get: api/Rooms/Maintenance/{Id}
-        [HttpGet("Maintenance/{id}")]
-        public APIResponse ChangeStatusRoomMaintenance(string id)
-        {
-            APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _roomService.ChangeStatusRoomMaintenance(id);
+            aPIResponse = _roomService.ChangeRoomStatus(id,status);
             return aPIResponse;
         }
     }
