@@ -22,6 +22,7 @@ namespace BusinessObject.AppDBContext
             optionsBuilder.UseSqlServer(configuration.GetConnectionString("HoangConnection"));
         }
         public virtual DbSet<Customer> Customer { get; set; }
+        public virtual DbSet<User> User { get; set; }
         protected override void OnModelCreating(ModelBuilder optionsBuilder)
         {
             optionsBuilder.Entity<Customer>().HasData(

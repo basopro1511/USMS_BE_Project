@@ -13,7 +13,7 @@ namespace Core
         public static void ConfigureDependencyInjection(this IServiceCollection services)
         {
             #region Register the repository
-            services.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             #endregion
 
             #region Register Service
