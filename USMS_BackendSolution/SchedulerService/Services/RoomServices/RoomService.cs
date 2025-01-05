@@ -174,7 +174,6 @@ namespace Services.RoomServices
         }
         #endregion
 
-
         #region Change Room Status
         /// <summary>
         /// Change the status of a room
