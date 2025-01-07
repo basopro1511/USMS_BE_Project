@@ -37,6 +37,63 @@ namespace SchedulerService.Repository.ExamScheduleRepository
         }
 
         /// <summary>
+        /// Retrieves all exam schedules that do not have a teacher assigned.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public List<ExamScheduleDTO> GetUnassignedTeacherExamSchedules()
+        {
+            try
+            {
+                using (var dbContext = new MyDbContext())
+                {
+                    var allExamSchedules = GetAllExamSchedule();
+                    var examSchedules = allExamSchedules.Where(x => x.TeacherId == null).ToList();
+                    List<ExamScheduleDTO> examScheduleDTOs = new List<ExamScheduleDTO>();
+                    foreach (var examSchedule in examSchedules)
+                    {
+                        ExamScheduleDTO examScheduleDTO = new ExamScheduleDTO();
+                        examScheduleDTO.CopyProperties(examSchedule);
+                        examScheduleDTOs.Add(examScheduleDTO);
+                    }
+                    return examScheduleDTOs;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        /// <summary>
+        /// Retrieves all exam schedules that do not have a room assigned.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public List<ExamScheduleDTO> GetUnassignedRoomExamSchedules()
+        {
+            try
+            {
+                using (var dbContext = new MyDbContext())
+                {
+                    var allExamSchedules = GetAllExamSchedule();
+                    var examSchedules = allExamSchedules.Where(x => x.RoomId == null).ToList();
+                    List<ExamScheduleDTO> examScheduleDTOs = new List<ExamScheduleDTO>();
+                    foreach (var examSchedule in examSchedules)
+                    {
+                        ExamScheduleDTO examScheduleDTO = new ExamScheduleDTO();
+                        examScheduleDTO.CopyProperties(examSchedule);
+                        examScheduleDTOs.Add(examScheduleDTO);
+                    }
+                    return examScheduleDTOs;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        /// <summary>
         /// Get available room 
         /// Input: DayStart, Time Start, Time End 
         /// Output: List Room not be using and available to choose
@@ -52,7 +109,7 @@ namespace SchedulerService.Repository.ExamScheduleRepository
             {
                 using (var dbContext = new MyDbContext())
                 {
-                    var rooms = dbContext.Room.Where(r => r.Status == 1 && !dbContext.ExamSchedule. // Check room status is avaialbe or not 
+                    var rooms = dbContext.Room.Where(r => r.Status == 1 && r.isOnline == false  && !dbContext.ExamSchedule. // Check room status is avaialbe or not 
                     Any(es => es.RoomId == r.RoomId &&es.Date == date &&                             
                                        es.StartTime < endTime &&                                    // Determine if the time is overlap
                                        es.EndTime > startTime))                                     

@@ -16,6 +16,42 @@ namespace SchedulerService.Controllers.ExamScheduleController
         {
             _examScheduleService = examScheduleService;
         }
+
+        // GET: api/ExamSchedules
+        [HttpGet]
+        public APIResponse GetAllExamSchedules()
+        {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse = _examScheduleService.GetAllExamSchedules();
+            return aPIResponse;
+        }
+
+        // GET: api/UnassignedTeacherExamSchedules
+        [HttpGet("UnassignedTeacherExamSchedules")]
+        public APIResponse GetUnassignedTeacherExamSchedules()
+        {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse = _examScheduleService.GetUnassignedTeacherExamSchedules();
+            return aPIResponse;
+        }
+
+        // GET: api/UnassignedRoomExamSchedules
+        [HttpGet("UnassignedRoomExamSchedules")]
+        public APIResponse GetUnassignedRoomExamSchedules()
+        {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse = _examScheduleService.GetUnassignedRoomExamSchedules();
+            return aPIResponse;
+        }
+
+        // GET: api/UnassignedRoomExamSchedules
+        [HttpGet("AvailableRooms")]
+        public APIResponse AvailableRooms(DateOnly date, TimeOnly startTime, TimeOnly endTime)
+        {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse = _examScheduleService.GetAvailableRooms(date, startTime,endTime);
+            return aPIResponse;
+        }
         //POST: api/Rooms
         [HttpPost]
         public APIResponse AddNewExamSchedule(ExamScheduleDTO examScheduleDTO)

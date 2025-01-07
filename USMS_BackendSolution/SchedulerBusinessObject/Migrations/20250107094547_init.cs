@@ -8,22 +8,44 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SchedulerBusinessObject.Migrations
 {
     /// <inheritdoc />
-    public partial class Init_SchedulerService : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "ExamSchedule",
+                columns: table => new
+                {
+                    ExamScheduleId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SemesterId = table.Column<string>(type: "NVARCHAR(4)", nullable: false),
+                    MajorId = table.Column<string>(type: "NVARCHAR(4)", nullable: true),
+                    SubjectId = table.Column<string>(type: "NVARCHAR(10)", nullable: false),
+                    RoomId = table.Column<string>(type: "NVARCHAR(6)", nullable: true),
+                    Date = table.Column<DateOnly>(type: "DATE", nullable: false),
+                    StartTime = table.Column<TimeOnly>(type: "TIME(7)", nullable: false),
+                    EndTime = table.Column<TimeOnly>(type: "TIME(7)", nullable: false),
+                    TeacherId = table.Column<string>(type: "NVARCHAR(8)", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "DATETIME", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExamSchedule", x => x.ExamScheduleId);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Room",
                 columns: table => new
                 {
                     RoomId = table.Column<string>(type: "NVARCHAR(6)", maxLength: 6, nullable: false),
                     Location = table.Column<string>(type: "NVARCHAR(100)", nullable: true),
-                    isOnline = table.Column<bool>(type: "Bool", nullable: false),
+                    isOnline = table.Column<bool>(type: "BIT", nullable: false),
                     OnlineURL = table.Column<string>(type: "NVARCHAR(MAX)", nullable: true),
                     Status = table.Column<int>(type: "INT", nullable: false),
-                    CreateAt = table.Column<DateTime>(type: "DATETIME", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "DATETIME", nullable: false)
+                    CreateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -79,8 +101,8 @@ namespace SchedulerBusinessObject.Migrations
                 columns: new[] { "RoomId", "CreateAt", "Location", "OnlineURL", "Status", "UpdateAt", "isOnline" },
                 values: new object[,]
                 {
-                    { "G304", new DateTime(2024, 12, 2, 9, 50, 40, 528, DateTimeKind.Local).AddTicks(6488), "Grammar Room 304", null, 1, new DateTime(2024, 12, 2, 9, 50, 40, 528, DateTimeKind.Local).AddTicks(6498), false },
-                    { "R.ON", new DateTime(2024, 12, 2, 9, 50, 40, 528, DateTimeKind.Local).AddTicks(6500), "Online", "https://meet.google.com/koi-kghw-tsy", 1, new DateTime(2024, 12, 2, 9, 50, 40, 528, DateTimeKind.Local).AddTicks(6500), true }
+                    { "G304", new DateTime(2025, 1, 7, 16, 45, 46, 463, DateTimeKind.Local).AddTicks(4318), "Grammar Room 304", null, 1, new DateTime(2025, 1, 7, 16, 45, 46, 463, DateTimeKind.Local).AddTicks(4329), false },
+                    { "R.ON", new DateTime(2025, 1, 7, 16, 45, 46, 463, DateTimeKind.Local).AddTicks(4331), "Online", "https://meet.google.com/koi-kghw-tsy", 1, new DateTime(2025, 1, 7, 16, 45, 46, 463, DateTimeKind.Local).AddTicks(4332), true }
                 });
 
             migrationBuilder.InsertData(
@@ -109,6 +131,9 @@ namespace SchedulerBusinessObject.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "ExamSchedule");
+
             migrationBuilder.DropTable(
                 name: "Schedule");
 

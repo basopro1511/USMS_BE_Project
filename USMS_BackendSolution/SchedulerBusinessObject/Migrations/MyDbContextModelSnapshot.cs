@@ -39,8 +39,10 @@ namespace SchedulerBusinessObject.Migrations
                     b.Property<TimeOnly>("EndTime")
                         .HasColumnType("TIME(7)");
 
+                    b.Property<string>("MajorId")
+                        .HasColumnType("NVARCHAR(4)");
+
                     b.Property<string>("RoomId")
-                        .IsRequired()
                         .HasColumnType("NVARCHAR(6)");
 
                     b.Property<string>("SemesterId")
@@ -58,7 +60,6 @@ namespace SchedulerBusinessObject.Migrations
                         .HasColumnType("NVARCHAR(10)");
 
                     b.Property<string>("TeacherId")
-                        .IsRequired()
                         .HasColumnType("NVARCHAR(8)");
 
                     b.HasKey("ExamScheduleId");
@@ -98,20 +99,20 @@ namespace SchedulerBusinessObject.Migrations
                         new
                         {
                             RoomId = "G304",
-                            CreateAt = new DateTime(2025, 1, 5, 19, 40, 13, 336, DateTimeKind.Local).AddTicks(2585),
+                            CreateAt = new DateTime(2025, 1, 7, 16, 45, 46, 463, DateTimeKind.Local).AddTicks(4318),
                             Location = "Grammar Room 304",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 1, 5, 19, 40, 13, 336, DateTimeKind.Local).AddTicks(2593),
+                            UpdateAt = new DateTime(2025, 1, 7, 16, 45, 46, 463, DateTimeKind.Local).AddTicks(4329),
                             isOnline = false
                         },
                         new
                         {
                             RoomId = "R.ON",
-                            CreateAt = new DateTime(2025, 1, 5, 19, 40, 13, 336, DateTimeKind.Local).AddTicks(2596),
+                            CreateAt = new DateTime(2025, 1, 7, 16, 45, 46, 463, DateTimeKind.Local).AddTicks(4331),
                             Location = "Online",
                             OnlineURL = "https://meet.google.com/koi-kghw-tsy",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 1, 5, 19, 40, 13, 336, DateTimeKind.Local).AddTicks(2597),
+                            UpdateAt = new DateTime(2025, 1, 7, 16, 45, 46, 463, DateTimeKind.Local).AddTicks(4332),
                             isOnline = true
                         });
                 });
