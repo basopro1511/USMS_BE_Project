@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Repositories.RoomRepository;
 using Repositories.ScheduleRepository;
 using SchedulerDataAccess.Services.SchedulerServices;
+using SchedulerService.Repository.ExamScheduleRepository;
+using SchedulerService.Services.ExamScheduleServices;
 using Services.RoomServices;
 
 namespace SchedulerDataAccess.Core
@@ -15,11 +17,14 @@ namespace SchedulerDataAccess.Core
             #region Register the repository
             services.AddScoped<IScheduleRepository, ScheduleRepository>();
             services.AddScoped<IRoomRepository, RoomRepository>();
+            services.AddScoped<IExamScheduleRepository, ExamScheduleRepository>();
+
             #endregion
 
             #region Register Service
             services.AddScoped<ScheduleService>();
             services.AddScoped<RoomService>();
+            services.AddScoped<ExamScheduleService>();
             #endregion
         }
     }
