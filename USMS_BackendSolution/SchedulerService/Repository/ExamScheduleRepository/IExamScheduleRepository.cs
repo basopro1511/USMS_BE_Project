@@ -10,5 +10,9 @@ namespace SchedulerService.Repository.ExamScheduleRepository
         public List<ExamScheduleDTO> GetUnassignedRoomExamSchedules();
         public bool AddNewExamSchedule(ExamScheduleDTO examScheduleDTO);
         public List<Room> GetAvailableRooms(DateOnly date, TimeOnly startTime, TimeOnly endTime);
+        public bool AssignTeacherToExamSchedule(int examScheduleId, string teacherId);
+        public bool AssignRooomToExamSchedule(int examScheduleId, string roomId);
+        public bool ChangeExamScheduleStatus(int id, int newStatus);
+        public ExamScheduleDTO GetExamScheduleById(int id);
     }
 }

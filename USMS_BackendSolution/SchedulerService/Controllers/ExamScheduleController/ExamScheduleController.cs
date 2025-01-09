@@ -60,5 +60,21 @@ namespace SchedulerService.Controllers.ExamScheduleController
             aPIResponse = _examScheduleService.AddNewExamSchedule(examScheduleDTO);
             return aPIResponse;
         }
+
+        [HttpPut("AssignTeacher/{id}/{teacherId}")]
+        public APIResponse AssignTeacher(int id, string teacherId)
+        {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse = _examScheduleService.AssignTeacherToExamSchedule(id,teacherId);
+            return aPIResponse;
+        }
+
+        [HttpPut("AssignRoom/{id}/{roomId}")]
+        public APIResponse AssignRoom(int id, string roomId)
+        {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse = _examScheduleService.AssignRoomToExamSchedule(id, roomId);
+            return aPIResponse;
+        }
     }
 }

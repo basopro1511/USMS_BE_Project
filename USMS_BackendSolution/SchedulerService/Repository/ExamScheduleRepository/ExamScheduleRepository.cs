@@ -1,4 +1,5 @@
 ﻿using ISUZU_NEXT.Server.Core.Extentions;
+using Microsoft.EntityFrameworkCore;
 using NuGet.DependencyResolver;
 using SchedulerBusinessObject.AppDBContext;
 using SchedulerBusinessObject.ModelDTOs;
@@ -33,6 +34,85 @@ namespace SchedulerService.Repository.ExamScheduleRepository
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
+            }
+        }
+        /// <summary>
+        /// Retrives information of Exam Schedule by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public ExamScheduleDTO GetExamScheduleById(int id)
+        {
+            try
+            {
+                var examSchedules = GetAllExamSchedule();
+                ExamScheduleDTO examScheduleDTO = examSchedules.FirstOrDefault(x => x.ExamScheduleId == id);
+                return examScheduleDTO;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Update Teacher to Exam Schedule
+        /// </summary>
+        /// <param name="updateDTO"></param>
+        /// <returns></returns>
+        public bool AssignTeacherToExamSchedule(int examScheduleId, string teacherId)
+        {
+            try
+            {
+                using (var dbContext = new MyDbContext())
+                {
+                    var existingExamSchedule = GetExamScheduleById(examScheduleId);
+                    ExamSchedule examSchedule = new ExamSchedule();
+                    examSchedule.CopyProperties(existingExamSchedule);
+                    if (existingExamSchedule == null)
+                    {
+                        return false;
+                    }
+                    examSchedule.TeacherId = teacherId;
+                    dbContext.Entry(examSchedule).State = EntityState.Modified;
+                    dbContext.SaveChanges();
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Update Room in ExamSchedule
+        /// </summary>
+        /// <param name="updateDTO"></param>
+        /// <returns></returns>
+        public bool AssignRooomToExamSchedule(int examScheduleId, string roomId)
+        {
+            try
+            {
+                using (var dbContext = new MyDbContext())
+                {
+                    var existingExamSchedule = GetExamScheduleById(examScheduleId);
+                    ExamSchedule examSchedule = new ExamSchedule();
+                    examSchedule.CopyProperties(existingExamSchedule);
+                    if (existingExamSchedule == null)
+                    {
+                        return false;
+                    }
+                    examSchedule.RoomId = roomId;
+                    dbContext.Entry(examSchedule).State = EntityState.Modified;
+                    dbContext.SaveChanges();
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
 
@@ -119,10 +199,15 @@ namespace SchedulerService.Repository.ExamScheduleRepository
             }
             catch (Exception ex)
             {
-                throw new Exception("Error fetching available rooms: " + ex.Message);
+                throw new Exception(ex.Message);
             }
         }
 
+        /// <summary>
+        /// Add new Exam Schedule
+        /// </summary>
+        /// <param name="examScheduleDTO"></param>
+        /// <returns></returns>
         public bool AddNewExamSchedule(ExamScheduleDTO examScheduleDTO)
         {
             try
@@ -142,6 +227,39 @@ namespace SchedulerService.Repository.ExamScheduleRepository
                 return false;
             }
         }
+
+        /// <summary>
+        /// Change Status of Exam Schedule Status
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="newStatus"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool ChangeExamScheduleStatus(int id, int newStatus)
+        {
+            try
+            {
+                using (var dbContext = new MyDbContext())
+                {
+                    var existingExamSchedule = GetExamScheduleById(id);
+                    ExamSchedule examSchedule = new ExamSchedule();
+                    examSchedule.CopyProperties(existingExamSchedule);
+                    if (existingExamSchedule == null)
+                    {
+                        return false;
+                    }
+                    examSchedule.Status = newStatus;
+                    dbContext.Entry(examSchedule).State = EntityState.Modified;
+                    dbContext.SaveChanges();
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+
         //public List<TeacherDTO> GetAvailableTeachers(DateOnly date, TimeOnly startTime, TimeOnly endTime)
         //{
         //    try
@@ -160,7 +278,7 @@ namespace SchedulerService.Repository.ExamScheduleRepository
         //    }
         //    catch (Exception ex)
         //    {
-        //        throw new Exception("Error fetching available teachers: " + ex.Message);
+        //        throw new Exception(ex.Message);
         //    }
         //}
 
