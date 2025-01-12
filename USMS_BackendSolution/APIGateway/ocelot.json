@@ -14,7 +14,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/Room",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT"]
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
     },
     {
       "DownstreamPathTemplate": "/api/Room/{id}",
@@ -39,7 +39,46 @@
       ],
       "UpstreamPathTemplate": "/api/Room/ChangeStatus/{id}/{status}",
       "UpstreamHttpMethod": [ "GET" ]
-    }
+    },
     /* Room API End */
+
+    /* Slot API Start */
+    {
+      "DownstreamPathTemplate": "/api/Slot",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7131
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Slot",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Slot/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7131
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Slot/{id}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Slot/ChangeStatus/{id}/{status}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7131
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Slot/ChangeStatus/{id}/{status}",
+      "UpstreamHttpMethod": [ "GET" ]
+    }
+    /* Slot API End */
   ]
 }
