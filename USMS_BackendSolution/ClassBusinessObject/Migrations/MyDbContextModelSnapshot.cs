@@ -43,8 +43,8 @@ namespace ClassBusinessObject.Migrations
                         .HasMaxLength(4)
                         .HasColumnType("nvarchar(4)");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("SubjectId")
                         .IsRequired()
@@ -66,7 +66,7 @@ namespace ClassBusinessObject.Migrations
                             ClassId = "SE1702",
                             CreatedAt = new DateTime(2024, 11, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             SemesterId = "SP25",
-                            Status = true,
+                            Status = 1,
                             SubjectId = "PRM392"
                         },
                         new
@@ -75,7 +75,7 @@ namespace ClassBusinessObject.Migrations
                             ClassId = "SE1702",
                             CreatedAt = new DateTime(2024, 11, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             SemesterId = "SP25",
-                            Status = true,
+                            Status = 1,
                             SubjectId = "PRN231"
                         },
                         new
@@ -84,7 +84,7 @@ namespace ClassBusinessObject.Migrations
                             ClassId = "SE1702",
                             CreatedAt = new DateTime(2024, 11, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             SemesterId = "SP25",
-                            Status = true,
+                            Status = 1,
                             SubjectId = "MLN122"
                         });
                 });
@@ -106,8 +106,8 @@ namespace ClassBusinessObject.Migrations
                     b.Property<DateOnly>("StartDate")
                         .HasColumnType("date");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.HasKey("SemesterId");
 
@@ -120,7 +120,7 @@ namespace ClassBusinessObject.Migrations
                             EndDate = new DateOnly(2025, 3, 24),
                             SemesterName = "Spring2025",
                             StartDate = new DateOnly(2025, 1, 5),
-                            Status = true
+                            Status = 1
                         },
                         new
                         {
@@ -128,7 +128,7 @@ namespace ClassBusinessObject.Migrations
                             EndDate = new DateOnly(2025, 8, 11),
                             SemesterName = "Summer2025",
                             StartDate = new DateOnly(2025, 5, 8),
-                            Status = true
+                            Status = 1
                         },
                         new
                         {
@@ -136,7 +136,7 @@ namespace ClassBusinessObject.Migrations
                             EndDate = new DateOnly(2025, 11, 25),
                             SemesterName = "Fall2025",
                             StartDate = new DateOnly(2025, 9, 5),
-                            Status = true
+                            Status = 1
                         });
                 });
 

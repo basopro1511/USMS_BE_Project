@@ -31,8 +31,8 @@ namespace ClassBusinessObject.Models
         [Required]
         public DateTime CreatedAt { get; set; }
         [Required]
-        [Column(TypeName = "bit")]
-        public bool Status { get; set; }
+        [Column(TypeName = "int")]
+        public int Status { get; set; }
 
         [ForeignKey("SubjectId")]
         public virtual Subject? Subject { get; set; }

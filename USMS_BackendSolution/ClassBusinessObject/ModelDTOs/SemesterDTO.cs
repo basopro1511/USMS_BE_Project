@@ -12,6 +12,12 @@ namespace SchedulerBusinessObject.ModelDTOs
         public string SemesterName { get; set; }
         public DateOnly StartDate { get; set; }
         public DateOnly EndDate { get; set; }
-        public bool Status { get; set; }
+        public int Status { get; set; }
     }
+    public class StatusSemesterDTO
+    {
+        public string SemesterId { get; set; }
+        public int Status { get; set; }
+    }
+
 }

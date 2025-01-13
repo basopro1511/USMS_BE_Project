@@ -126,7 +126,7 @@ namespace Services.SemesterServices
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public APIResponse ChangeStatusSemester(string id)
+        public APIResponse ChangeStatusSemester(string id, int status)
         {
             APIResponse response = new APIResponse();
             SemesterDTO existingSemester = _semesterRepository.GetSemesterById(id);
@@ -138,16 +138,37 @@ namespace Services.SemesterServices
                     Message = "Semester with the given ID does not exist."
                 };
             }
-            bool isSuccess = _semesterRepository.ChangeStatusSemester(id);
-            if (isSuccess)
+            // Validate status input
+
+            if (status < 0 || status > 2)
+            {
+                response.IsSuccess = false;
+                response.Message = "Invalid status. Status must be between 0 and 2.";
+                return response;
+            }
+            // Update the semester's status
+            bool isUpdated = _semesterRepository.ChangeStatusSemester(id, status);
+            if (isUpdated)
             {
                 response.IsSuccess = true;
-                response.Message = "Semester status changed successfully.";
+                // Provide the message based on the status value
+                switch (status)
+                {
+                    case 0:
+                        response.Message = "Semester status set to ended successfully.";
+                        break;
+                    case 1:
+                        response.Message = "Semester status set to going on successfully.";
+                        break;
+                    case 2:
+                        response.Message = "Semester status set to not started successfully.";
+                        break;
+                }
             }
             else
             {
                 response.IsSuccess = false;
-                response.Message = "Failed to change semester status.";
+                response.Message = "Failed to update semester status.";
             }
             return response;
         }
