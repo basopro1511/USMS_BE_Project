@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ClassBusinessObject.Migrations
 {
     /// <inheritdoc />
-    public partial class Init_ClassService : Migration
+    public partial class Migrations : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,13 +33,14 @@ namespace ClassBusinessObject.Migrations
                 columns: table => new
                 {
                     SubjectId = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    MajorId = table.Column<string>(type: "nvarchar(4)", maxLength: 4, nullable: false),
                     SubjectName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     NumberOfSlot = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Term = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<bool>(type: "bit", nullable: false)
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -87,12 +88,12 @@ namespace ClassBusinessObject.Migrations
 
             migrationBuilder.InsertData(
                 table: "Subject",
-                columns: new[] { "SubjectId", "CreatedAt", "Description", "NumberOfSlot", "Status", "SubjectName", "Term", "UpdatedAt" },
+                columns: new[] { "SubjectId", "CreatedAt", "Description", "MajorId", "NumberOfSlot", "Status", "SubjectName", "Term", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { "MLN122", new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6097), "Description", 16, true, "Political economics of Marxism – Leninism", 8, new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6097) },
-                    { "PRM392", new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6082), "Description", 20, true, "Mobile Programing", 8, new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6092) },
-                    { "PRN231", new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6095), "Description", 20, true, "Building Cross-Platform Back-End Application With .NET", 8, new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6095) }
+                    { "MLN122", new DateTime(2025, 1, 14, 1, 47, 35, 214, DateTimeKind.Local).AddTicks(8011), "Description", "CA", 16, 2, "Political economics of Marxism – Leninism", 6, new DateTime(2025, 1, 14, 1, 47, 35, 214, DateTimeKind.Local).AddTicks(8012) },
+                    { "PRM392", new DateTime(2025, 1, 14, 1, 47, 35, 214, DateTimeKind.Local).AddTicks(7991), "Description", "IT", 20, 1, "Mobile Programing", 8, new DateTime(2025, 1, 14, 1, 47, 35, 214, DateTimeKind.Local).AddTicks(8005) },
+                    { "PRN231", new DateTime(2025, 1, 14, 1, 47, 35, 214, DateTimeKind.Local).AddTicks(8009), "Description", "IT", 20, 0, "Building Cross-Platform Back-End Application With .NET", 7, new DateTime(2025, 1, 14, 1, 47, 35, 214, DateTimeKind.Local).AddTicks(8009) }
                 });
 
             migrationBuilder.InsertData(

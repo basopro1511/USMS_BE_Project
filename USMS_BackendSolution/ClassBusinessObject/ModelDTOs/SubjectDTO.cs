@@ -15,13 +15,21 @@ namespace ClassBusinessObject.ModelDTOs
 		[Column(TypeName = "nvarchar(100)")]
 		public string SubjectName { get; set; }
 
-		[Required]
+        [StringLength(4)]
+        [Column(TypeName = "nvarchar(4)")]
+        public string MajorId { get; set; }
+
+        [Required]
 		public int NumberOfSlot { get; set; }
 
 		[StringLength(200)]
 		[Column(TypeName = "nvarchar(200)")]
 		public string Description { get; set; }
 
-		public bool Status { get; set; }
+        [Required]
+        [Column(TypeName = "int")]
+        public int Term { get; set; }
+
+        public int Status { get; set; }
 	}
 }

@@ -31,7 +31,7 @@ namespace ClassService.Controllers.SubjectController
 			return aPIResponse;
 		}
 
-		[HttpPut("{subjectId}")]
+		[HttpPut]
 		public APIResponse UpdateSubject(SubjectDTO subject)
 		{
 			APIResponse aPIResponse = new APIResponse();

@@ -132,14 +132,6 @@ namespace Repositories.SubjectRepository
 				subject.CopyProperties(checkSubject);
 				using (var _db = new MyDbContext())
 				{
-					if (subject.Status)
-					{
-						subject.Status = false;
-					}
-					else
-					{
-						subject.Status = true;
-					}
 					_db.Entry(subject).State = EntityState.Modified;
 					_db.SaveChanges();
 					return true;

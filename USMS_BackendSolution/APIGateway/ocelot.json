@@ -14,7 +14,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/Room",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT"]
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
     },
     {
       "DownstreamPathTemplate": "/api/Room/{id}",
@@ -39,7 +39,46 @@
       ],
       "UpstreamPathTemplate": "/api/Room/ChangeStatus/{id}/{status}",
       "UpstreamHttpMethod": [ "GET" ]
-    }
+    },
     /* Room API End */
+
+    /* Subject API Start */
+    {
+      "DownstreamPathTemplate": "/api/Subjects",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7286
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Subjects",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Subjects/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7286
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Subjects/{id}",
+      "UpstreamHttpMethod": [ "GET", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Subjects/ChangeStatus/{id}/{status}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7286
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Subjects/ChangeStatus/{id}/{status}",
+      "UpstreamHttpMethod": [ "GET" ]
+    }
+    /* Subject API End */
   ]
 }

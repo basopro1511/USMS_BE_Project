@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClassBusinessObject.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20241202033438_Init_ClassService")]
-    partial class Init_ClassService
+    [Migration("20250113184735_Migrations")]
+    partial class Migrations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -157,11 +157,16 @@ namespace ClassBusinessObject.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("MajorId")
+                        .IsRequired()
+                        .HasMaxLength(4)
+                        .HasColumnType("nvarchar(4)");
+
                     b.Property<int>("NumberOfSlot")
                         .HasColumnType("int");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("SubjectName")
                         .IsRequired()
@@ -182,35 +187,38 @@ namespace ClassBusinessObject.Migrations
                         new
                         {
                             SubjectId = "PRM392",
-                            CreatedAt = new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6082),
+                            CreatedAt = new DateTime(2025, 1, 14, 1, 47, 35, 214, DateTimeKind.Local).AddTicks(7991),
                             Description = "Description",
+                            MajorId = "IT",
                             NumberOfSlot = 20,
-                            Status = true,
+                            Status = 1,
                             SubjectName = "Mobile Programing",
                             Term = 8,
-                            UpdatedAt = new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6092)
+                            UpdatedAt = new DateTime(2025, 1, 14, 1, 47, 35, 214, DateTimeKind.Local).AddTicks(8005)
                         },
                         new
                         {
                             SubjectId = "PRN231",
-                            CreatedAt = new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6095),
+                            CreatedAt = new DateTime(2025, 1, 14, 1, 47, 35, 214, DateTimeKind.Local).AddTicks(8009),
                             Description = "Description",
+                            MajorId = "IT",
                             NumberOfSlot = 20,
-                            Status = true,
+                            Status = 0,
                             SubjectName = "Building Cross-Platform Back-End Application With .NET",
-                            Term = 8,
-                            UpdatedAt = new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6095)
+                            Term = 7,
+                            UpdatedAt = new DateTime(2025, 1, 14, 1, 47, 35, 214, DateTimeKind.Local).AddTicks(8009)
                         },
                         new
                         {
                             SubjectId = "MLN122",
-                            CreatedAt = new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6097),
+                            CreatedAt = new DateTime(2025, 1, 14, 1, 47, 35, 214, DateTimeKind.Local).AddTicks(8011),
                             Description = "Description",
+                            MajorId = "CA",
                             NumberOfSlot = 16,
-                            Status = true,
+                            Status = 2,
                             SubjectName = "Political economics of Marxism – Leninism",
-                            Term = 8,
-                            UpdatedAt = new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6097)
+                            Term = 6,
+                            UpdatedAt = new DateTime(2025, 1, 14, 1, 47, 35, 214, DateTimeKind.Local).AddTicks(8012)
                         });
                 });
 
