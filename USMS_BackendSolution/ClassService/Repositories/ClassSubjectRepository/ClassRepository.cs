@@ -184,7 +184,7 @@ namespace Repositories.ClassSubjectRepository
                 using (var dbContext = new MyDbContext())
                 {
                     ClassSubject classSubject = GetClassSubjectToUpdate(id);
-                    classSubject.Status = !classSubject.Status;
+                    classSubject.Status = classSubject.Status;
                     dbContext.SaveChanges();
                     return true;
                 }

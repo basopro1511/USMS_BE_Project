@@ -1,5 +1,4 @@
-﻿using ClassBusinessObject.ModelDTOs;
-using SchedulerBusinessObject.ModelDTOs;
+﻿using SchedulerBusinessObject.ModelDTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +13,6 @@ namespace Repositories.SemesterRepository
         public SemesterDTO GetSemesterById(string semesterId);
         public bool AddNewSemester(SemesterDTO semesterDTO);
         public bool UpdateSemester(SemesterDTO updateSemesterDTO);
-        public bool ChangeStatusSemester(string semesterId);
+        public bool ChangeStatusSemester(string semesterId, int status);
     }
 }

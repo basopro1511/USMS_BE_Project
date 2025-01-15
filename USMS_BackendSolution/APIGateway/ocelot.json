@@ -2,83 +2,122 @@
   "GlobalConfiguration": {
     "BaseUrl": "https://localhost:7067"
   },
-  "Routes": [
-    /* Room API Start */
-    {
-      "DownstreamPathTemplate": "/api/Room",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
+    "Routes": [
+        /* Room API Start */
         {
-          "Host": "localhost",
-          "Port": 7131
-        }
-      ],
-      "UpstreamPathTemplate": "/api/Room",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/Room/{id}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
+            "DownstreamPathTemplate": "/api/Room",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Room",
+            "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+        },
         {
-          "Host": "localhost",
-          "Port": 7131
-        }
-      ],
-      "UpstreamPathTemplate": "/api/Room/{id}",
-      "UpstreamHttpMethod": [ "GET", "DELETE" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/Room/ChangeStatus/{id}/{status}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
+            "DownstreamPathTemplate": "/api/Room/{id}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Room/{id}",
+            "UpstreamHttpMethod": [ "GET", "DELETE" ]
+        },
         {
-          "Host": "localhost",
-          "Port": 7131
-        }
-      ],
-      "UpstreamPathTemplate": "/api/Room/ChangeStatus/{id}/{status}",
-      "UpstreamHttpMethod": [ "GET" ]
-    },
-    /* Room API End */
+            "DownstreamPathTemplate": "/api/Room/ChangeStatus/{id}/{status}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Room/ChangeStatus/{id}/{status}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        /* Room API End */
 
-    /* Slot API Start */
-    {
-      "DownstreamPathTemplate": "/api/Slot",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
+        /* Slot API Start */
         {
-          "Host": "localhost",
-          "Port": 7131
-        }
-      ],
-      "UpstreamPathTemplate": "/api/Slot",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/Slot/{id}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
+            "DownstreamPathTemplate": "/api/Slot",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Slot",
+            "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+        },
         {
-          "Host": "localhost",
-          "Port": 7131
-        }
-      ],
-      "UpstreamPathTemplate": "/api/Slot/{id}",
-      "UpstreamHttpMethod": [ "GET" ]
-    },
-    {
-      "DownstreamPathTemplate": "/api/Slot/ChangeStatus/{id}/{status}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
+            "DownstreamPathTemplate": "/api/Slot/{id}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Slot/{id}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
         {
-          "Host": "localhost",
-          "Port": 7131
+            "DownstreamPathTemplate": "/api/Slot/ChangeStatus/{id}/{status}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Slot/ChangeStatus/{id}/{status}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        /* Slot API End */
+
+        /* Semester API Start */
+        {
+            "DownstreamPathTemplate": "/api/Semester",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7286
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Semester",
+            "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Semester/{id}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7286
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Semester/{id}",
+            "UpstreamHttpMethod": [ "GET", "DELETE" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Semester/ChangeStatus/{id}/{status}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7286
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Semester/ChangeStatus/{id}/{status}",
+            "UpstreamHttpMethod": [ "GET" ]
         }
-      ],
-      "UpstreamPathTemplate": "/api/Slot/ChangeStatus/{id}/{status}",
-      "UpstreamHttpMethod": [ "GET" ]
-    }
-    /* Slot API End */
-  ]
+        /* Semester API End */
+    ]
 }

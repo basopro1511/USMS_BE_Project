@@ -1,9 +1,9 @@
 ﻿using ClassBusinessObject;
-using SchedulerBusinessObject.ModelDTOs;
+using ClassBusinessObject.ModelDTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.ClassServices;
-using ClassBusinessObject.ModelDTOs;
+using SchedulerBusinessObject.ModelDTOs;
 using Services.SemesterServices;
 
 namespace SchedulerService.Controllers.SemesterController
@@ -50,14 +50,15 @@ namespace SchedulerService.Controllers.SemesterController
             response = _semesterService.UpdateSemester(semesterDTO);
             return response;
         }
-        // PUT: api/Semester/ChangeStatus/{id}
-        [HttpPut("ChangeStatus/{id}")]
-        public APIResponse ChangeStatusSemester(string id)
+        // Get: api/Semester/ChangeStatus/{id}
+        [HttpGet("ChangeStatus/{id}/{status}")]
+        public APIResponse ChangeStatusSemester(string id, int status)
         {
             APIResponse response = new APIResponse();
-            response = _semesterService.GetSemesterById(id);
+            response = _semesterService.ChangeStatusSemester(id, status);
             return response;
         }
+        
 
     }
 }
