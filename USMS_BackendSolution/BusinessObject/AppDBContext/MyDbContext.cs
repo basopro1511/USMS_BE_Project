@@ -19,7 +19,8 @@ namespace BusinessObject.AppDBContext
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             IConfigurationRoot configuration = builder.Build();
-            optionsBuilder.UseSqlServer(configuration.GetConnectionString("HoangConnection"));
+            //optionsBuilder.UseSqlServer(configuration.GetConnectionString("HoangConnection"));
+            optionsBuilder.UseSqlServer(configuration.GetConnectionString("NamConnection"));
         }
         public virtual DbSet<Customer> Customer { get; set; }
         protected override void OnModelCreating(ModelBuilder optionsBuilder)

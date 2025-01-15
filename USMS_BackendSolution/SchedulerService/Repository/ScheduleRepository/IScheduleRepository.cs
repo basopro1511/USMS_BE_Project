@@ -1,19 +1,16 @@
 ﻿using SchedulerBusinessObject.ModelDTOs;
 using SchedulerBusinessObject.SchedulerModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Repositories.ScheduleRepository
 {
-    public interface IScheduleRepository
+	public interface IScheduleRepository
     {    
       /// <summary>
       /// Method Test to get all Schedule
       /// </summary>
       /// <returns>a list of all schedule</returns>
-        public List<ScheduleDTO> getAllSchedule();
-    }
+        List<ScheduleDTO> getAllSchedule();
+        Task AddSchedule(Schedule schedule);
+        Task<List<Schedule>?> GetSchedulesByDateAndSlot(DateOnly date, int slot);
+	}
 }
