@@ -12,7 +12,7 @@ using SchedulerBusinessObject.AppDBContext;
 namespace SchedulerBusinessObject.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20250107094547_init")]
+    [Migration("20250112151745_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -102,20 +102,20 @@ namespace SchedulerBusinessObject.Migrations
                         new
                         {
                             RoomId = "G304",
-                            CreateAt = new DateTime(2025, 1, 7, 16, 45, 46, 463, DateTimeKind.Local).AddTicks(4318),
+                            CreateAt = new DateTime(2025, 1, 12, 22, 17, 45, 96, DateTimeKind.Local).AddTicks(2675),
                             Location = "Grammar Room 304",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 1, 7, 16, 45, 46, 463, DateTimeKind.Local).AddTicks(4329),
+                            UpdateAt = new DateTime(2025, 1, 12, 22, 17, 45, 96, DateTimeKind.Local).AddTicks(2685),
                             isOnline = false
                         },
                         new
                         {
                             RoomId = "R.ON",
-                            CreateAt = new DateTime(2025, 1, 7, 16, 45, 46, 463, DateTimeKind.Local).AddTicks(4331),
+                            CreateAt = new DateTime(2025, 1, 12, 22, 17, 45, 96, DateTimeKind.Local).AddTicks(2688),
                             Location = "Online",
                             OnlineURL = "https://meet.google.com/koi-kghw-tsy",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 1, 7, 16, 45, 46, 463, DateTimeKind.Local).AddTicks(4332),
+                            UpdateAt = new DateTime(2025, 1, 12, 22, 17, 45, 96, DateTimeKind.Local).AddTicks(2689),
                             isOnline = true
                         });
                 });
@@ -167,10 +167,13 @@ namespace SchedulerBusinessObject.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SlotId"));
 
                     b.Property<TimeOnly>("EndTime")
-                        .HasColumnType("TIME(7)");
+                        .HasColumnType("TIME(0)");
 
                     b.Property<TimeOnly>("StartTime")
-                        .HasColumnType("TIME(7)");
+                        .HasColumnType("TIME(0)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INT");
 
                     b.HasKey("SlotId");
 
@@ -181,31 +184,36 @@ namespace SchedulerBusinessObject.Migrations
                         {
                             SlotId = 1,
                             EndTime = new TimeOnly(9, 15, 0),
-                            StartTime = new TimeOnly(7, 0, 0)
+                            StartTime = new TimeOnly(7, 0, 0),
+                            Status = 1
                         },
                         new
                         {
                             SlotId = 2,
                             EndTime = new TimeOnly(11, 45, 0),
-                            StartTime = new TimeOnly(9, 30, 0)
+                            StartTime = new TimeOnly(9, 30, 0),
+                            Status = 1
                         },
                         new
                         {
                             SlotId = 3,
                             EndTime = new TimeOnly(15, 15, 0),
-                            StartTime = new TimeOnly(13, 0, 0)
+                            StartTime = new TimeOnly(13, 0, 0),
+                            Status = 1
                         },
                         new
                         {
                             SlotId = 4,
                             EndTime = new TimeOnly(17, 45, 0),
-                            StartTime = new TimeOnly(15, 30, 0)
+                            StartTime = new TimeOnly(15, 30, 0),
+                            Status = 1
                         },
                         new
                         {
                             SlotId = 5,
                             EndTime = new TimeOnly(20, 15, 0),
-                            StartTime = new TimeOnly(18, 0, 0)
+                            StartTime = new TimeOnly(18, 0, 0),
+                            Status = 1
                         });
                 });
 

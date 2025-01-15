@@ -32,11 +32,11 @@ namespace SchedulerBusinessObject.AppDBContext
         {   
             //Create Default Time Slots
             modelBuilder.Entity<TimeSlot>().HasData(
-               new TimeSlot { SlotId = 1, StartTime = TimeOnly.FromTimeSpan(new TimeSpan(7, 0, 0)), EndTime = TimeOnly.FromTimeSpan(new TimeSpan(9, 15, 0)) },
-               new TimeSlot { SlotId = 2, StartTime = TimeOnly.FromTimeSpan(new TimeSpan(9, 30, 0)), EndTime = TimeOnly.FromTimeSpan(new TimeSpan(11, 45, 0)) },
-               new TimeSlot { SlotId = 3, StartTime = TimeOnly.FromTimeSpan(new TimeSpan(13, 0, 0)), EndTime = TimeOnly.FromTimeSpan(new TimeSpan(15, 15, 0)) },
-               new TimeSlot { SlotId = 4, StartTime = TimeOnly.FromTimeSpan(new TimeSpan(15, 30, 0)), EndTime = TimeOnly.FromTimeSpan(new TimeSpan(17, 45, 0)) },
-               new TimeSlot { SlotId = 5, StartTime = TimeOnly.FromTimeSpan(new TimeSpan(18, 0, 0)), EndTime = TimeOnly.FromTimeSpan(new TimeSpan(20, 15, 0)) }
+               new TimeSlot { SlotId = 1, StartTime = TimeOnly.FromTimeSpan(new TimeSpan(7, 0, 0)), EndTime = TimeOnly.FromTimeSpan(new TimeSpan(9, 15, 0)),Status=1 },
+               new TimeSlot { SlotId = 2, StartTime = TimeOnly.FromTimeSpan(new TimeSpan(9, 30, 0)), EndTime = TimeOnly.FromTimeSpan(new TimeSpan(11, 45, 0)), Status = 1 },
+               new TimeSlot { SlotId = 3, StartTime = TimeOnly.FromTimeSpan(new TimeSpan(13, 0, 0)), EndTime = TimeOnly.FromTimeSpan(new TimeSpan(15, 15, 0)), Status = 1 },
+               new TimeSlot { SlotId = 4, StartTime = TimeOnly.FromTimeSpan(new TimeSpan(15, 30, 0)), EndTime = TimeOnly.FromTimeSpan(new TimeSpan(17, 45, 0)), Status = 1 },
+               new TimeSlot { SlotId = 5, StartTime = TimeOnly.FromTimeSpan(new TimeSpan(18, 0, 0)), EndTime = TimeOnly.FromTimeSpan(new TimeSpan(20, 15, 0)), Status = 1 }
             );
             //Create Example Rooms, Status = 0 là đang disable, 1 là đang available, 2 là đang trì hoãn ( maintenance )
             modelBuilder.Entity<Room>().HasData(

@@ -29,7 +29,7 @@ namespace Services.SemesterServices
             if (semesters == null || !semesters.Any())
             {
                 response.IsSuccess = false;
-                response.Message = "No semesters found!";
+                response.Message = "Không có kỳ học nào!";
             }
             response.Result = semesters;
             return response;
@@ -49,7 +49,7 @@ namespace Services.SemesterServices
             if (semester == null)
             {
                 response.IsSuccess = false;
-                response.Message = $"Semester with ID: {id} not found.";
+                response.Message = $" Kỳ học với mã: {id} không tồn tại. Vui lòng kiểm tra lại";
             }
             response.Result = semester;
             return response;
@@ -70,19 +70,19 @@ namespace Services.SemesterServices
                 return new APIResponse
                 {
                     IsSuccess = false,
-                    Message = "A semester with the same name already exists."
+                    Message = $" Kỳ học với mã: {semesterDto.SemesterId} đã tồn tại. Vui lòng kiểm tra lại"
                 };
             }
             bool isAdded = _semesterRepository.AddNewSemester(semesterDto);
             if (isAdded)
             {
                 response.IsSuccess = true;
-                response.Message = "Semester added successfully.";
+                response.Message = "Thêm kỳ học thành công";
             }
             else
             {
                 response.IsSuccess = false;
-                response.Message = "Failed to add semester.";
+                response.Message = "Thêm kỳ học thất bại.";
             }
             return response;
         }
@@ -102,19 +102,27 @@ namespace Services.SemesterServices
                 return new APIResponse
                 {
                     IsSuccess = false,
-                    Message = "Semester with the given ID does not exist."
+                    Message = "Mã kỳ học được cung cấp không tồn tại!"
                 };
             }
+            if (semesterDto.EndDate <= semesterDto.StartDate)
+            {
+                return new APIResponse
+                {
+                    IsSuccess = false,
+                    Message = "Ngày bắt đầu không thể diển ra sau ngày kết thúc."
+                };
+            } 
             bool isUpdated = _semesterRepository.UpdateSemester(semesterDto);
             if (isUpdated)
             {
                 response.IsSuccess = true;
-                response.Message = "Semester updated successfully.";
+                response.Message = $"Kỳ học với mã: {semesterDto.SemesterId} đã được cập nhật thành công.";
             }
             else
             {
                 response.IsSuccess = false;
-                response.Message = "Failed to update semester.";
+                response.Message = $" Cập nhật kỳ học với mã: {semesterDto.SemesterId} thất bại.";
             }
             return response;
         }
@@ -126,7 +134,7 @@ namespace Services.SemesterServices
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public APIResponse ChangeStatusSemester(string id)
+        public APIResponse ChangeStatusSemester(string id, int status)
         {
             APIResponse response = new APIResponse();
             SemesterDTO existingSemester = _semesterRepository.GetSemesterById(id);
@@ -135,19 +143,40 @@ namespace Services.SemesterServices
                 return new APIResponse
                 {
                     IsSuccess = false,
-                    Message = "Semester with the given ID does not exist."
+                    Message = "Mã kỳ học được cung cấp không tồn tại!"
                 };
             }
-            bool isSuccess = _semesterRepository.ChangeStatusSemester(id);
-            if (isSuccess)
+            // Validate status input
+
+            if (status < 0 || status > 2)
+            {
+                response.IsSuccess = false;
+                response.Message = "Trạng thái không hợp lệ. Vui lòng nhập trạng thái từ 0 đến 2.";
+                return response;
+            }
+            // Update the semester's status
+            bool isUpdated = _semesterRepository.ChangeStatusSemester(id, status);
+            if (isUpdated)
             {
                 response.IsSuccess = true;
-                response.Message = "Semester status changed successfully.";
+                // Provide the message based on the status value
+                switch (status)
+                {
+                    case 0:
+                        response.Message = $" Kỳ học với mã: {id} đã kết thúc.";
+                        break;
+                    case 1:
+                        response.Message = $" Kỳ học với mã: {id} đang diễn ra.";
+                        break;
+                    case 2:
+                        response.Message = $" Kỳ học với mã: {id} chưa bắt đầu.";
+                        break;
+                }
             }
             else
             {
                 response.IsSuccess = false;
-                response.Message = "Failed to change semester status.";
+                response.Message = "Cập nhật kỳ học thất bại.";
             }
             return response;
         }

@@ -33,14 +33,14 @@ namespace ClassBusinessObject.AppDBContext
              new Subject { SubjectId = "MLN122", MajorId = "CA", SubjectName = "Political economics of Marxism – Leninism",Term = 6, NumberOfSlot = 16, Description = "Description", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now, Status = 2 }
           );
             modelBuilder.Entity<Semester>().HasData(
-              new Semester { SemesterId = "SP25", SemesterName = "Spring2025", StartDate = new DateOnly(2025, 01, 05), EndDate = new DateOnly(2025, 03, 24), Status = true },
-              new Semester { SemesterId = "SU25", SemesterName = "Summer2025", StartDate = new DateOnly(2025, 05, 08), EndDate = new DateOnly(2025, 08, 11), Status = true },
-              new Semester { SemesterId = "FA25", SemesterName = "Fall2025", StartDate = new DateOnly(2025, 09, 05), EndDate = new DateOnly(2025, 11, 25), Status = true }
+              new Semester { SemesterId = "SP25", SemesterName = "Spring2025", StartDate = new DateOnly(2025, 01, 05), EndDate = new DateOnly(2025, 03, 24), Status = 1 },
+              new Semester { SemesterId = "SU25", SemesterName = "Summer2025", StartDate = new DateOnly(2025, 05, 08), EndDate = new DateOnly(2025, 08, 11), Status = 1 },
+              new Semester { SemesterId = "FA25", SemesterName = "Fall2025", StartDate = new DateOnly(2025, 09, 05), EndDate = new DateOnly(2025, 11, 25), Status = 1 }
            );
             modelBuilder.Entity<ClassSubject>().HasData(
-               new ClassSubject { ClassSubjectId = 1, ClassId = "SE1702", SubjectId = "PRM392", SemesterId = "SP25", CreatedAt = new DateTime(2024, 11, 25), Status = true},
-               new ClassSubject { ClassSubjectId = 2, ClassId = "SE1702", SubjectId = "PRN231", SemesterId = "SP25", CreatedAt = new DateTime(2024, 11, 25), Status = true},
-               new ClassSubject { ClassSubjectId = 3, ClassId = "SE1702", SubjectId = "MLN122", SemesterId = "SP25", CreatedAt = new DateTime(2024, 11, 25), Status = true}
+               new ClassSubject { ClassSubjectId = 1, ClassId = "SE1702", SubjectId = "PRM392", SemesterId = "SP25", CreatedAt = new DateTime(2024, 11, 25), Status = 1},
+               new ClassSubject { ClassSubjectId = 2, ClassId = "SE1702", SubjectId = "PRN231", SemesterId = "SP25", CreatedAt = new DateTime(2024, 11, 25), Status = 1},
+               new ClassSubject { ClassSubjectId = 3, ClassId = "SE1702", SubjectId = "MLN122", SemesterId = "SP25", CreatedAt = new DateTime(2024, 11, 25), Status = 1}
             );
 
         }
