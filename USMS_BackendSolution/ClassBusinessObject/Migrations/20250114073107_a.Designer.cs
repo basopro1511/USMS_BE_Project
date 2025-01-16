@@ -4,6 +4,7 @@ using ClassBusinessObject.AppDBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClassBusinessObject.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250114073107_a")]
+    partial class a
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -154,16 +157,11 @@ namespace ClassBusinessObject.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("MajorId")
-                        .IsRequired()
-                        .HasMaxLength(4)
-                        .HasColumnType("nvarchar(4)");
-
                     b.Property<int>("NumberOfSlot")
                         .HasColumnType("int");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
 
                     b.Property<string>("SubjectName")
                         .IsRequired()
@@ -184,38 +182,35 @@ namespace ClassBusinessObject.Migrations
                         new
                         {
                             SubjectId = "PRM392",
-                            CreatedAt = new DateTime(2025, 1, 14, 1, 47, 35, 214, DateTimeKind.Local).AddTicks(7991),
+                            CreatedAt = new DateTime(2025, 1, 14, 14, 31, 7, 112, DateTimeKind.Local).AddTicks(7232),
                             Description = "Description",
-                            MajorId = "IT",
                             NumberOfSlot = 20,
-                            Status = 1,
+                            Status = true,
                             SubjectName = "Mobile Programing",
                             Term = 8,
-                            UpdatedAt = new DateTime(2025, 1, 14, 1, 47, 35, 214, DateTimeKind.Local).AddTicks(8005)
+                            UpdatedAt = new DateTime(2025, 1, 14, 14, 31, 7, 112, DateTimeKind.Local).AddTicks(7246)
                         },
                         new
                         {
                             SubjectId = "PRN231",
-                            CreatedAt = new DateTime(2025, 1, 14, 1, 47, 35, 214, DateTimeKind.Local).AddTicks(8009),
+                            CreatedAt = new DateTime(2025, 1, 14, 14, 31, 7, 112, DateTimeKind.Local).AddTicks(7248),
                             Description = "Description",
-                            MajorId = "IT",
                             NumberOfSlot = 20,
-                            Status = 0,
+                            Status = true,
                             SubjectName = "Building Cross-Platform Back-End Application With .NET",
-                            Term = 7,
-                            UpdatedAt = new DateTime(2025, 1, 14, 1, 47, 35, 214, DateTimeKind.Local).AddTicks(8009)
+                            Term = 8,
+                            UpdatedAt = new DateTime(2025, 1, 14, 14, 31, 7, 112, DateTimeKind.Local).AddTicks(7249)
                         },
                         new
                         {
                             SubjectId = "MLN122",
-                            CreatedAt = new DateTime(2025, 1, 14, 1, 47, 35, 214, DateTimeKind.Local).AddTicks(8011),
+                            CreatedAt = new DateTime(2025, 1, 14, 14, 31, 7, 112, DateTimeKind.Local).AddTicks(7251),
                             Description = "Description",
-                            MajorId = "CA",
                             NumberOfSlot = 16,
-                            Status = 2,
+                            Status = true,
                             SubjectName = "Political economics of Marxism – Leninism",
-                            Term = 6,
-                            UpdatedAt = new DateTime(2025, 1, 14, 1, 47, 35, 214, DateTimeKind.Local).AddTicks(8012)
+                            Term = 8,
+                            UpdatedAt = new DateTime(2025, 1, 14, 14, 31, 7, 112, DateTimeKind.Local).AddTicks(7251)
                         });
                 });
 
