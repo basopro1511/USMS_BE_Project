@@ -1,5 +1,5 @@
 ﻿using ClassBusinessObject.AppDBContext;
-using ClassBusinessObject.ModelDTOs;
+using SchedulerBusinessObject.ModelDTOs;
 using ClassBusinessObject.Models;
 using ISUZU_NEXT.Server.Core.Extentions;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +24,7 @@ namespace Repositories.SemesterRepository
             {
                 using (var dbContext = new MyDbContext())
                 {
-                    List <Semester> semesters = dbContext.Semester.ToList();
+                    List<Semester> semesters = dbContext.Semester.ToList();
                     List<SemesterDTO> semesterDTOs = new List<SemesterDTO>();
                     foreach (var semester in semesters)
                     {
@@ -91,12 +91,14 @@ namespace Repositories.SemesterRepository
                 using (var dbContext = new MyDbContext())
                 {
                     var existingSemester = GetSemesterById(updateSemesterDTO.SemesterId);
+                    Semester semester = new Semester();
+                    semester.CopyProperties(updateSemesterDTO);
                     if (existingSemester == null)
                     {
                         return false;
                     }
                     existingSemester.CopyProperties(updateSemesterDTO);
-                    dbContext.Entry(existingSemester).State = EntityState.Modified;
+                    dbContext.Entry(semester).State = EntityState.Modified;
                     dbContext.SaveChanges();
                     return true;
                 }
@@ -137,26 +139,34 @@ namespace Repositories.SemesterRepository
         /// </summary>
         /// <returns>List of active SemesterDTO</returns>
         #endregion
-        public bool ChangeStatusSemester(string semesterId)
+        public bool ChangeStatusSemester(string semesterId, int status)
         {
             try
             {
-                using (var dbContext = new MyDbContext())
+                var existingSemesterDTO = GetSemesterById(semesterId);
+                if (existingSemesterDTO != null)
                 {
-                    var semester = GetSemesterById(semesterId);
-                    if (semester == null)
+                    using (var dbContext = new MyDbContext())
                     {
-                        return false; // Không tìm thấy Semester
+                        // Tìm đối tượng Semester trong dbContext để ánh xạ vào
+                        var existingSemester = dbContext.Semester.Find(semesterId);
+                        if (existingSemester == null) return false;
+                        // Sử dụng phương thức CopyProperties để copy từ DTO sang entity
+                        existingSemester.CopyProperties(existingSemesterDTO);
+                        // Cập nhật giá trị Status sau khi ánh xạ
+                        existingSemester.Status = status;
+                        dbContext.Entry(existingSemester).State = EntityState.Modified;
+                        dbContext.SaveChanges();
                     }
-                    semester.Status = !semester.Status;
-                    dbContext.SaveChanges();
                     return true;
                 }
+                return false;
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message, ex);
             }
         }
+
     }
 }

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ClassBusinessObject.Migrations
 {
     /// <inheritdoc />
-    public partial class Init_ClassService : Migration
+    public partial class a : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,7 +21,7 @@ namespace ClassBusinessObject.Migrations
                     SemesterName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     StartDate = table.Column<DateOnly>(type: "date", nullable: false),
                     EndDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    Status = table.Column<bool>(type: "bit", nullable: false)
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -56,7 +56,7 @@ namespace ClassBusinessObject.Migrations
                     SubjectId = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     SemesterId = table.Column<string>(type: "nvarchar(4)", maxLength: 4, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<bool>(type: "bit", nullable: false)
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -80,9 +80,9 @@ namespace ClassBusinessObject.Migrations
                 columns: new[] { "SemesterId", "EndDate", "SemesterName", "StartDate", "Status" },
                 values: new object[,]
                 {
-                    { "FA25", new DateOnly(2025, 11, 25), "Fall2025", new DateOnly(2025, 9, 5), true },
-                    { "SP25", new DateOnly(2025, 3, 24), "Spring2025", new DateOnly(2025, 1, 5), true },
-                    { "SU25", new DateOnly(2025, 8, 11), "Summer2025", new DateOnly(2025, 5, 8), true }
+                    { "FA25", new DateOnly(2025, 11, 25), "Fall2025", new DateOnly(2025, 9, 5), 1 },
+                    { "SP25", new DateOnly(2025, 3, 24), "Spring2025", new DateOnly(2025, 1, 5), 1 },
+                    { "SU25", new DateOnly(2025, 8, 11), "Summer2025", new DateOnly(2025, 5, 8), 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -90,9 +90,9 @@ namespace ClassBusinessObject.Migrations
                 columns: new[] { "SubjectId", "CreatedAt", "Description", "NumberOfSlot", "Status", "SubjectName", "Term", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { "MLN122", new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6097), "Description", 16, true, "Political economics of Marxism – Leninism", 8, new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6097) },
-                    { "PRM392", new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6082), "Description", 20, true, "Mobile Programing", 8, new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6092) },
-                    { "PRN231", new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6095), "Description", 20, true, "Building Cross-Platform Back-End Application With .NET", 8, new DateTime(2024, 12, 2, 10, 34, 37, 941, DateTimeKind.Local).AddTicks(6095) }
+                    { "MLN122", new DateTime(2025, 1, 14, 14, 31, 7, 112, DateTimeKind.Local).AddTicks(7251), "Description", 16, true, "Political economics of Marxism – Leninism", 8, new DateTime(2025, 1, 14, 14, 31, 7, 112, DateTimeKind.Local).AddTicks(7251) },
+                    { "PRM392", new DateTime(2025, 1, 14, 14, 31, 7, 112, DateTimeKind.Local).AddTicks(7232), "Description", 20, true, "Mobile Programing", 8, new DateTime(2025, 1, 14, 14, 31, 7, 112, DateTimeKind.Local).AddTicks(7246) },
+                    { "PRN231", new DateTime(2025, 1, 14, 14, 31, 7, 112, DateTimeKind.Local).AddTicks(7248), "Description", 20, true, "Building Cross-Platform Back-End Application With .NET", 8, new DateTime(2025, 1, 14, 14, 31, 7, 112, DateTimeKind.Local).AddTicks(7249) }
                 });
 
             migrationBuilder.InsertData(
@@ -100,9 +100,9 @@ namespace ClassBusinessObject.Migrations
                 columns: new[] { "ClassSubjectId", "ClassId", "CreatedAt", "SemesterId", "Status", "SubjectId" },
                 values: new object[,]
                 {
-                    { 1, "SE1702", new DateTime(2024, 11, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), "SP25", true, "PRM392" },
-                    { 2, "SE1702", new DateTime(2024, 11, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), "SP25", true, "PRN231" },
-                    { 3, "SE1702", new DateTime(2024, 11, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), "SP25", true, "MLN122" }
+                    { 1, "SE1702", new DateTime(2024, 11, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), "SP25", 1, "PRM392" },
+                    { 2, "SE1702", new DateTime(2024, 11, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), "SP25", 1, "PRN231" },
+                    { 3, "SE1702", new DateTime(2024, 11, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), "SP25", 1, "MLN122" }
                 });
 
             migrationBuilder.CreateIndex(

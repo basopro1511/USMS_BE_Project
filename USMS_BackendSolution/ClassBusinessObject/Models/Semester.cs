@@ -27,8 +27,8 @@ namespace ClassBusinessObject.Models
         public DateOnly EndDate { get; set; }
 
         [Required]
-        [Column(TypeName = "bit")]
-        public bool Status { get; set; }
+        [Column(TypeName = "int")]
+        public int Status { get; set; }
 
         public virtual ICollection<ClassSubject>? ClassSubjects { get; set; }
     }
