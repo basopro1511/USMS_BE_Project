@@ -52,7 +52,6 @@ namespace Services.SubjectServices
                   (string.IsNullOrEmpty(subjectDTO.MajorId),"Chuyên ngành không được để trống!"),
                   (subjectDTO.NumberOfSlot <= 4 || subjectDTO.NumberOfSlot > 30,"Số buổi học phải lớn hơn 4 và nhỏ hơn hoặc bằng 30!"),
                   (subjectDTO.Term <= 0 || subjectDTO.Term > 8,"Kỳ học phải lớn hơn 0 và nhỏ hơn hoặc bằng 8!"),
-                  (string.IsNullOrEmpty(subjectDTO.Description),"Mô tả môn học không được để trống!"),
             };
             foreach (var validation in validations)
             {
@@ -98,7 +97,7 @@ namespace Services.SubjectServices
             #region validation cua Update
             var validations = new List<(bool condition, string errorMessage)>
             {
-                  (subjectDTO.SubjectId.Length > 4, "Mã môn học không thể ngắn hơn 4 ký tự"),
+                  (subjectDTO.SubjectId.Length < 4, "Mã môn học không thể ngắn hơn 4 ký tự"),
                   (subjectDTO.SubjectId.Length > 10, "Mã môn học không thể dài hơn 10 ký tự"),
                   (subjectDTO == null, "Mã môn học không tồn tại!"),
                   (!subjectDTO.SubjectId.Any(char.IsLetter) || !subjectDTO.SubjectId.Any(char.IsDigit),"Mã môn học phải chứa cả chữ và số!"),
@@ -107,7 +106,6 @@ namespace Services.SubjectServices
                   (string.IsNullOrEmpty(subjectDTO.MajorId),"Chuyên ngành không được để trống!"),
                   (subjectDTO.NumberOfSlot <= 4 || subjectDTO.NumberOfSlot > 30,"Số buổi học phải lớn hơn 4 và nhỏ hơn hoặc bằng 30!"),
                   (subjectDTO.Term <= 0 || subjectDTO.Term > 8,"Kỳ học phải lớn hơn 0 và nhỏ hơn hoặc bằng 8!"),
-                  (string.IsNullOrEmpty(subjectDTO.Description),"Mô tả môn học không được để trống!"),
             };
             foreach (var validation in validations)
             {
