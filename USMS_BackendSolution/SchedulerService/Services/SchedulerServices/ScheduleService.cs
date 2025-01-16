@@ -3,18 +3,21 @@ using Repositories.ScheduleRepository;
 using SchedulerBusinessObject;
 using SchedulerBusinessObject.ModelDTOs;
 using SchedulerBusinessObject.SchedulerModels;
+using Services.RoomServices;
 using System.Text.Json;
 
 namespace SchedulerDataAccess.Services.SchedulerServices
 {
 	public class ScheduleService
 	{
+		private readonly RoomService _roomService;
 		private readonly IScheduleRepository _scheduleRepository;
 		private readonly HttpClient _httpClient;
 
 		public ScheduleService(HttpClient httpClient)
 		{
 			_scheduleRepository = new ScheduleRepository();
+			_roomService = new RoomService();
 			_httpClient = httpClient;
 		}
 		#region Get All Schedule
@@ -64,10 +67,18 @@ namespace SchedulerDataAccess.Services.SchedulerServices
 				// Này lấy tất cả thời khóa biểu của ngày hôm đó ngay slot đó
 				var existingSchedules = await _scheduleRepository.GetSchedulesByDateAndSlot(schedule.Date, schedule.SlotId);
 				// Kiểm tra xung đột lịch học
-				if (!CheckSlotConflict(classSubjectList, existingSchedules))
+				if (CheckSlotConflict(classSubjectOfClass, existingSchedules))
 				{
 					aPIResponse.IsSuccess = false;
 					aPIResponse.Message = "Lớp này đã có tiết vào thời gian này!";
+					return aPIResponse;
+				}
+				// Kiểm tra tính hợp lệ của phòng học
+				var room = _roomService.GetRoomById(schedule.RoomId);
+				if (!room.IsSuccess)
+				{
+					aPIResponse.IsSuccess = false;
+					aPIResponse.Message = "Không tìm thấy phòng học!";
 					return aPIResponse;
 				}
 				// Kiểm tra xung đột phòng học
@@ -129,10 +140,13 @@ namespace SchedulerDataAccess.Services.SchedulerServices
 		/// <returns></returns>
 		private bool CheckSlotConflict(List<ClassSubjectDTO> classSubjectOfClass, List<Schedule>? existingSchedules)
 		{
-			return (existingSchedules != null &&
-				existingSchedules.Any(cs =>
-										classSubjectOfClass.Any(csc =>
-																	csc.ClassSubjectId == cs.ClassSubjectId)));
+			if (existingSchedules == null || existingSchedules.Count == 0)
+			{
+				return false;
+			}
+			return existingSchedules.Any(cs =>
+											classSubjectOfClass.Any(csc =>
+																		csc.ClassSubjectId == cs.ClassSubjectId));
 		}
 
 		/// <summary>

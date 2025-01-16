@@ -13,22 +13,13 @@ namespace Repositories.ScheduleRepository
 		/// </summary>
 		/// <returns></returns>
 		/// <exception cref="Exception"></exception>
-		public List<ScheduleDTO> getAllSchedule()
+		public List<Schedule> getAllSchedule()
 		{
 			try
 			{
 				var dbContext = new MyDbContext();
 				List<Schedule> schedules = dbContext.Schedule.ToList();
-				List<ScheduleDTO> scheduleDTOs = new List<ScheduleDTO>();
-				foreach (var schedule in schedules)
-				{
-					ScheduleDTO scheduleDTO = new ScheduleDTO();
-					scheduleDTO.CopyProperties(schedule);
-					scheduleDTO.ClassId = "SE1702"; // Tạo 1 method để get data những model này
-					scheduleDTO.TeacherId = "Test";
-					scheduleDTOs.Add(scheduleDTO);
-				}
-				return scheduleDTOs;
+				return schedules;
 			}
 			catch (Exception ex)
 			{
