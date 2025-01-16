@@ -11,8 +11,6 @@ namespace ClassBusinessObject.Models
     public class Subject
     {
         [Key]
-        [StringLength(10)]
-        [Column(TypeName = "nvarchar(10)")]
         public string SubjectId { get; set; }
 
         [StringLength(4)]
