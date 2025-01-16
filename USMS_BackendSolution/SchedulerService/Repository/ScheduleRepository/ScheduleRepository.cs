@@ -36,6 +36,12 @@ namespace Repositories.ScheduleRepository
 			}
 		}
 
+		/// <summary>
+		/// Add Schedule
+		/// </summary>
+		/// <param name="schedule"></param>
+		/// <returns></returns>
+		/// <exception cref="Exception"></exception>
 		public async Task AddSchedule(Schedule schedule)
 		{
 			try
@@ -52,6 +58,13 @@ namespace Repositories.ScheduleRepository
 			}
 		}
 
+		/// <summary>
+		/// Get Schedules By Date And Slot
+		/// </summary>
+		/// <param name="date"></param>
+		/// <param name="slotId"></param>
+		/// <returns></returns>
+		/// <exception cref="Exception"></exception>
 		public async Task<List<Schedule>?> GetSchedulesByDateAndSlot(DateOnly date, int slotId)
 		{
 			try
