@@ -1,7 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Repositories.RoomRepository;
+﻿using Repositories.RoomRepository;
 using Repositories.ScheduleRepository;
 using SchedulerDataAccess.Services.SchedulerServices;
 using SchedulerService.Repository.ExamScheduleRepository;
@@ -12,7 +9,7 @@ using Services.RoomServices;
 
 namespace SchedulerDataAccess.Core
 {
-    public static class DependencyInjection
+	public static class DependencyInjection
     {
         public static void ConfigureDependencyInjection(this IServiceCollection services)
         {
