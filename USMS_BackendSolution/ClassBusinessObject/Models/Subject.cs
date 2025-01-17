@@ -11,9 +11,11 @@ namespace ClassBusinessObject.Models
     public class Subject
     {
         [Key]
-        [StringLength(10)]
-        [Column(TypeName = "nvarchar(10)")]
         public string SubjectId { get; set; }
+
+        [StringLength(4)]
+        [Column(TypeName = "nvarchar(4)")]
+        public string MajorId { get; set; }
 
         [Required]
         [StringLength(100)]
@@ -37,8 +39,8 @@ namespace ClassBusinessObject.Models
 
         [Required]
         public DateTime UpdatedAt { get; set; }
-        [Column(TypeName = "bit")]
-        public bool Status { get; set; }
+        [Column(TypeName = "int")]
+        public int Status { get; set; }
 
         public virtual ICollection<ClassSubject>? ClassSubjects { get; set; }
     }

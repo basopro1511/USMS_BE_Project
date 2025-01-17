@@ -4,6 +4,7 @@ using ClassBusinessObject.AppDBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClassBusinessObject.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250113184735_Migrations")]
+    partial class Migrations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,8 +46,8 @@ namespace ClassBusinessObject.Migrations
                         .HasMaxLength(4)
                         .HasColumnType("nvarchar(4)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
 
                     b.Property<string>("SubjectId")
                         .IsRequired()
@@ -66,7 +69,7 @@ namespace ClassBusinessObject.Migrations
                             ClassId = "SE1702",
                             CreatedAt = new DateTime(2024, 11, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             SemesterId = "SP25",
-                            Status = 1,
+                            Status = true,
                             SubjectId = "PRM392"
                         },
                         new
@@ -75,7 +78,7 @@ namespace ClassBusinessObject.Migrations
                             ClassId = "SE1702",
                             CreatedAt = new DateTime(2024, 11, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             SemesterId = "SP25",
-                            Status = 1,
+                            Status = true,
                             SubjectId = "PRN231"
                         },
                         new
@@ -84,7 +87,7 @@ namespace ClassBusinessObject.Migrations
                             ClassId = "SE1702",
                             CreatedAt = new DateTime(2024, 11, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             SemesterId = "SP25",
-                            Status = 1,
+                            Status = true,
                             SubjectId = "MLN122"
                         });
                 });
@@ -106,8 +109,8 @@ namespace ClassBusinessObject.Migrations
                     b.Property<DateOnly>("StartDate")
                         .HasColumnType("date");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
 
                     b.HasKey("SemesterId");
 
@@ -120,7 +123,7 @@ namespace ClassBusinessObject.Migrations
                             EndDate = new DateOnly(2025, 3, 24),
                             SemesterName = "Spring2025",
                             StartDate = new DateOnly(2025, 1, 5),
-                            Status = 1
+                            Status = true
                         },
                         new
                         {
@@ -128,7 +131,7 @@ namespace ClassBusinessObject.Migrations
                             EndDate = new DateOnly(2025, 8, 11),
                             SemesterName = "Summer2025",
                             StartDate = new DateOnly(2025, 5, 8),
-                            Status = 1
+                            Status = true
                         },
                         new
                         {
@@ -136,7 +139,7 @@ namespace ClassBusinessObject.Migrations
                             EndDate = new DateOnly(2025, 11, 25),
                             SemesterName = "Fall2025",
                             StartDate = new DateOnly(2025, 9, 5),
-                            Status = 1
+                            Status = true
                         });
                 });
 

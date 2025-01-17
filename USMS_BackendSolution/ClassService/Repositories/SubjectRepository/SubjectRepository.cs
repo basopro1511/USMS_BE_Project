@@ -7,7 +7,7 @@ using ClassBusinessObject.AppDBContext;
 namespace Repositories.SubjectRepository
 {
 	public class SubjectRepository : ISubjectRepository
-	{
+    {
 		/// <summary>
 		/// Create Subject
 		/// </summary>
@@ -108,42 +108,53 @@ namespace Repositories.SubjectRepository
 			}
 		}
 
-		/// <summary>
-		/// Switch State Subject
-		/// </summary>
-		/// <param name="subjectId"></param>
-		/// <returns></returns>
-		/// <exception cref="ArgumentNullException"></exception>
-		/// <exception cref="Exception"></exception>
-		public bool SwitchStateSubject(string subjectId)
+
+        /// <summary>
+        /// Get Subjects By Id
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public SubjectDTO GetSubjectsById(string subjectId)
+        {
+            try
+            {
+                var subject = GetAllSubjects();
+				SubjectDTO subjectDTO = subject.FirstOrDefault(x => x.SubjectId == subjectId);
+				return subjectDTO;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Switch State Subject
+        /// </summary>
+        /// <param name="subjectId"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="Exception"></exception>
+        public bool SwitchStateSubject(string subjectId, int status)
 		{
-			if (subjectId == null)
-			{
-				throw new ArgumentNullException(nameof(SubjectDTO), "subjectId is null");
-			}
 			try
 			{
-				var checkSubject = GetAllSubjects().Find(x => x.SubjectId == subjectId);
-				if (checkSubject == null)
-				{
-					return false;
-				}
-				Subject subject = new Subject();
-				subject.CopyProperties(checkSubject);
-				using (var _db = new MyDbContext())
-				{
-					if (subject.Status)
+				var existingSubjectDTO = GetSubjectsById(subjectId);
+                if (existingSubjectDTO != null)
+					using (var dbContext = new MyDbContext())
 					{
-						subject.Status = false;
+						{
+							var existingSubject = dbContext.Subject.Find(subjectId);
+							if (existingSubject == null) return false;
+							existingSubject.CopyProperties(existingSubjectDTO);
+                            existingSubject.Status = status;
+							dbContext.Entry(existingSubject).State = EntityState.Modified;
+							dbContext.SaveChanges();
+						}
+						return true;
 					}
-					else
-					{
-						subject.Status = true;
-					}
-					_db.Entry(subject).State = EntityState.Modified;
-					_db.SaveChanges();
-					return true;
-				}
+				return false;
 			}
 			catch (Exception ex)
 			{

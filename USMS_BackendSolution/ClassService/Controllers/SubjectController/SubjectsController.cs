@@ -31,7 +31,7 @@ namespace ClassService.Controllers.SubjectController
 			return aPIResponse;
 		}
 
-		[HttpPut("{subjectId}")]
+		[HttpPut]
 		public APIResponse UpdateSubject(SubjectDTO subject)
 		{
 			APIResponse aPIResponse = new APIResponse();
@@ -39,11 +39,11 @@ namespace ClassService.Controllers.SubjectController
 			return aPIResponse;
 		}
 
-		[HttpPut("SwitchStateSubject/{subjectId}")]
-		public APIResponse SwitchStateSubject(string subjectId)
+		[HttpGet("SwitchStateSubject/{subjectId}/{status}")]
+		public APIResponse SwitchStateSubject(string subjectId, int status)
 		{
 			APIResponse aPIResponse = new APIResponse();
-			aPIResponse = _subjectService.SwitchStateSubject(subjectId);
+			aPIResponse = _subjectService.SwitchStateSubject(subjectId, status);
 			return aPIResponse;
 		}
 	}
