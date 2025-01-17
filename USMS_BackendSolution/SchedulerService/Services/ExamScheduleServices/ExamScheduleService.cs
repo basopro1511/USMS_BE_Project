@@ -69,6 +69,7 @@ namespace SchedulerService.Services.ExamScheduleServices
             return aPIResponse;
         }
         #endregion
+
         #region Get Unassigned Room ExamSchedule
         /// <summary>
         /// Retrive all Rooms in Database
