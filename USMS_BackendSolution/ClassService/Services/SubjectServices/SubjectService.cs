@@ -208,6 +208,39 @@ namespace Services.SubjectServices
 			}
 			return aPIResponse;
 		}
-		#endregion
-	}
+        #endregion
+
+        #region Get Subject by Major ID
+        public APIResponse GetSubjectByMajorId(string majorId)
+        {
+            APIResponse aPIResponse = new APIResponse();
+            List<SubjectDTO>? subjects = _subjectRepository.GetAllSubjects();
+            List<SubjectDTO>? subjectByMajor = subjects.Where(x => x.MajorId == majorId).ToList();
+            if (subjects == null || subjects.Count == 0)
+            {
+                aPIResponse.IsSuccess = false;
+                aPIResponse.Message = "Không có môn học đang tìm kiếm.";
+            }
+            aPIResponse.Result = subjectByMajor;
+            return aPIResponse;
+        }
+        #endregion
+  
+
+        #region Get Subject by Major ID and Term
+        public APIResponse GetSubjectByMajorIdAndTerm(string majorId, int term)
+        {
+            APIResponse aPIResponse = new APIResponse();
+            List<SubjectDTO>? subjects = _subjectRepository.GetAllSubjects();
+            List<SubjectDTO>? subjectByMajor = subjects.Where(x => x.MajorId == majorId && x.Term == term).ToList();
+            if (subjects == null || subjects.Count == 0)
+            {
+                aPIResponse.IsSuccess = false;
+                aPIResponse.Message = "Không có môn học đang tìm kiếm.";
+            }
+            aPIResponse.Result = subjectByMajor;
+            return aPIResponse;
+        }
+        #endregion
+    }
 }

@@ -46,5 +46,25 @@ namespace ClassService.Controllers.SubjectController
 			aPIResponse = _subjectService.SwitchStateSubject(subjectId, status);
 			return aPIResponse;
 		}
-	}
+
+        #region Get Subjects by MajorId
+        [HttpGet("GetSubjectByMajor/{id}")]
+        public APIResponse GetSubjectsByMajor(string id)
+        {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse = _subjectService.GetSubjectByMajorId(id);
+            return aPIResponse;
+        }
+        #endregion
+
+        #region GetSubjects by MajorId and Term
+        [HttpGet("GetSubjectByMajorAndTerm/{id}/{term}")]
+        public APIResponse GetSubjectsByMajorAndTerm(string id, int term)
+        {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse = _subjectService.GetSubjectByMajorIdAndTerm(id,term);
+            return aPIResponse;
+        }
+        #endregion
+    }
 }

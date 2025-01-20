@@ -111,6 +111,7 @@ namespace Repositories.ClassSubjectRepository
                     var classSubject = new ClassSubject();
                     classSubject.CopyProperties(classSubjectDTO);
                     dbContext.ClassSubject.Add(classSubject);
+                    classSubject.CreatedAt = DateTime.Now;
                     dbContext.SaveChanges();
                     return true;
                 }

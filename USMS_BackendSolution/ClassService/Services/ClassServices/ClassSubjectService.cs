@@ -5,7 +5,9 @@ using Repositories.ClassSubjectRepository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Services.ClassServices
@@ -13,8 +15,10 @@ namespace Services.ClassServices
     public class ClassSubjectService
     {
         private readonly IClassRepository _classRepository;
+        private readonly HttpClient _httpClient;
         public ClassSubjectService()
         {
+            _httpClient = new HttpClient();
             _classRepository = new ClassRepository();
         }
 
@@ -32,10 +36,75 @@ namespace Services.ClassServices
                 aPIResponse.IsSuccess = false;
                 aPIResponse.Message = "Don't have any Class Subject available!";
             }
+            foreach (var item in classSubjects)
+            {
+                var majorName = GetMajorNameById(item.MajorId);
+                item.MajorName = majorName.MajorName?? "Null";
+            }
             aPIResponse.Result = classSubjects;
             return aPIResponse;
         }
         #endregion
+
+        #region get all Major by major API
+        /// <summary>
+        ///   Get All Major by Major API
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        private List<ClassSubjectDTO>? GetAllMajor()
+        {
+            try
+            {
+                var response = _httpClient.GetAsync("https://localhost:7067/api/Major").Result;
+                var apiResponse = response.Content.ReadFromJsonAsync<APIResponse>().Result;
+                if (apiResponse == null || !apiResponse.IsSuccess)
+                {
+                    return null;
+                }
+                var dataResponse = apiResponse.Result as JsonElement?;
+                if (dataResponse == null)
+                {
+                    return null;
+                }
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+                return dataResponse.Value.Deserialize<List<ClassSubjectDTO>>(options);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        #endregion
+
+        #region get Major Name by Major Id
+        /// <summary>
+        /// Get the name of a Major by its Id
+        /// </summary>
+        /// <param name="id">Major Id</param>
+        /// <returns>A ClassSubjectDTO containing Major Name if found, otherwise null</returns>
+        private ClassSubjectDTO GetMajorNameById(string id)
+        {
+            try
+            {
+                var majors = GetAllMajor();
+                var major = majors?.FirstOrDefault(x => x.MajorId == id);
+                if (major == null)
+                {
+                    throw new Exception($"Chuyên ngành với mã '{id}' không tìm thấy.");
+                }
+                return major;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+        #endregion
+
 
         #region Get ClassSubject By ClassSubjectId 
         /// <summary>
@@ -91,7 +160,7 @@ namespace Services.ClassServices
                 return new APIResponse
                 {
                     IsSuccess = false,
-                    Message = "Class Subject with the given ClassId, SubjectId, SemesterId already exists."
+                    Message = "Lớp học với Mã lớp học : " + classSubject.ClassId+ " Mã môn học : "+ classSubject.SubjectId+", và Mã kỳ học : "+classSubject.SemesterId+" đã tồn tại !"
                 };
             }
             bool isAdded = _classRepository.AddNewClassSubject(classSubject);
@@ -100,13 +169,13 @@ namespace Services.ClassServices
                 return new APIResponse
                 {
                     IsSuccess = true,
-                    Message = "Class Subject added successfully."
+                    Message = "Thêm mới lớp học thành công !"
                 };
             }
             return new APIResponse
             {
                 IsSuccess = false,
-                Message = "Failed to add Class Subject."
+                Message = "Thêm mới lớp học thất bại!."
             };
         }
         #endregion
@@ -134,13 +203,13 @@ namespace Services.ClassServices
                 return new APIResponse
                 {
                     IsSuccess = true,
-                    Message = "Class Subject updated successfully."
+                    Message = "Cập nhật lớp học thành công!"
                 };
             }
             return new APIResponse
             {
                 IsSuccess = false,
-                Message = "Failed to updated Class Subject."
+                Message = "Cập nhật lớp học thất bại!"
             };
         }
         #endregion
