@@ -11,11 +11,12 @@ namespace ClassBusinessObject.Models
     public class Subject
     {
         [Key]
+        [Column(TypeName = "nvarchar(10)")]
         public string SubjectId { get; set; }
 
         [StringLength(4)]
         [Column(TypeName = "nvarchar(4)")]
-        public string MajorId { get; set; }
+        public string? MajorId { get; set; }
 
         [Required]
         [StringLength(100)]

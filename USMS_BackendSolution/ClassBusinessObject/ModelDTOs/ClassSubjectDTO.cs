@@ -14,6 +14,9 @@ namespace ClassBusinessObject.ModelDTOs
         public string ClassId { get; set; }
         public string SubjectId { get; set; }
         public string SemesterId { get; set; }
+        public string MajorId {  get; set; }
+        public string MajorName { get; set; }
+        public int Term {  get; set; }
         public string? ClassSubjectName
         {
             get
@@ -22,7 +25,7 @@ namespace ClassBusinessObject.ModelDTOs
             }
         }
         public DateTime CreatedAt { get; set; }
-        public bool Status { get; set; }
+        public int Status { get; set; }
     }
     public class AddUpdateClassSubjectDTO
     {
@@ -30,7 +33,9 @@ namespace ClassBusinessObject.ModelDTOs
         public string ClassId { get; set; }
         public string SubjectId { get; set; }
         public string SemesterId { get; set; }
+        public string MajorId { get; set; }
+        public int Term { get; set; }
         public DateTime CreatedAt { get; set; }
-        public bool Status { get; set; }
+        public int Status { get; set; }
     }
 }

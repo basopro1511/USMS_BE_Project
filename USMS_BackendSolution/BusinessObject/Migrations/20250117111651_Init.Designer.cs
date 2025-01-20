@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessObject.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20250108133932_a")]
-    partial class a
+    [Migration("20250117111651_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,49 +25,13 @@ namespace BusinessObject.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BusinessObject.Models.Customer", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasMaxLength(8)
-                        .HasColumnType("NVARCHAR(8)");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR(MAX)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("NVARCHAR(30)");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasMaxLength(11)
-                        .HasColumnType("NVARCHAR(MAX)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Customer");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "CE170288",
-                            Address = "Phong Điền, Cần Thơ",
-                            Name = "Nguyễn Quốc Hoàng",
-                            Phone = "0333744591"
-                        });
-                });
-
             modelBuilder.Entity("BusinessObject.Models.Major", b =>
                 {
                     b.Property<string>("MajorId")
-                        .HasMaxLength(4)
                         .HasColumnType("NVARCHAR(4)");
 
                     b.Property<string>("MajorName")
                         .IsRequired()
-                        .HasMaxLength(100)
                         .HasColumnType("NVARCHAR(100)");
 
                     b.HasKey("MajorId");
@@ -77,13 +41,18 @@ namespace BusinessObject.Migrations
                     b.HasData(
                         new
                         {
-                            MajorId = "IB",
-                            MajorName = "International Business"
+                            MajorId = "IT",
+                            MajorName = "Information Technology"
                         },
                         new
                         {
-                            MajorId = "IT",
-                            MajorName = "Information Technology"
+                            MajorId = "BA",
+                            MajorName = "Business Administration"
+                        },
+                        new
+                        {
+                            MajorId = "MT",
+                            MajorName = "Media Technology"
                         });
                 });
 
@@ -97,7 +66,6 @@ namespace BusinessObject.Migrations
 
                     b.Property<string>("RoleName")
                         .IsRequired()
-                        .HasMaxLength(50)
                         .HasColumnType("NVARCHAR(50)");
 
                     b.HasKey("RoleId");
@@ -123,7 +91,7 @@ namespace BusinessObject.Migrations
                         new
                         {
                             RoleId = 4,
-                            RoleName = "Lecture"
+                            RoleName = "Teacher"
                         },
                         new
                         {
@@ -132,10 +100,35 @@ namespace BusinessObject.Migrations
                         });
                 });
 
+            modelBuilder.Entity("BusinessObject.Models.Student", b =>
+                {
+                    b.Property<string>("StudentId")
+                        .HasColumnType("NVARCHAR(8)");
+
+                    b.Property<string>("MajorId")
+                        .HasColumnType("NVARCHAR(4)");
+
+                    b.Property<int>("Term")
+                        .HasColumnType("INT");
+
+                    b.HasKey("StudentId");
+
+                    b.HasIndex("MajorId");
+
+                    b.ToTable("Student");
+
+                    b.HasData(
+                        new
+                        {
+                            StudentId = "CE170288",
+                            MajorId = "IT",
+                            Term = 1
+                        });
+                });
+
             modelBuilder.Entity("BusinessObject.Models.User", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasMaxLength(8)
                         .HasColumnType("NVARCHAR(8)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -145,39 +138,32 @@ namespace BusinessObject.Migrations
                         .HasColumnType("date");
 
                     b.Property<string>("Email")
-                        .HasMaxLength(100)
                         .HasColumnType("NVARCHAR(100)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasMaxLength(20)
                         .HasColumnType("NVARCHAR(20)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasMaxLength(20)
                         .HasColumnType("NVARCHAR(20)");
 
                     b.Property<string>("MajorId")
                         .HasColumnType("NVARCHAR(4)");
 
                     b.Property<string>("MiddleName")
-                        .HasMaxLength(20)
                         .HasColumnType("NVARCHAR(20)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasMaxLength(200)
                         .HasColumnType("NVARCHAR(200)");
 
                     b.Property<string>("PersonalEmail")
                         .IsRequired()
-                        .HasMaxLength(100)
                         .HasColumnType("NVARCHAR(100)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasMaxLength(15)
                         .HasColumnType("NVARCHAR(15)");
 
                     b.Property<int>("RoleId")
@@ -203,57 +189,30 @@ namespace BusinessObject.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "IT0001",
-                            CreatedAt = new DateTime(2025, 1, 8, 20, 39, 32, 196, DateTimeKind.Local).AddTicks(1529),
-                            DateOfBirth = new DateOnly(2002, 4, 30),
-                            Email = "ANVIT0001.a@university.edu",
-                            FirstName = "Nguyen",
-                            LastName = "A",
+                            UserId = "CE170288",
+                            CreatedAt = new DateTime(2025, 1, 17, 18, 16, 50, 778, DateTimeKind.Local).AddTicks(3412),
+                            DateOfBirth = new DateOnly(2025, 11, 15),
+                            Email = "HoangNQCE170288@fpt.edu.vn",
+                            FirstName = "Nguyễn",
+                            LastName = "Hoàng",
                             MajorId = "IT",
-                            MiddleName = "Van",
-                            PasswordHash = "hashedpassword1",
-                            PersonalEmail = "van.a@gmail.com",
-                            PhoneNumber = "0123456789",
-                            RoleId = 5,
-                            Status = 1,
-                            UpdatedAt = new DateTime(2025, 1, 8, 20, 39, 32, 196, DateTimeKind.Local).AddTicks(1543),
-                            UserAvartar = "123"
-                        },
-                        new
-                        {
-                            UserId = "IB0001",
-                            CreatedAt = new DateTime(2025, 1, 8, 20, 39, 32, 196, DateTimeKind.Local).AddTicks(1545),
-                            DateOfBirth = new DateOnly(2002, 9, 30),
-                            Email = "BTTIB0001.b@university.edu",
-                            FirstName = "Tran",
-                            LastName = "B",
-                            MajorId = "IB",
-                            MiddleName = "Thi",
-                            PasswordHash = "hashedpassword2",
-                            PersonalEmail = "thi.b@gmail.com",
-                            PhoneNumber = "0987654321",
-                            RoleId = 5,
-                            Status = 1,
-                            UpdatedAt = new DateTime(2025, 1, 8, 20, 39, 32, 196, DateTimeKind.Local).AddTicks(1546),
-                            UserAvartar = "123"
-                        },
-                        new
-                        {
-                            UserId = "AD0001",
-                            CreatedAt = new DateTime(2025, 1, 8, 20, 39, 32, 196, DateTimeKind.Local).AddTicks(1549),
-                            DateOfBirth = new DateOnly(2000, 9, 30),
-                            Email = "admin0001@university.edu",
-                            FirstName = "Nguyen",
-                            LastName = "Admin",
-                            MiddleName = "Tuan",
-                            PasswordHash = "hashedpassword3",
-                            PersonalEmail = "admin0001@gmail.edu",
-                            PhoneNumber = "0123456780",
+                            MiddleName = "Quốc",
+                            PasswordHash = "123456",
+                            PersonalEmail = "Hoang@gmail.com",
+                            PhoneNumber = "0333744591",
                             RoleId = 1,
                             Status = 1,
-                            UpdatedAt = new DateTime(2025, 1, 8, 20, 39, 32, 196, DateTimeKind.Local).AddTicks(1549),
-                            UserAvartar = "123"
+                            UpdatedAt = new DateTime(2025, 1, 17, 18, 16, 50, 778, DateTimeKind.Local).AddTicks(3422)
                         });
+                });
+
+            modelBuilder.Entity("BusinessObject.Models.Student", b =>
+                {
+                    b.HasOne("BusinessObject.Models.Major", "Major")
+                        .WithMany()
+                        .HasForeignKey("MajorId");
+
+                    b.Navigation("Major");
                 });
 
             modelBuilder.Entity("BusinessObject.Models.User", b =>

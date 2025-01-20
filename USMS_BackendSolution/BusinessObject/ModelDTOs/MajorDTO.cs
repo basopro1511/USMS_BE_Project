@@ -6,16 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BusinessObject.Models
+namespace BusinessObject.ModelDTOs
 {
-    public class Major
+    public class MajorDTO
     {
-        [Key]
-        [Required]
-        [Column(TypeName = "NVARCHAR(4)")]
         public string MajorId { get; set; }
-        [Required]
-        [Column(TypeName = "NVARCHAR(100)")]
         public string MajorName { get; set; }
     }
 }

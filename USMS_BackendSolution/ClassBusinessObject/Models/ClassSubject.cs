@@ -14,19 +14,21 @@ namespace ClassBusinessObject.Models
         public int ClassSubjectId { get; set; }
 
         [Required]
-        [StringLength(10)]
         [Column(TypeName = "nvarchar(10)")]
         public string ClassId { get; set; }
 
         [Required]
-        [StringLength(10)]
         [Column(TypeName = "nvarchar(10)")]
         public string SubjectId { get; set; }
 
         [Required]
-        [StringLength(4)]
         [Column(TypeName = "nvarchar(4)")]
         public string SemesterId { get; set; }
+
+        [Column(TypeName = "nvarchar(4)")]
+        public string? MajorId { get; set; }
+
+        public int Term { get; set; }
 
         [Required]
         public DateTime CreatedAt { get; set; }
