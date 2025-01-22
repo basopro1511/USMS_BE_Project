@@ -22,7 +22,7 @@ namespace Services.ClassServices
             _classRepository = new ClassRepository();
         }
 
-        #region Get All Schedule
+        #region Get All Class Subject
         /// <summary>
         /// Retrive all ClassSubject in Database
         /// </summary>
@@ -104,7 +104,6 @@ namespace Services.ClassServices
             }
         }
         #endregion
-
 
         #region Get ClassSubject By ClassSubjectId 
         /// <summary>

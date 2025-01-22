@@ -1,6 +1,7 @@
 ﻿using ISUZU_NEXT.Server.Core.Extentions;
 using Repositories.ScheduleRepository;
 using SchedulerBusinessObject;
+using SchedulerBusinessObject.AppDBContext;
 using SchedulerBusinessObject.ModelDTOs;
 using SchedulerBusinessObject.SchedulerModels;
 using Services.RoomServices;
@@ -13,7 +14,6 @@ namespace SchedulerDataAccess.Services.SchedulerServices
 		private readonly RoomService _roomService;
 		private readonly IScheduleRepository _scheduleRepository;
 		private readonly HttpClient _httpClient;
-
 		public ScheduleService(HttpClient httpClient)
 		{
 			_scheduleRepository = new ScheduleRepository();
@@ -44,7 +44,6 @@ namespace SchedulerDataAccess.Services.SchedulerServices
 		public async Task<APIResponse> PostSchedule(ClassScheduleDTO schedule)
 		{
 			APIResponse aPIResponse = new APIResponse();
-
 			try
 			{
 				var classSubjectList = await GetClassSubjects();
@@ -103,16 +102,17 @@ namespace SchedulerDataAccess.Services.SchedulerServices
 			}
 			return aPIResponse;
 		}
-		#endregion
+        #endregion
 
-		/// <summary>
-		/// Get ClassSubjectOfClass
-		/// </summary>
-		/// <returns></returns>
-		private async Task<List<ClassSubjectDTO>?> GetClassSubjects()
+        #region Get Class Subject
+        /// <summary>
+        /// Get ClassSubjectOfClass
+        /// </summary>
+        /// <returns></returns>
+        private async Task<List<ClassSubjectDTO>?> GetClassSubjects()
 		{
 			// Lấy danh sách ClassSubject từ API
-			var response = await _httpClient.GetAsync("https://localhost:7286/api/ClassSubject");
+			var response = await _httpClient.GetAsync("https://localhost:7067/api/ClassSubject");
 			var apiResponse = await response.Content.ReadFromJsonAsync<APIResponse>();
 			if (apiResponse == null || !apiResponse.IsSuccess)
 			{
@@ -131,14 +131,16 @@ namespace SchedulerDataAccess.Services.SchedulerServices
 			};
 			return classSubjectResponse.Value.Deserialize<List<ClassSubjectDTO>>(options);
 		}
+        #endregion
 
-		/// <summary>
-		/// Check Slot Conflict
-		/// </summary>
-		/// <param name="classSubjectOfClass"></param>
-		/// <param name="existingSchedules"></param>
-		/// <returns></returns>
-		private bool CheckSlotConflict(List<ClassSubjectDTO> classSubjectOfClass, List<Schedule>? existingSchedules)
+        #region Check Slot Conflict
+        /// <summary>
+        /// Check Slot Conflict
+        /// </summary>
+        /// <param name="classSubjectOfClass"></param>
+        /// <param name="existingSchedules"></param>
+        /// <returns></returns>
+        private bool CheckSlotConflict(List<ClassSubjectDTO> classSubjectOfClass, List<Schedule>? existingSchedules)
 		{
 			if (existingSchedules == null || existingSchedules.Count == 0)
 			{
@@ -148,18 +150,69 @@ namespace SchedulerDataAccess.Services.SchedulerServices
 											classSubjectOfClass.Any(csc =>
 																		csc.ClassSubjectId == cs.ClassSubjectId));
 		}
+        #endregion
 
-		/// <summary>
-		/// Check Room Conflict
-		/// </summary>
-		/// <param name="existingSchedules"></param>
-		/// <param name="roomId"></param>
-		/// <returns></returns>
-		private bool CheckRoomConflict(List<Schedule>? existingSchedules, string roomId)
+        #region Check Room Conflict
+        /// <summary>
+        /// Check Room Conflict
+        /// </summary>
+        /// <param name="existingSchedules"></param>
+        /// <param name="roomId"></param>
+        /// <returns></returns>
+        private bool CheckRoomConflict(List<Schedule>? existingSchedules, string roomId)
 		{
 			return (existingSchedules != null &&
 				existingSchedules.Any(es =>
 										es.RoomId == roomId));
 		}
-	}
-}
+        #endregion
+
+        #region Get Class SubjectIds by Student Id
+		private List<int> getClassSubjectIdsByStudentId(string id)
+			{
+			try
+				{
+                var response = _httpClient.GetAsync($"https://localhost:7067/api/StudentInClass/ClassSubject/{id}").Result;
+                var apiResponse = response.Content.ReadFromJsonAsync<APIResponse>().Result;
+                if(apiResponse == null || !apiResponse.IsSuccess)
+                    {
+                    return null;
+                    }
+                var dataResponse = apiResponse.Result as JsonElement?;
+                if(dataResponse == null)
+                    {
+                    return null;
+                    }
+                var options = new JsonSerializerOptions
+                    {
+                    PropertyNameCaseInsensitive = true
+                    };
+                return dataResponse.Value.Deserialize<List<int>>(options);
+                }
+            catch(Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
+        #region Get Schedule for Student
+        //public List<ClassScheduleDTO> GetClassSchedulesByStudentId(string studentId)
+        //    {
+        //    // Bước 1: Lấy ClassSubjectIds từ studentId
+        //    var classSubjectIds = getClassSubjectIdsByStudentId(studentId);
+
+        //    // Bước 2: Lọc ClassSchedules dựa trên ClassSubjectIds
+        //    return _scheduleRepository.GetClassSchedulesByClassSubjectIds(classSubjectIds);
+        //    }
+
+        public APIResponse GetClassSchedulesByStudentId(string studentId)
+            {
+            APIResponse aPIResponse = new APIResponse();
+			var classSubjectIds = getClassSubjectIdsByStudentId(studentId);
+            aPIResponse.Result = _scheduleRepository.GetClassSchedulesByClassSubjectIds(classSubjectIds);
+            return aPIResponse;
+            }
+        #endregion
+        }
+    }

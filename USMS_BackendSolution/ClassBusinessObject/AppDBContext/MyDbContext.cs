@@ -25,6 +25,7 @@ namespace ClassBusinessObject.AppDBContext
         public virtual DbSet<ClassSubject> ClassSubject { get; set; }
         public virtual DbSet<Semester> Semester { get; set; }
         public virtual DbSet<Subject> Subject { get; set; }
+        public virtual DbSet<StudentInClass> StudentInClass { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
             modelBuilder.Entity<Subject>().HasData(
@@ -51,6 +52,7 @@ namespace ClassBusinessObject.AppDBContext
      new Semester { SemesterId = "SU25", SemesterName = "Summer2025", StartDate = new DateOnly(2025, 05, 08), EndDate = new DateOnly(2025, 08, 11), Status = 1 },
      new Semester { SemesterId = "FA25", SemesterName = "Fall2025", StartDate = new DateOnly(2025, 09, 05), EndDate = new DateOnly(2025, 11, 25), Status = 1 }
     );
+
    //         modelBuilder.Entity<ClassSubject>().HasData(
    //new ClassSubject { ClassSubjectId = 1, ClassId = "SE1702", SubjectId = "PRM392", SemesterId = "SP25", MajorId = "IT", Term = 1, CreatedAt = new DateTime(2024, 11, 25), Status = 1 },
    //new ClassSubject { ClassSubjectId = 2, ClassId = "SE1702", SubjectId = "PRN231", SemesterId = "SP25", MajorId = "IT", Term = 1, CreatedAt = new DateTime(2024, 11, 25), Status = 1 },

@@ -210,8 +210,24 @@
       ],
       "UpstreamPathTemplate": "/api/ClassSubject",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
-    }
+    },
     /* Class Subject API End */
+
+    /* Student In Class API Start */
+    {
+      "DownstreamPathTemplate": "/api/StudentInClass/ClassSubject/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7286
+        }
+      ],
+      "UpstreamPathTemplate": "/api/StudentInClass/ClassSubject/{id}",
+      "UpstreamHttpMethod": [ "GET" ]
+    }
+    /* Student In Class API End */
+
 
   ]
 
