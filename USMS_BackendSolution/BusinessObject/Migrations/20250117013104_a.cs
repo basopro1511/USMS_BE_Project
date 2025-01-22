@@ -14,6 +14,20 @@ namespace BusinessObject.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Customer",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "NVARCHAR(8)", maxLength: 8, nullable: false),
+                    Name = table.Column<string>(type: "NVARCHAR(30)", maxLength: 30, nullable: false),
+                    Phone = table.Column<string>(type: "NVARCHAR(MAX)", maxLength: 11, nullable: false),
+                    Address = table.Column<string>(type: "NVARCHAR(MAX)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Customer", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Major",
                 columns: table => new
                 {
@@ -53,7 +67,6 @@ namespace BusinessObject.Migrations
                     DateOfBirth = table.Column<DateOnly>(type: "date", nullable: false),
                     UserAvartar = table.Column<string>(type: "NVARCHAR(MAX)", nullable: true),
                     RoleId = table.Column<int>(type: "int", nullable: false),
-                    MajorId = table.Column<string>(type: "NVARCHAR(4)", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -62,11 +75,6 @@ namespace BusinessObject.Migrations
                 {
                     table.PrimaryKey("PK_User", x => x.UserId);
                     table.ForeignKey(
-                        name: "FK_User_Major_MajorId",
-                        column: x => x.MajorId,
-                        principalTable: "Major",
-                        principalColumn: "MajorId");
-                    table.ForeignKey(
                         name: "FK_User_Role_RoleId",
                         column: x => x.RoleId,
                         principalTable: "Role",
@@ -74,12 +82,35 @@ namespace BusinessObject.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.UpdateData(
+            migrationBuilder.CreateTable(
+                name: "Student",
+                columns: table => new
+                {
+                    StudentId = table.Column<string>(type: "NVARCHAR(8)", maxLength: 8, nullable: false),
+                    MajorId = table.Column<string>(type: "NVARCHAR(4)", maxLength: 4, nullable: false),
+                    Term = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Student", x => x.StudentId);
+                    table.ForeignKey(
+                        name: "FK_Student_Major_MajorId",
+                        column: x => x.MajorId,
+                        principalTable: "Major",
+                        principalColumn: "MajorId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Student_User_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "User",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
                 table: "Customer",
-                keyColumn: "Id",
-                keyValue: "CE170288",
-                column: "Name",
-                value: "Nguyễn Quốc Hoàng");
+                columns: new[] { "Id", "Address", "Name", "Phone" },
+                values: new object[] { "CE170288", "Phong Điền, Cần Thơ", "Nguyễn Quốc Hoàng", "0333744591" });
 
             migrationBuilder.InsertData(
                 table: "Major",
@@ -96,25 +127,37 @@ namespace BusinessObject.Migrations
                 values: new object[,]
                 {
                     { 1, "Admin" },
-                    { 2, "Academic Staff" },
+                    { 2, "AcademicStaff" },
                     { 3, "Chairperson" },
-                    { 4, "Lecture" },
+                    { 4, "Teacher" },
                     { 5, "Student" }
                 });
 
             migrationBuilder.InsertData(
                 table: "User",
-                columns: new[] { "UserId", "CreatedAt", "DateOfBirth", "Email", "FirstName", "LastName", "MajorId", "MiddleName", "PasswordHash", "PersonalEmail", "PhoneNumber", "RoleId", "Status", "UpdatedAt", "UserAvartar" },
+                columns: new[] { "UserId", "CreatedAt", "DateOfBirth", "Email", "FirstName", "LastName", "MiddleName", "PasswordHash", "PersonalEmail", "PhoneNumber", "RoleId", "Status", "UpdatedAt", "UserAvartar" },
                 values: new object[,]
                 {
-                    { "AD0001", new DateTime(2025, 1, 8, 20, 39, 32, 196, DateTimeKind.Local).AddTicks(1549), new DateOnly(2000, 9, 30), "admin0001@university.edu", "Nguyen", "Admin", null, "Tuan", "hashedpassword3", "admin0001@gmail.edu", "0123456780", 1, 1, new DateTime(2025, 1, 8, 20, 39, 32, 196, DateTimeKind.Local).AddTicks(1549), "123" },
-                    { "IB0001", new DateTime(2025, 1, 8, 20, 39, 32, 196, DateTimeKind.Local).AddTicks(1545), new DateOnly(2002, 9, 30), "BTTIB0001.b@university.edu", "Tran", "B", "IB", "Thi", "hashedpassword2", "thi.b@gmail.com", "0987654321", 5, 1, new DateTime(2025, 1, 8, 20, 39, 32, 196, DateTimeKind.Local).AddTicks(1546), "123" },
-                    { "IT0001", new DateTime(2025, 1, 8, 20, 39, 32, 196, DateTimeKind.Local).AddTicks(1529), new DateOnly(2002, 4, 30), "ANVIT0001.a@university.edu", "Nguyen", "A", "IT", "Van", "hashedpassword1", "van.a@gmail.com", "0123456789", 5, 1, new DateTime(2025, 1, 8, 20, 39, 32, 196, DateTimeKind.Local).AddTicks(1543), "123" }
+                    { "IB0001", new DateTime(2025, 1, 17, 8, 31, 2, 319, DateTimeKind.Local).AddTicks(6041), new DateOnly(1990, 1, 1), "ThangNTIB0001@gmail.com", "Thắng", "Nguyễn", "Toàn", "123", "nqh@gmail.com", "0333744591", 5, 1, new DateTime(2025, 1, 17, 8, 31, 2, 319, DateTimeKind.Local).AddTicks(6042), "123" },
+                    { "IB0002", new DateTime(2025, 1, 17, 8, 31, 2, 319, DateTimeKind.Local).AddTicks(6044), new DateOnly(1990, 1, 1), "AnLDIB0002@gmail.com", "Ân", "Lê", "Đức", "123", "nqh@gmail.com", "0333744591", 5, 1, new DateTime(2025, 1, 17, 8, 31, 2, 319, DateTimeKind.Local).AddTicks(6044), "123" },
+                    { "IT0001", new DateTime(2025, 1, 17, 8, 31, 2, 319, DateTimeKind.Local).AddTicks(6022), new DateOnly(1990, 1, 1), "HoangNQIT0001@gmail.com", "Hoàng", "Nguyễn", "Quốc", "123", "nqh@gmail.com", "0333744591", 5, 1, new DateTime(2025, 1, 17, 8, 31, 2, 319, DateTimeKind.Local).AddTicks(6035), "123" },
+                    { "IT0002", new DateTime(2025, 1, 17, 8, 31, 2, 319, DateTimeKind.Local).AddTicks(6038), new DateOnly(1990, 1, 1), "ThinhNTIT0002@gmail.com", "Thịnh", "Nguyễn", "Tuấn", "123", "nqh@gmail.com", "0333744591", 5, 1, new DateTime(2025, 1, 17, 8, 31, 2, 319, DateTimeKind.Local).AddTicks(6039), "123" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Student",
+                columns: new[] { "StudentId", "MajorId", "Term" },
+                values: new object[,]
+                {
+                    { "IB0001", "IB", 4 },
+                    { "IB0002", "IB", 5 },
+                    { "IT0001", "IT", 2 },
+                    { "IT0002", "IT", 3 }
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_User_MajorId",
-                table: "User",
+                name: "IX_Student_MajorId",
+                table: "Student",
                 column: "MajorId");
 
             migrationBuilder.CreateIndex(
@@ -127,20 +170,19 @@ namespace BusinessObject.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "User");
+                name: "Customer");
+
+            migrationBuilder.DropTable(
+                name: "Student");
 
             migrationBuilder.DropTable(
                 name: "Major");
 
             migrationBuilder.DropTable(
-                name: "Role");
+                name: "User");
 
-            migrationBuilder.UpdateData(
-                table: "Customer",
-                keyColumn: "Id",
-                keyValue: "CE170288",
-                column: "Name",
-                value: "Nguyễn Quốcc Hoàng");
+            migrationBuilder.DropTable(
+                name: "Role");
         }
     }
 }

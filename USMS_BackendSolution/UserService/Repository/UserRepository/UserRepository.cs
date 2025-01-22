@@ -23,9 +23,8 @@ namespace UserService.Repository.UserRepository
             {
                 using (var dbContext = new MyDbContext())
                 {
-                    List<User> users = dbContext.Users
+                    List<User> users = dbContext.User
                         .Include(u => u.Role)
-                        .Include(u => u.Major)
                         .ToList();
                     List<UserDTO> userDTOs = new List<UserDTO>();
                     foreach (var user in users)
@@ -33,7 +32,6 @@ namespace UserService.Repository.UserRepository
                         UserDTO userDTO = new UserDTO();
                         userDTO.CopyProperties(user);
                         userDTO.RoleName = user.Role?.RoleName;
-                        userDTO.MajorName = user.Major?.MajorName;
                         userDTOs.Add(userDTO);
                     }
                     return userDTOs;
@@ -77,7 +75,7 @@ namespace UserService.Repository.UserRepository
                 {
                     var user = new User();
                     user.CopyProperties(userDTO);
-                    dbContext.Users.Add(user);
+                    dbContext.User.Add(user);
                     dbContext.SaveChanges();
                 }
                 return true;
@@ -101,10 +99,6 @@ namespace UserService.Repository.UserRepository
                 using (var dbContext = new MyDbContext())
                 {
                     var existingUser = GetUserToUpdate(UpdateUserDTO.UserId);
-                    if (existingUser == null)
-                    {
-                        return false;
-                    }
                     existingUser.CopyProperties(UpdateUserDTO);
                     dbContext.Entry(existingUser).State = EntityState.Modified;
                     dbContext.SaveChanges();
@@ -128,7 +122,7 @@ namespace UserService.Repository.UserRepository
             {
                 using (var dbContext = new MyDbContext())
                 {
-                    var existingUser = dbContext.Users.FirstOrDefault(cs => cs.UserId == id);
+                    var existingUser = dbContext.User.FirstOrDefault(cs => cs.UserId == id);
                     return existingUser;
                 }
             }
@@ -153,7 +147,7 @@ namespace UserService.Repository.UserRepository
                     existingUser.Status = status;
                     using (var dbContext = new MyDbContext())
                     {
-                        dbContext.Users.Attach(existingUser);
+                        dbContext.User.Attach(existingUser);
                         dbContext.Entry(existingUser).State = EntityState.Modified;
                         dbContext.SaveChanges();
                     }

@@ -8,18 +8,24 @@ using System.Threading.Tasks;
 
 namespace BusinessObject.Models
 {
-    public class Major
+    public class Student
     {
         [Key]
         [Required]
+        [StringLength(8)]
+        [Column(TypeName = "NVARCHAR(8)")]
+        public string StudentId { get; set; }
+        [Required]
         [StringLength(4)]
         [Column(TypeName = "NVARCHAR(4)")]
+        [ForeignKey("Major")]
         public string MajorId { get; set; }
-        [Required]
-        [StringLength(100)]
-        [Column(TypeName = "NVARCHAR(100)")]
-        public string MajorName { get; set; }
-        public virtual ICollection<Student> Students { get; set; }
+        public Major Major { get; set; }
 
+        public int Term { get; set; }
+
+        public virtual User User { get; set; }
+
+       
     }
 }

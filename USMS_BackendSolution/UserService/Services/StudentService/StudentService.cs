@@ -1,0 +1,337 @@
+﻿using UserService.Repository.StudentRepository;
+using BusinessObject;
+using BusinessObject.ModelDTOs;
+using System.Text;
+using System.Security.Cryptography;
+using Microsoft.Extensions.Configuration.UserSecrets;
+namespace UserService.Services.StudentService
+{
+    public class StudentService
+    {
+        private readonly IStudentRepository _studentRepository;
+        public StudentService()
+        {
+            _studentRepository = new StudentRepository();
+        }
+
+        /// <summary>
+        /// Hashing password
+        /// </summary>
+        /// <param name="plainPassword"></param>
+        /// <returns></returns>
+        public string HashPassword(string plainPassword)
+        {
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] bytes = Encoding.UTF8.GetBytes(plainPassword);
+                byte[] hashBytes = sha256.ComputeHash(bytes);
+                return Convert.ToBase64String(hashBytes);
+            }
+        }
+
+        /// <summary>
+        /// Generate next UserId for students (with majorId) 
+        /// </summary>
+        /// <param name="majorId"></param>
+        /// <returns></returns>
+        public string GenerateNextStudentId(string majorId)
+        {
+            //Select a list of User with the same MajorId
+            var allStudents = _studentRepository.GetAllStudent();
+            var filteredStudents = allStudents.Where(s => s.UserId.StartsWith(majorId)).ToList();
+            if (filteredStudents.Count == 0)
+            {
+                return majorId + "0001";
+            }
+            //Get the max number in UserId of the list
+            int maxNumber = filteredStudents
+                .Select(s => int.Parse(s.UserId.Substring(majorId.Length)))
+                .Max();
+            int nextNumber = maxNumber + 1;
+            return majorId + nextNumber.ToString("D4"); // Format as MajorId_xxxx;
+        }
+
+        /// <summary>
+        /// generate email like the format of FPT Email
+        /// </summary>
+        /// <param name="first"></param>
+        /// <param name="mid"></param>
+        /// <param name="last"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public string GenerateEmail(string first, string mid, string last, string userId)
+        {
+            //Take the first letter of lastname
+            char firstCharacterLastName = last[0];
+            //Take the first letter of middlename
+            char firstCharacterMidName = mid[0];
+            return $"{first}{firstCharacterLastName}{firstCharacterMidName}{userId}@gmail.com";
+        }
+
+        /// <summary>
+        /// add new student
+        /// </summary>
+        /// <param name="addStudentDTO"></param>
+        /// <returns></returns>
+        public APIResponse AddStudent(AddStudentDTO addStudentDTO)
+        {
+            // Require MajorID for Student
+            if (string.IsNullOrEmpty(addStudentDTO.MajorId))
+            {
+                return new APIResponse
+                {
+                    IsSuccess = false,
+                    Message = "Vui lòng chọn chuyên ngành cho sinh viên."
+                };
+            }
+
+            // Validate Email
+            if (!IsValidEmail(addStudentDTO.PersonalEmail))
+            {
+                return new APIResponse
+                {
+                    IsSuccess = false,
+                    Message = "Sai định dạng email."
+                };
+            }
+            // Validate PhoneNumber
+            if (!IsValidPhoneNumber(addStudentDTO.PhoneNumber))
+            {
+                return new APIResponse
+                {
+                    IsSuccess = false,
+                    Message = "Sai định dạng số điện thoại."
+                };
+            }
+            string generatedUserId = GenerateNextStudentId(addStudentDTO.MajorId);
+            var studentDTO = new StudentDTO
+            {
+                UserId = generatedUserId,
+                FirstName = addStudentDTO.FirstName,
+                MiddleName = addStudentDTO.MiddleName,
+                LastName = addStudentDTO.LastName,
+                PasswordHash = HashPassword(addStudentDTO.PasswordHash),
+                PersonalEmail = addStudentDTO.PersonalEmail,
+                Email = GenerateEmail(addStudentDTO.FirstName, addStudentDTO.MiddleName, addStudentDTO.LastName, GenerateNextStudentId(addStudentDTO.MajorId)),
+                PhoneNumber = addStudentDTO.PhoneNumber,
+                UserAvartar = addStudentDTO.UserAvartar,
+                RoleId = 5,
+                MajorId = addStudentDTO.MajorId,
+                Term = addStudentDTO.Term,
+                Status = 1,
+                DateOfBirth = addStudentDTO.DateOfBirth,
+                CreatedAt = addStudentDTO.CreatedAt,
+                UpdatedAt = addStudentDTO.UpdatedAt,
+            };
+
+            StudentDTO existingUser = _studentRepository.GetStudentById(studentDTO.UserId);
+            if (existingUser != null)
+            {
+                return new APIResponse
+                {
+                    IsSuccess = false,
+                    Message = $" Sinh viên với mã: {GenerateNextStudentId(addStudentDTO.MajorId)} đã tồn tại. Vui lòng kiểm tra lại"
+                };
+            }
+            bool isAdded = _studentRepository.AddNewStudent(studentDTO);
+            if (isAdded)
+            {
+                return new APIResponse
+                {
+                    IsSuccess = true,
+                    Message = "Thêm sinh viên thành công."
+                };
+            }
+            return new APIResponse
+            {
+                IsSuccess = false,
+                Message = "Thêm sinh viên thất bại."
+            };
+        }
+        //Validate Email Format
+        private bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        //Validate Phonenumber Format
+        private bool IsValidPhoneNumber(string phoneNumber)
+        {
+            return phoneNumber.All(char.IsDigit) && phoneNumber.Length >= 10 && phoneNumber.Length <= 15 && phoneNumber.StartsWith("0");
+        }
+        /// <summary>
+        /// Get list all student
+        /// </summary>
+        /// <returns></returns>
+        public APIResponse GetAllStudent()
+        {
+            APIResponse aPIResponse = new APIResponse();
+            List<StudentDTO> students = _studentRepository.GetAllStudent();
+
+            if (students == null || students.Count == 0)
+            {
+                aPIResponse.IsSuccess = false;
+                aPIResponse.Message = "Không tìm thấy sinh viên nào.";
+            }
+            else
+            {
+                aPIResponse.IsSuccess = true;
+                aPIResponse.Result = students;
+            }
+
+            return aPIResponse;
+        }
+
+        /// <summary>
+        /// Get User by Id
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public APIResponse GetStudentById(string userId)
+        {
+            APIResponse aPIResponse = new APIResponse();
+            StudentDTO student= _studentRepository.GetStudentById(userId);
+            if (student == null)
+            {
+                aPIResponse.IsSuccess = false;
+                aPIResponse.Message = $"Không tìm thấy sinh viên với mã:{userId}.";
+            }
+            else
+            {
+                aPIResponse.IsSuccess = true;
+                aPIResponse.Result = student;
+            }
+            return aPIResponse;
+        }
+
+        /// <summary>
+        /// admin Update personal email and phone number for student
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="updateUser"></param>
+        /// <returns></returns>
+        public APIResponse UpdateStudent(string userId, UpdateStudentDTO updateStudent)
+        {
+            StudentDTO existingStudent = _studentRepository.GetStudentById(userId);
+            if (existingStudent == null)
+            {
+                return new APIResponse
+                {
+                    IsSuccess = false,
+                    Message = $"Không tìm thấy sinh viên với mã:{userId}."
+                };
+            }
+            if (!string.IsNullOrEmpty(updateStudent.PersonalEmail) && !IsValidEmail(updateStudent.PersonalEmail))
+            {
+                return new APIResponse
+                {
+                    IsSuccess = false,
+                    Message = "Định dạng email không hợp lệ."
+                };
+            }
+            if (!string.IsNullOrEmpty(updateStudent.PhoneNumber) && !IsValidPhoneNumber(updateStudent.PhoneNumber))
+            {
+                return new APIResponse
+                {
+                    IsSuccess = false,
+                    Message = "Định dạng số điện thoại không hợp lệ."
+                };
+            }
+            existingStudent.PersonalEmail = updateStudent.PersonalEmail ?? existingStudent.PersonalEmail;
+            existingStudent.PhoneNumber = updateStudent.PhoneNumber ?? existingStudent.PhoneNumber;
+            existingStudent.MajorId = updateStudent.MajorId ?? existingStudent.MajorId;
+            existingStudent.LastName = updateStudent.LastName ?? existingStudent.LastName;
+            existingStudent.MiddleName = updateStudent.MiddleName ?? existingStudent.MiddleName;
+            existingStudent.FirstName = updateStudent.FirstName ?? existingStudent.FirstName;
+            existingStudent.UserAvartar = updateStudent.UserAvartar ?? existingStudent.UserAvartar;
+            existingStudent.DateOfBirth = updateStudent.DateOfBirth;
+            existingStudent.Status = updateStudent.Status;
+            existingStudent.Term = updateStudent.Term;
+            existingStudent.UpdatedAt = DateTime.Now;
+            bool isUpdated = _studentRepository.UpdateStudent(existingStudent);
+            if (isUpdated)
+            {
+                return new APIResponse
+                {
+                    IsSuccess = true,
+                    Message = "Cập nhật sinh viên thành công."
+                };
+            }
+            return new APIResponse
+            {
+                IsSuccess = false,
+                Message = "Cập nhật sinh viên thất bại."
+            };
+        }
+
+        /// <summary>
+        /// Change status of a student
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        public APIResponse UpdateStudentStatus(string userId, int status)
+        {
+            APIResponse aPIResponse = new APIResponse();
+            // Validate status input
+            if (status < 0 || status > 3)
+            {
+                aPIResponse.IsSuccess = false;
+                aPIResponse.Message = "Trạng thái không hợp lệ. Vui lòng nhập từ 0 đến 3";
+                return aPIResponse;
+            }
+            StudentDTO user = _studentRepository.GetStudentById(userId);
+            // Check if the user exists
+            if (user == null)
+            {
+                aPIResponse.IsSuccess = false;
+                aPIResponse.Message = $"Không tìm thấy sinh viên với mã:{userId}.";
+                return aPIResponse;
+            }
+            // Check if the user is a student
+            if (user.RoleId != 5)
+            {
+                aPIResponse.IsSuccess = false;
+                aPIResponse.Message = "Chỉ có thể thay đổi trạng thái cho sinh viên.";
+                return aPIResponse;
+            }
+            // Update the student's status
+            bool isUpdated = _studentRepository.UpdateStudentStatus(userId, status);
+            if (isUpdated)
+            {
+                aPIResponse.IsSuccess = true;
+                // Provide the message based on the status value
+                switch (status)
+                {
+                    case 0:
+                        aPIResponse.Message = $"Vô hiệu hóa sinh viên với mã: {userId} thành công.";
+                        break;
+                    case 1:
+                        aPIResponse.Message = $"Đặt trạng thái học tiếp cho sinh viên với mã: {userId} thành công.";
+                        break;
+                    case 2:
+                        aPIResponse.Message = $"Đặt trạng thái bảo lưu cho sinh viên với mã: {userId} thành công.";
+                        break;
+                    case 3:
+                        aPIResponse.Message = $"Đặt trạng thái đã tốt nghiệp cho sinh viên với mã: {userId} thành công.";
+                        break;
+                }
+            }
+            else
+            {
+                aPIResponse.IsSuccess = false;
+                aPIResponse.Message = "Cập nhật trạng thái sinh viên thất bại.";
+            }
+            return aPIResponse;
+        }
+
+
+    }
+}

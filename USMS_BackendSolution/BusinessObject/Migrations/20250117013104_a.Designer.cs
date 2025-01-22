@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessObject.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20250108133932_a")]
+    [Migration("20250117013104_a")]
     partial class a
     {
         /// <inheritdoc />
@@ -113,7 +113,7 @@ namespace BusinessObject.Migrations
                         new
                         {
                             RoleId = 2,
-                            RoleName = "Academic Staff"
+                            RoleName = "AcademicStaff"
                         },
                         new
                         {
@@ -123,12 +123,59 @@ namespace BusinessObject.Migrations
                         new
                         {
                             RoleId = 4,
-                            RoleName = "Lecture"
+                            RoleName = "Teacher"
                         },
                         new
                         {
                             RoleId = 5,
                             RoleName = "Student"
+                        });
+                });
+
+            modelBuilder.Entity("BusinessObject.Models.Student", b =>
+                {
+                    b.Property<string>("StudentId")
+                        .HasMaxLength(8)
+                        .HasColumnType("NVARCHAR(8)");
+
+                    b.Property<string>("MajorId")
+                        .IsRequired()
+                        .HasMaxLength(4)
+                        .HasColumnType("NVARCHAR(4)");
+
+                    b.Property<int>("Term")
+                        .HasColumnType("int");
+
+                    b.HasKey("StudentId");
+
+                    b.HasIndex("MajorId");
+
+                    b.ToTable("Student");
+
+                    b.HasData(
+                        new
+                        {
+                            StudentId = "IT0001",
+                            MajorId = "IT",
+                            Term = 2
+                        },
+                        new
+                        {
+                            StudentId = "IT0002",
+                            MajorId = "IT",
+                            Term = 3
+                        },
+                        new
+                        {
+                            StudentId = "IB0001",
+                            MajorId = "IB",
+                            Term = 4
+                        },
+                        new
+                        {
+                            StudentId = "IB0002",
+                            MajorId = "IB",
+                            Term = 5
                         });
                 });
 
@@ -157,9 +204,6 @@ namespace BusinessObject.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("NVARCHAR(20)");
-
-                    b.Property<string>("MajorId")
-                        .HasColumnType("NVARCHAR(4)");
 
                     b.Property<string>("MiddleName")
                         .HasMaxLength(20)
@@ -194,8 +238,6 @@ namespace BusinessObject.Migrations
 
                     b.HasKey("UserId");
 
-                    b.HasIndex("MajorId");
-
                     b.HasIndex("RoleId");
 
                     b.ToTable("User");
@@ -204,78 +246,117 @@ namespace BusinessObject.Migrations
                         new
                         {
                             UserId = "IT0001",
-                            CreatedAt = new DateTime(2025, 1, 8, 20, 39, 32, 196, DateTimeKind.Local).AddTicks(1529),
-                            DateOfBirth = new DateOnly(2002, 4, 30),
-                            Email = "ANVIT0001.a@university.edu",
-                            FirstName = "Nguyen",
-                            LastName = "A",
-                            MajorId = "IT",
-                            MiddleName = "Van",
-                            PasswordHash = "hashedpassword1",
-                            PersonalEmail = "van.a@gmail.com",
-                            PhoneNumber = "0123456789",
+                            CreatedAt = new DateTime(2025, 1, 17, 8, 31, 2, 319, DateTimeKind.Local).AddTicks(6022),
+                            DateOfBirth = new DateOnly(1990, 1, 1),
+                            Email = "HoangNQIT0001@gmail.com",
+                            FirstName = "Hoàng",
+                            LastName = "Nguyễn",
+                            MiddleName = "Quốc",
+                            PasswordHash = "123",
+                            PersonalEmail = "nqh@gmail.com",
+                            PhoneNumber = "0333744591",
                             RoleId = 5,
                             Status = 1,
-                            UpdatedAt = new DateTime(2025, 1, 8, 20, 39, 32, 196, DateTimeKind.Local).AddTicks(1543),
+                            UpdatedAt = new DateTime(2025, 1, 17, 8, 31, 2, 319, DateTimeKind.Local).AddTicks(6035),
+                            UserAvartar = "123"
+                        },
+                        new
+                        {
+                            UserId = "IT0002",
+                            CreatedAt = new DateTime(2025, 1, 17, 8, 31, 2, 319, DateTimeKind.Local).AddTicks(6038),
+                            DateOfBirth = new DateOnly(1990, 1, 1),
+                            Email = "ThinhNTIT0002@gmail.com",
+                            FirstName = "Thịnh",
+                            LastName = "Nguyễn",
+                            MiddleName = "Tuấn",
+                            PasswordHash = "123",
+                            PersonalEmail = "nqh@gmail.com",
+                            PhoneNumber = "0333744591",
+                            RoleId = 5,
+                            Status = 1,
+                            UpdatedAt = new DateTime(2025, 1, 17, 8, 31, 2, 319, DateTimeKind.Local).AddTicks(6039),
                             UserAvartar = "123"
                         },
                         new
                         {
                             UserId = "IB0001",
-                            CreatedAt = new DateTime(2025, 1, 8, 20, 39, 32, 196, DateTimeKind.Local).AddTicks(1545),
-                            DateOfBirth = new DateOnly(2002, 9, 30),
-                            Email = "BTTIB0001.b@university.edu",
-                            FirstName = "Tran",
-                            LastName = "B",
-                            MajorId = "IB",
-                            MiddleName = "Thi",
-                            PasswordHash = "hashedpassword2",
-                            PersonalEmail = "thi.b@gmail.com",
-                            PhoneNumber = "0987654321",
+                            CreatedAt = new DateTime(2025, 1, 17, 8, 31, 2, 319, DateTimeKind.Local).AddTicks(6041),
+                            DateOfBirth = new DateOnly(1990, 1, 1),
+                            Email = "ThangNTIB0001@gmail.com",
+                            FirstName = "Thắng",
+                            LastName = "Nguyễn",
+                            MiddleName = "Toàn",
+                            PasswordHash = "123",
+                            PersonalEmail = "nqh@gmail.com",
+                            PhoneNumber = "0333744591",
                             RoleId = 5,
                             Status = 1,
-                            UpdatedAt = new DateTime(2025, 1, 8, 20, 39, 32, 196, DateTimeKind.Local).AddTicks(1546),
+                            UpdatedAt = new DateTime(2025, 1, 17, 8, 31, 2, 319, DateTimeKind.Local).AddTicks(6042),
                             UserAvartar = "123"
                         },
                         new
                         {
-                            UserId = "AD0001",
-                            CreatedAt = new DateTime(2025, 1, 8, 20, 39, 32, 196, DateTimeKind.Local).AddTicks(1549),
-                            DateOfBirth = new DateOnly(2000, 9, 30),
-                            Email = "admin0001@university.edu",
-                            FirstName = "Nguyen",
-                            LastName = "Admin",
-                            MiddleName = "Tuan",
-                            PasswordHash = "hashedpassword3",
-                            PersonalEmail = "admin0001@gmail.edu",
-                            PhoneNumber = "0123456780",
-                            RoleId = 1,
+                            UserId = "IB0002",
+                            CreatedAt = new DateTime(2025, 1, 17, 8, 31, 2, 319, DateTimeKind.Local).AddTicks(6044),
+                            DateOfBirth = new DateOnly(1990, 1, 1),
+                            Email = "AnLDIB0002@gmail.com",
+                            FirstName = "Ân",
+                            LastName = "Lê",
+                            MiddleName = "Đức",
+                            PasswordHash = "123",
+                            PersonalEmail = "nqh@gmail.com",
+                            PhoneNumber = "0333744591",
+                            RoleId = 5,
                             Status = 1,
-                            UpdatedAt = new DateTime(2025, 1, 8, 20, 39, 32, 196, DateTimeKind.Local).AddTicks(1549),
+                            UpdatedAt = new DateTime(2025, 1, 17, 8, 31, 2, 319, DateTimeKind.Local).AddTicks(6044),
                             UserAvartar = "123"
                         });
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.User", b =>
+            modelBuilder.Entity("BusinessObject.Models.Student", b =>
                 {
                     b.HasOne("BusinessObject.Models.Major", "Major")
-                        .WithMany()
-                        .HasForeignKey("MajorId");
+                        .WithMany("Students")
+                        .HasForeignKey("MajorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
+                    b.HasOne("BusinessObject.Models.User", "User")
+                        .WithOne("Student")
+                        .HasForeignKey("BusinessObject.Models.Student", "StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Major");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BusinessObject.Models.User", b =>
+                {
                     b.HasOne("BusinessObject.Models.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Major");
-
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("BusinessObject.Models.Major", b =>
+                {
+                    b.Navigation("Students");
                 });
 
             modelBuilder.Entity("BusinessObject.Models.Role", b =>
                 {
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("BusinessObject.Models.User", b =>
+                {
+                    b.Navigation("Student")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

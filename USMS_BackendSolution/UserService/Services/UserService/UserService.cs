@@ -12,6 +12,7 @@ namespace UserService.Services.UserService
 {
     public class UserService
     {
+     
         private readonly IUserRepository _userRepository;
 
         public UserService()
@@ -110,7 +111,7 @@ namespace UserService.Services.UserService
                 return new APIResponse
                 {
                     IsSuccess = false,
-                    Message = "Invalid RoleId."
+                    Message = "RoleId không hợp lệ."
                 };
             }
             // Require MajorID for Student
@@ -119,16 +120,17 @@ namespace UserService.Services.UserService
                 return new APIResponse
                 {
                     IsSuccess = false,
-                    Message = "MajorId is required for RoleId = 5 (Student)."
+                    Message = "Vui lòng chọn chuyên ngành cho sinh viên."
                 };
             }
+         
             // Validate Email
             if (!IsValidEmail(addUserDTO.PersonalEmail))
             {
                 return new APIResponse
                 {
                     IsSuccess = false,
-                    Message = "Invalid email format."
+                    Message = "Sai định dạng email."
                 };
             }
             // Validate PhoneNumber
@@ -137,7 +139,7 @@ namespace UserService.Services.UserService
                 return new APIResponse
                 {
                     IsSuccess = false,
-                    Message = "Invalid phone number format."
+                    Message = "Sai định dạng số điện thoại."
                 };
             }
             string genUserId = addUserDTO.RoleId == 5 ? GenerateNextUserId(addUserDTO.MajorId) : GenerateNextUserIdWithoutMajor(addUserDTO.RoleId);
@@ -162,7 +164,7 @@ namespace UserService.Services.UserService
                 return new APIResponse
                 {
                     IsSuccess = false,
-                    Message = "User with the given UserId already exists."
+                    Message = $" Sinh viên với mã: {genUserId} đã tồn tại. Vui lòng kiểm tra lại"
                 };
             }
             bool isAdded = _userRepository.AddNewUser(userDTO);
@@ -171,13 +173,13 @@ namespace UserService.Services.UserService
                 return new APIResponse
                 {
                     IsSuccess = true,
-                    Message = "User added successfully."
+                    Message = "Thêm sinh viên thành công."
                 };
             }
             return new APIResponse
             {
                 IsSuccess = false,
-                Message = "Failed to add User."
+                Message = "Thêm sinh viên thất bại."
             };
         }
         //Validate Email Format
@@ -209,7 +211,7 @@ namespace UserService.Services.UserService
             if (users == null || users.Count == 0)
             {
                 aPIResponse.IsSuccess = false;
-                aPIResponse.Message = "No users found.";
+                aPIResponse.Message = "Không tìm thấy người dùng nào.";
             }
             else
             {
@@ -232,7 +234,7 @@ namespace UserService.Services.UserService
                 return new APIResponse
                 {
                     IsSuccess = false,
-                    Message = "User not found."
+                    Message = "Không tìm thấy người dùng."
                 };
             }
             if (!string.IsNullOrEmpty(updateUser.PersonalEmail) && !IsValidEmail(updateUser.PersonalEmail))
@@ -240,7 +242,7 @@ namespace UserService.Services.UserService
                 return new APIResponse
                 {
                     IsSuccess = false,
-                    Message = "Invalid email format."
+                    Message = "Định dạng email không hợp lệ."
                 };
             }
             if (!string.IsNullOrEmpty(updateUser.PhoneNumber) && !IsValidPhoneNumber(updateUser.PhoneNumber))
@@ -248,7 +250,7 @@ namespace UserService.Services.UserService
                 return new APIResponse
                 {
                     IsSuccess = false,
-                    Message = "Invalid phone number format."
+                    Message = "Định dạng số điện thoại không hợp lệ."
                 };
             }
             existingUser.PersonalEmail = updateUser.PersonalEmail ?? existingUser.PersonalEmail;
@@ -259,13 +261,13 @@ namespace UserService.Services.UserService
                 return new APIResponse
                 {
                     IsSuccess = true,
-                    Message = "User updated successfully."
+                    Message = "Cập nhật người dùng thành công."
                 };
             }
             return new APIResponse
             {
                 IsSuccess = false,
-                Message = "Failed to update User."
+                Message = "Cập nhật người dùng thất bại."
             };
         }
         /// <summary>
@@ -280,7 +282,7 @@ namespace UserService.Services.UserService
             if (user == null)
             {
                 aPIResponse.IsSuccess = false;
-                aPIResponse.Message = "User not found.";
+                aPIResponse.Message = $"Không tìm thấy người dùng với mã:{userId}.";
             }
             else
             {
@@ -302,7 +304,7 @@ namespace UserService.Services.UserService
             if (status < 0 || status > 3)
             {
                 aPIResponse.IsSuccess = false;
-                aPIResponse.Message = "Invalid status. Status must be between 0 and 3.";
+                aPIResponse.Message = "Trạng thái không hợp lệ. Vui lòng nhập từ 0 đến 3";
                 return aPIResponse;
             }
             UserDTO user = _userRepository.GetUserById(userId);
@@ -310,14 +312,14 @@ namespace UserService.Services.UserService
             if (user == null)
             {
                 aPIResponse.IsSuccess = false;
-                aPIResponse.Message = "User not found.";
+                aPIResponse.Message = $"Không tìm thấy sinh viên với mã:{userId}.";
                 return aPIResponse;
             }
             // Check if the user is a student
             if (user.RoleId != 5)
             {
                 aPIResponse.IsSuccess = false;
-                aPIResponse.Message = "Only students can have this status changed.";
+                aPIResponse.Message = "Chỉ có thể thay đổi trạng thái cho sinh viên.";
                 return aPIResponse;
             }
             // Update the student's status
@@ -327,25 +329,25 @@ namespace UserService.Services.UserService
                 aPIResponse.IsSuccess = true;
                 // Provide the message based on the status value
                 switch (status)
-                {
+                { 
                     case 0:
-                        aPIResponse.Message = "Disable student successfully.";
+                        aPIResponse.Message = "Vô hiệu hóa sinh viên thành công.";
                         break;
                     case 1:
-                        aPIResponse.Message = "Set student on schedule successfully.";
+                        aPIResponse.Message = $"Đặt trạng thái học tiếp cho sinh viên với mã: {userId} thành công.";
                         break;
                     case 2:
-                        aPIResponse.Message = "Set student deferment successfully.";
+                        aPIResponse.Message = $"Đặt trạng thái bảo lưu cho sinh viên với mã: {userId} thành công.";
                         break;
                     case 3:
-                        aPIResponse.Message = "Set student graduated successfully.";
+                        aPIResponse.Message = $"Đặt trạng thái đã tốt nghiệp cho sinh viên với mã: {userId} thành công.";
                         break;
                 }
             }
             else
             {
                 aPIResponse.IsSuccess = false;
-                aPIResponse.Message = "Failed to update student status.";
+                aPIResponse.Message = "Cập nhật trạng thái sinh viên thất bại.";
             }
             return aPIResponse;
         }
@@ -364,7 +366,7 @@ namespace UserService.Services.UserService
                 return new APIResponse
                 {
                     IsSuccess = false,
-                    Message = "User not found."
+                    Message = $"Không tìm thấy người dùng với mã:{userId}."
                 };
             }
             // Check valid Email
@@ -373,7 +375,7 @@ namespace UserService.Services.UserService
                 return new APIResponse
                 {
                     IsSuccess = false,
-                    Message = "Invalid email format."
+                    Message = "Sai định dạng email."
                 };
             }
             // Check valid PhoneNumber
@@ -382,7 +384,7 @@ namespace UserService.Services.UserService
                 return new APIResponse
                 {
                     IsSuccess = false,
-                    Message = "Invalid phone number format."
+                    Message = "Sai định dạng số điện thoại."
                 };
             }
             existingUser.FirstName = updateInfor.FirstName ?? existingUser.FirstName;
@@ -397,13 +399,13 @@ namespace UserService.Services.UserService
                 return new APIResponse
                 {
                     IsSuccess = true,
-                    Message = "User updated successfully."
+                    Message = "Cập nhật thông tin thành công."
                 };
             }
             return new APIResponse
             {
                 IsSuccess = false,
-                Message = "Failed to update User."
+                Message = "Cập nhật thông tin thất bại."
             };
         }
     }
