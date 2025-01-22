@@ -12,11 +12,9 @@ namespace BusinessObject.Models
     {
         [Key]
         [Required]
-        [StringLength(4)]
         [Column(TypeName = "NVARCHAR(4)")]
         public string MajorId { get; set; }
         [Required]
-        [StringLength(100)]
         [Column(TypeName = "NVARCHAR(100)")]
         public string MajorName { get; set; }
         public virtual ICollection<Student> Students { get; set; }
