@@ -14,7 +14,6 @@ namespace BusinessObject.Models
         [Key]
         [Column(TypeName = "NVARCHAR(8)")]
         public string UserId { get; set; }
-
         [Column(TypeName = "NVARCHAR(20)")]
         [Required]
         public string FirstName { get; set; }
@@ -41,13 +40,15 @@ namespace BusinessObject.Models
         public string? UserAvartar { get; set; }
         [ForeignKey("Role")]
         public int RoleId { get; set; }
-        public Role Role { get; set; }
+
         [ForeignKey("Major")]
         public string? MajorId { get; set; }
-        public Major Major { get; set; }
-        [Column(TypeName = "INT"]
+
+        [Column(TypeName = "INT")]
         public int Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public Role Role { get; set; }
+        public Major Major { get; set; }
         }
 }

@@ -1,6 +1,5 @@
 using BusinessObject.AppDBContext;
 using Core;
-using Services.CustomerService;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

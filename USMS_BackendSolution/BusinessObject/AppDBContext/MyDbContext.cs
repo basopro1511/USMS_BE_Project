@@ -21,25 +21,14 @@ namespace BusinessObject.AppDBContext
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             IConfigurationRoot configuration = builder.Build();
             optionsBuilder.UseSqlServer(configuration.GetConnectionString("HoangConnection"));
-            optionsBuilder.UseSqlServer(configuration.GetConnectionString("ThinhConnection"));
         }
         public virtual DbSet<Customer> Customer { get; set; }
         public virtual DbSet<User> User { get; set; }
-        public virtual DbSet<Student> Student{ get; set; }
+        public virtual DbSet<Student> Student { get; set; }
 
         protected override void OnModelCreating(ModelBuilder optionsBuilder)
         {
             base.OnModelCreating(optionsBuilder);
-
-          
-            optionsBuilder.Entity<User>()
-                .HasOne(u => u.Student) 
-                .WithOne(s => s.User)   
-                .HasForeignKey<Student>(s => s.StudentId);
-
-            optionsBuilder.Entity<Customer>().HasData(
-             new Customer { Id = "CE170288", Name = "Nguyễn Quốc Hoàng", Phone="0333744591", Address = "Phong Điền, Cần Thơ"}
-            );
             optionsBuilder.Entity<User>().HasData(
             new User { UserId = "IT0001", FirstName = "Hoàng", MiddleName="Quốc", LastName="Nguyễn", PhoneNumber = "0333744591", PasswordHash  = "123", Email="HoangNQIT0001@gmail.com", PersonalEmail="nqh@gmail.com", RoleId=5, UserAvartar="123", DateOfBirth = new DateOnly(1990, 1, 1), Status = 1, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now},
             new User { UserId = "IT0002", FirstName = "Thịnh", MiddleName = "Tuấn", LastName = "Nguyễn", PhoneNumber = "0333744591", PasswordHash = "123", Email = "ThinhNTIT0002@gmail.com", PersonalEmail = "nqh@gmail.com", RoleId = 5, UserAvartar = "123", DateOfBirth = new DateOnly(1990, 1, 1), Status = 1, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
