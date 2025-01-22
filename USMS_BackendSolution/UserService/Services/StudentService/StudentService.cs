@@ -13,7 +13,7 @@ namespace UserService.Services.StudentService
         {
             _studentRepository = new StudentRepository();
         }
-
+        #region HashPassword
         /// <summary>
         /// Hashing password
         /// </summary>
@@ -28,7 +28,9 @@ namespace UserService.Services.StudentService
                 return Convert.ToBase64String(hashBytes);
             }
         }
+        #endregion
 
+        #region Generate Next Student Id
         /// <summary>
         /// Generate next UserId for students (with majorId) 
         /// </summary>
@@ -50,7 +52,9 @@ namespace UserService.Services.StudentService
             int nextNumber = maxNumber + 1;
             return majorId + nextNumber.ToString("D4"); // Format as MajorId_xxxx;
         }
+        #endregion
 
+        #region Generate Email
         /// <summary>
         /// generate email like the format of FPT Email
         /// </summary>
@@ -67,7 +71,9 @@ namespace UserService.Services.StudentService
             char firstCharacterMidName = mid[0];
             return $"{first}{firstCharacterLastName}{firstCharacterMidName}{userId}@gmail.com";
         }
+        #endregion
 
+        #region Add Student
         /// <summary>
         /// add new student
         /// </summary>
@@ -84,7 +90,6 @@ namespace UserService.Services.StudentService
                     Message = "Vui lòng chọn chuyên ngành cho sinh viên."
                 };
             }
-
             // Validate Email
             if (!IsValidEmail(addStudentDTO.PersonalEmail))
             {
@@ -166,6 +171,9 @@ namespace UserService.Services.StudentService
         {
             return phoneNumber.All(char.IsDigit) && phoneNumber.Length >= 10 && phoneNumber.Length <= 15 && phoneNumber.StartsWith("0");
         }
+        #endregion
+
+        #region Get All Student
         /// <summary>
         /// Get list all student
         /// </summary>
@@ -188,6 +196,8 @@ namespace UserService.Services.StudentService
 
             return aPIResponse;
         }
+        #endregion
+
 
         /// <summary>
         /// Get User by Id
@@ -197,7 +207,7 @@ namespace UserService.Services.StudentService
         public APIResponse GetStudentById(string userId)
         {
             APIResponse aPIResponse = new APIResponse();
-            StudentDTO student= _studentRepository.GetStudentById(userId);
+            StudentDTO student = _studentRepository.GetStudentById(userId);
             if (student == null)
             {
                 aPIResponse.IsSuccess = false;
@@ -270,7 +280,7 @@ namespace UserService.Services.StudentService
                 Message = "Cập nhật sinh viên thất bại."
             };
         }
-
+        #region UpdateStudentStatus
         /// <summary>
         /// Change status of a student
         /// </summary>
@@ -280,28 +290,27 @@ namespace UserService.Services.StudentService
         public APIResponse UpdateStudentStatus(string userId, int status)
         {
             APIResponse aPIResponse = new APIResponse();
-            // Validate status input
-            if (status < 0 || status > 3)
-            {
-                aPIResponse.IsSuccess = false;
-                aPIResponse.Message = "Trạng thái không hợp lệ. Vui lòng nhập từ 0 đến 3";
-                return aPIResponse;
-            }
+
             StudentDTO user = _studentRepository.GetStudentById(userId);
-            // Check if the user exists
-            if (user == null)
+            #region validation cua Update
+            var validations = new List<(bool condition, string errorMessage)>
+   {
+         (status < 0 || status > 3, "Trạng thái không hợp lệ. Vui lòng nhập từ 0 đến 3"),
+         (user == null , $"Không tìm thấy sinh viên với mã:{userId}."),
+         (user.RoleId != 5, "Chỉ có thể thay đổi trạng thái cho sinh viên."),
+   };
+            foreach (var validation in validations)
             {
-                aPIResponse.IsSuccess = false;
-                aPIResponse.Message = $"Không tìm thấy sinh viên với mã:{userId}.";
-                return aPIResponse;
+                if (validation.condition)
+                {
+                    return new APIResponse
+                    {
+                        IsSuccess = false,
+                        Message = validation.errorMessage
+                    };
+                }
             }
-            // Check if the user is a student
-            if (user.RoleId != 5)
-            {
-                aPIResponse.IsSuccess = false;
-                aPIResponse.Message = "Chỉ có thể thay đổi trạng thái cho sinh viên.";
-                return aPIResponse;
-            }
+            #endregion
             // Update the student's status
             bool isUpdated = _studentRepository.UpdateStudentStatus(userId, status);
             if (isUpdated)
@@ -331,7 +340,6 @@ namespace UserService.Services.StudentService
             }
             return aPIResponse;
         }
-
-
+        #endregion
     }
 }
