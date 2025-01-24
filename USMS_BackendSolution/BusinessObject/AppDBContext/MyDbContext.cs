@@ -20,6 +20,7 @@ namespace BusinessObject.AppDBContext
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             IConfigurationRoot configuration = builder.Build();
             optionsBuilder.UseSqlServer(configuration.GetConnectionString("HoangConnection"));
+            optionsBuilder.UseSqlServer(configuration.GetConnectionString("ThinhConnection"));
         }
         public virtual DbSet<User> User { get; set; }
         public virtual DbSet<Role> Role { get; set; }
@@ -50,13 +51,13 @@ namespace BusinessObject.AppDBContext
                  LastName = "Hoàng",
                  MajorId = "IT",
                  PasswordHash = "123456",
-                 Email = "HoangNQCE170288@fpt.edu.vn"
-             ,
+                 Email = "HoangNQCE170288@fpt.edu.vn",
+                 Address = "Can Tho",
                  PersonalEmail = "Hoang@gmail.com",
                  PhoneNumber = "0333744591",
                  DateOfBirth = new DateOnly(2025, 11, 15),
                  UserAvartar = null,
-                 RoleId = 1,
+                 RoleId = 5,
                  Status = 1,
                  CreatedAt = DateTime.Now,
                  UpdatedAt = DateTime.Now

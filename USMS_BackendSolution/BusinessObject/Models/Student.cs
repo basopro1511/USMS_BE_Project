@@ -13,6 +13,7 @@ namespace BusinessObject.Models
     {
         [Key]
         [Column(TypeName = "NVARCHAR(8)")]
+        [ForeignKey("User")]
         public string StudentId { get; set; }
         [ForeignKey("Major")]
         [Column(TypeName = "NVARCHAR(4)")]
@@ -21,5 +22,6 @@ namespace BusinessObject.Models
         public int Term {  get; set; }
         [JsonIgnore]
         public Major Major { get; set; }
+        public virtual User User { get; set; }
     }
 }

@@ -39,24 +39,6 @@ namespace BusinessObject.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Student",
-                columns: table => new
-                {
-                    StudentId = table.Column<string>(type: "NVARCHAR(8)", nullable: false),
-                    MajorId = table.Column<string>(type: "NVARCHAR(4)", nullable: true),
-                    Term = table.Column<int>(type: "INT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Student", x => x.StudentId);
-                    table.ForeignKey(
-                        name: "FK_Student_Major_MajorId",
-                        column: x => x.MajorId,
-                        principalTable: "Major",
-                        principalColumn: "MajorId");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "User",
                 columns: table => new
                 {
@@ -67,6 +49,7 @@ namespace BusinessObject.Migrations
                     PasswordHash = table.Column<string>(type: "NVARCHAR(200)", nullable: false),
                     Email = table.Column<string>(type: "NVARCHAR(100)", nullable: true),
                     PersonalEmail = table.Column<string>(type: "NVARCHAR(100)", nullable: false),
+                    Address = table.Column<string>(type: "NVARCHAR(MAX)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "NVARCHAR(15)", nullable: false),
                     DateOfBirth = table.Column<DateOnly>(type: "date", nullable: false),
                     UserAvartar = table.Column<string>(type: "NVARCHAR(MAX)", nullable: true),
@@ -89,6 +72,30 @@ namespace BusinessObject.Migrations
                         column: x => x.RoleId,
                         principalTable: "Role",
                         principalColumn: "RoleId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Student",
+                columns: table => new
+                {
+                    StudentId = table.Column<string>(type: "NVARCHAR(8)", nullable: false),
+                    MajorId = table.Column<string>(type: "NVARCHAR(4)", nullable: true),
+                    Term = table.Column<int>(type: "INT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Student", x => x.StudentId);
+                    table.ForeignKey(
+                        name: "FK_Student_Major_MajorId",
+                        column: x => x.MajorId,
+                        principalTable: "Major",
+                        principalColumn: "MajorId");
+                    table.ForeignKey(
+                        name: "FK_Student_User_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "User",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -115,14 +122,14 @@ namespace BusinessObject.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "User",
+                columns: new[] { "UserId", "Address", "CreatedAt", "DateOfBirth", "Email", "FirstName", "LastName", "MajorId", "MiddleName", "PasswordHash", "PersonalEmail", "PhoneNumber", "RoleId", "Status", "UpdatedAt", "UserAvartar" },
+                values: new object[] { "CE170288", "Can Tho", new DateTime(2025, 1, 23, 22, 18, 45, 942, DateTimeKind.Local).AddTicks(8438), new DateOnly(2025, 11, 15), "HoangNQCE170288@fpt.edu.vn", "Nguyễn", "Hoàng", "IT", "Quốc", "123456", "Hoang@gmail.com", "0333744591", 5, 1, new DateTime(2025, 1, 23, 22, 18, 45, 942, DateTimeKind.Local).AddTicks(8450), null });
+
+            migrationBuilder.InsertData(
                 table: "Student",
                 columns: new[] { "StudentId", "MajorId", "Term" },
                 values: new object[] { "CE170288", "IT", 1 });
-
-            migrationBuilder.InsertData(
-                table: "User",
-                columns: new[] { "UserId", "CreatedAt", "DateOfBirth", "Email", "FirstName", "LastName", "MajorId", "MiddleName", "PasswordHash", "PersonalEmail", "PhoneNumber", "RoleId", "Status", "UpdatedAt", "UserAvartar" },
-                values: new object[] { "CE170288", new DateTime(2025, 1, 17, 18, 16, 50, 778, DateTimeKind.Local).AddTicks(3412), new DateOnly(2025, 11, 15), "HoangNQCE170288@fpt.edu.vn", "Nguyễn", "Hoàng", "IT", "Quốc", "123456", "Hoang@gmail.com", "0333744591", 1, 1, new DateTime(2025, 1, 17, 18, 16, 50, 778, DateTimeKind.Local).AddTicks(3422), null });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Student_MajorId",

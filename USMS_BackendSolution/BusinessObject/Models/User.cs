@@ -31,6 +31,9 @@ namespace BusinessObject.Models
         [Column(TypeName = "NVARCHAR(100)")]
         [Required]
         public string PersonalEmail { get; set; }
+        [Column(TypeName = "NVARCHAR(MAX)")]
+        [Required]
+        public string Address { get; set; }
 
         [Required]
         [Column(TypeName = "NVARCHAR(15)")]
@@ -52,5 +55,6 @@ namespace BusinessObject.Models
         public int Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public virtual Student Student { get; set; }
     }
 }

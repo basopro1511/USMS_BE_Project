@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessObject.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20250117111651_Init")]
+    [Migration("20250123151848_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -131,6 +131,10 @@ namespace BusinessObject.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("NVARCHAR(8)");
 
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(MAX)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -190,7 +194,8 @@ namespace BusinessObject.Migrations
                         new
                         {
                             UserId = "CE170288",
-                            CreatedAt = new DateTime(2025, 1, 17, 18, 16, 50, 778, DateTimeKind.Local).AddTicks(3412),
+                            Address = "Can Tho",
+                            CreatedAt = new DateTime(2025, 1, 23, 22, 18, 45, 942, DateTimeKind.Local).AddTicks(8438),
                             DateOfBirth = new DateOnly(2025, 11, 15),
                             Email = "HoangNQCE170288@fpt.edu.vn",
                             FirstName = "Nguyễn",
@@ -200,9 +205,9 @@ namespace BusinessObject.Migrations
                             PasswordHash = "123456",
                             PersonalEmail = "Hoang@gmail.com",
                             PhoneNumber = "0333744591",
-                            RoleId = 1,
+                            RoleId = 5,
                             Status = 1,
-                            UpdatedAt = new DateTime(2025, 1, 17, 18, 16, 50, 778, DateTimeKind.Local).AddTicks(3422)
+                            UpdatedAt = new DateTime(2025, 1, 23, 22, 18, 45, 942, DateTimeKind.Local).AddTicks(8450)
                         });
                 });
 
@@ -212,7 +217,15 @@ namespace BusinessObject.Migrations
                         .WithMany()
                         .HasForeignKey("MajorId");
 
+                    b.HasOne("BusinessObject.Models.User", "User")
+                        .WithOne("Student")
+                        .HasForeignKey("BusinessObject.Models.Student", "StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Major");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BusinessObject.Models.User", b =>
@@ -235,6 +248,12 @@ namespace BusinessObject.Migrations
             modelBuilder.Entity("BusinessObject.Models.Role", b =>
                 {
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("BusinessObject.Models.User", b =>
+                {
+                    b.Navigation("Student")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
