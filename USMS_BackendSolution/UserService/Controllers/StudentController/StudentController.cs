@@ -37,9 +37,9 @@ namespace UserService.Controllers.StudentController
             aPIResponse = _studentService.AddStudent(addstudentDTO);
             return aPIResponse;
         }
-        // PUT: api/Student/{id}
-        [HttpPut("UpdateStudent/{id}")]
-        public APIResponse UpdateUser(string id, UpdateStudentDTO updateStudentDTO)
+        // PUT: api/Student/UpdateStudent/{id}
+        [HttpPut("{id}")]
+        public APIResponse UpdateStudent(string id, UpdateStudentDTO updateStudentDTO)
         {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse = _studentService.UpdateStudent(id, updateStudentDTO);

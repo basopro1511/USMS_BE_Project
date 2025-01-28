@@ -164,7 +164,7 @@ namespace UserService.Services.StudentService
                 LastName = addStudentDTO.LastName,
                 PasswordHash = HashPassword(addStudentDTO.PasswordHash),
                 PersonalEmail = addStudentDTO.PersonalEmail,
-                Email = GenerateEmail(addStudentDTO.FirstName, addStudentDTO.MiddleName, addStudentDTO.LastName, GenerateNextStudentId(addStudentDTO.MajorId)),
+                Email = GenerateEmail(addStudentDTO.FirstName, addStudentDTO.MiddleName, addStudentDTO.LastName, GenerateNextStudentId(addStudentDTO.MajorId)), 
                 PhoneNumber = addStudentDTO.PhoneNumber,
                 UserAvartar = addStudentDTO.UserAvartar,
                 RoleId = 5,

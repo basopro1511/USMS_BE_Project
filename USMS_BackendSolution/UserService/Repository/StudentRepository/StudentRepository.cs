@@ -129,10 +129,10 @@ namespace UserService.Repository.StudentRepository
                     existingStudent.User.DateOfBirth = updateStudentDTO.DateOfBirth != default ? updateStudentDTO.DateOfBirth : existingStudent.User.DateOfBirth;
                     existingStudent.User.UpdatedAt = DateTime.Now;
                     existingStudent.User.Address = updateStudentDTO.Address;
-                    existingStudent.User.Status = updateStudentDTO.Status != 0 ? updateStudentDTO.Status : existingStudent.User.Status;
-                    //Nếu cần cập nhật các thuộc tính liên quan đến sinh viên
+                    existingStudent.User.Status = updateStudentDTO.Status;
+            //Nếu cần cập nhật các thuộc tính liên quan đến sinh viên
                     existingStudent.MajorId = updateStudentDTO.MajorId ?? existingStudent.MajorId;
-                    existingStudent.Term = updateStudentDTO.Term != 0 ? updateStudentDTO.Term : existingStudent.Term;
+                    existingStudent.Term =  updateStudentDTO.Term;
                     dbContext.Entry(existingStudent).State = EntityState.Modified;
                     dbContext.SaveChanges();
                     return true;
