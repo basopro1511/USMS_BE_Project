@@ -22,8 +22,15 @@ namespace ClassService.Controllers.SubjectController
 			aPIResponse = _subjectService.GetAllSubjects();
 			return aPIResponse;
 		}
+        [HttpGet("{id}")]
+        public APIResponse GetSubjectById(string id)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse = _subjectService.GetSubjectById(id);
+            return aPIResponse;
+            }
 
-		[HttpPost]
+        [HttpPost]
 		public APIResponse CreateSubject(SubjectDTO subject)
 		{
 			APIResponse aPIResponse = new APIResponse();
@@ -66,5 +73,6 @@ namespace ClassService.Controllers.SubjectController
             return aPIResponse;
         }
         #endregion
+
     }
 }

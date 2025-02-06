@@ -24,8 +24,8 @@ namespace SchedulerBusinessObject.Migrations
                     SubjectId = table.Column<string>(type: "NVARCHAR(10)", nullable: false),
                     RoomId = table.Column<string>(type: "NVARCHAR(6)", nullable: true),
                     Date = table.Column<DateOnly>(type: "DATE", nullable: false),
-                    StartTime = table.Column<TimeOnly>(type: "TIME(0)", nullable: false),
-                    EndTime = table.Column<TimeOnly>(type: "TIME(0)", nullable: false),
+                    StartTime = table.Column<TimeOnly>(type: "TIME(7)", nullable: false),
+                    EndTime = table.Column<TimeOnly>(type: "TIME(7)", nullable: false),
                     TeacherId = table.Column<string>(type: "NVARCHAR(8)", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "DATETIME", nullable: false)
@@ -78,7 +78,8 @@ namespace SchedulerBusinessObject.Migrations
                     RoomId = table.Column<string>(type: "NVARCHAR(6)", maxLength: 6, nullable: false),
                     TeacherId = table.Column<string>(type: "NVARCHAR(8)", maxLength: 8, nullable: true),
                     Date = table.Column<DateOnly>(type: "DATE", nullable: false),
-                    Status = table.Column<int>(type: "INT", nullable: false)
+                    Status = table.Column<int>(type: "INT", nullable: false),
+                    SlotNoInSubject = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -102,8 +103,8 @@ namespace SchedulerBusinessObject.Migrations
                 columns: new[] { "RoomId", "CreateAt", "Location", "OnlineURL", "Status", "UpdateAt", "isOnline" },
                 values: new object[,]
                 {
-                    { "G304", new DateTime(2025, 1, 12, 22, 17, 45, 96, DateTimeKind.Local).AddTicks(2675), "Grammar Room 304", null, 1, new DateTime(2025, 1, 12, 22, 17, 45, 96, DateTimeKind.Local).AddTicks(2685), false },
-                    { "R.ON", new DateTime(2025, 1, 12, 22, 17, 45, 96, DateTimeKind.Local).AddTicks(2688), "Online", "https://meet.google.com/koi-kghw-tsy", 1, new DateTime(2025, 1, 12, 22, 17, 45, 96, DateTimeKind.Local).AddTicks(2689), true }
+                    { "G304", new DateTime(2025, 2, 6, 17, 32, 58, 681, DateTimeKind.Local).AddTicks(4781), "Grammar Room 304", null, 1, new DateTime(2025, 2, 6, 17, 32, 58, 681, DateTimeKind.Local).AddTicks(4791), false },
+                    { "R.ON", new DateTime(2025, 2, 6, 17, 32, 58, 681, DateTimeKind.Local).AddTicks(4793), "Online", "https://meet.google.com/koi-kghw-tsy", 1, new DateTime(2025, 2, 6, 17, 32, 58, 681, DateTimeKind.Local).AddTicks(4794), true }
                 });
 
             migrationBuilder.InsertData(

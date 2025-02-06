@@ -15,5 +15,8 @@ namespace SchedulerBusinessObject.ModelDTOs
 
 		[Required]
 		public int SlotId { get; set; }
-	}
-}
+
+        public int SlotNoInSubject { get; set; }
+
+        }
+    }
