@@ -1,4 +1,5 @@
 ﻿using ISUZU_NEXT.Server.Core.Extentions;
+using Newtonsoft.Json;
 using Repositories.ScheduleRepository;
 using SchedulerBusinessObject;
 using SchedulerBusinessObject.AppDBContext;
@@ -168,7 +169,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
         #endregion
 
         #region Get Class SubjectIds by Student Id
-		private List<int> getClassSubjectIdsByStudentId(string id)
+		private List<int> getClassSubjectIdsByStudentIds(string id)
 			{
 			try
 				{
@@ -196,23 +197,90 @@ namespace SchedulerDataAccess.Services.SchedulerServices
             }
         #endregion
 
+        #region Get Class SubjectIds by MajorId, ClassId, SubjectId
+        private List<ClassSubjectDTO> getClassSubjectIdsByMajorIdClassIdSubjectId(string majorId, string classId, int term)
+            {
+            try
+                {
+                var response = _httpClient.GetAsync($"https://localhost:7286/api/ClassSubject/ClassSubject?majorId={majorId}&classId={classId}&term={term}").Result;
+                var apiResponse = response.Content.ReadFromJsonAsync<APIResponse>().Result;
+                if(apiResponse == null || !apiResponse.IsSuccess)
+                    {
+                    return null;
+                    }
+                var dataResponse = apiResponse.Result as JsonElement?;
+                if(dataResponse == null)
+                    {
+                    return null;
+                    }
+                var options = new JsonSerializerOptions
+                    {
+                    PropertyNameCaseInsensitive = true
+                    };
+                return dataResponse.Value.Deserialize<List<ClassSubjectDTO>>(options);
+                }
+            catch(Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
         #region Get Schedule for Student
-        //public List<ClassScheduleDTO> GetClassSchedulesByStudentId(string studentId)
-        //    {
-        //    // Bước 1: Lấy ClassSubjectIds từ studentId
-        //    var classSubjectIds = getClassSubjectIdsByStudentId(studentId);
-
-        //    // Bước 2: Lọc ClassSchedules dựa trên ClassSubjectIds
-        //    return _scheduleRepository.GetClassSchedulesByClassSubjectIds(classSubjectIds);
-        //    }
-
-        public APIResponse GetClassSchedulesByStudentId(string studentId)
+        public APIResponse GetClassSchedulesByStudentIds(string studentId)
             {
             APIResponse aPIResponse = new APIResponse();
-			var classSubjectIds = getClassSubjectIdsByStudentId(studentId);
+			var classSubjectIds = getClassSubjectIdsByStudentIds(studentId);
             aPIResponse.Result = _scheduleRepository.GetClassSchedulesByClassSubjectIds(classSubjectIds);
             return aPIResponse;
             }
         #endregion
+
+        #region Get Schedule for Class
+        public APIResponse GetClassSchedulesForClass(string majorId, string classId, int term, DateTime startDay, DateTime endDay)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            try
+                {
+				var classSubjects = getClassSubjectIdsByMajorIdClassIdSubjectId(majorId, classId, term);
+					if(classSubjects == null)
+                    {
+                    aPIResponse.IsSuccess = false;
+                    aPIResponse.Message = "Không tìm thấy bất kỳ lớp nào!";
+                    return aPIResponse;
+                    };
+				List<int> classSubjectIds = classSubjects.Select(s => s.ClassSubjectId).ToList();
+        Dictionary<int, string> subjectMap = classSubjects.ToDictionary(s => s.ClassSubjectId, s => s.SubjectId);
+                using(var _dbContext = new MyDbContext())
+                    {
+                    var schedules = _dbContext.Schedule
+                        .Where(s => classSubjectIds.Contains(s.ClassSubjectId)
+                                 && s.Date >= DateOnly.FromDateTime(startDay)
+                                 && s.Date <= DateOnly.FromDateTime(endDay))
+                        .Select(s => new ViewScheduleDTO
+                            {
+                            ClassScheduleId = s.ScheduleId,
+                            ClassSubjectId = s.ClassSubjectId,
+							ClassId = classId,
+							MajorId = majorId,
+                            SubjectId = subjectMap.ContainsKey(s.ClassSubjectId) ? subjectMap[s.ClassSubjectId] : null, // Lấy SubjectId theo ClassSubjectId
+                            SlotId = s.SlotId,
+                            TeacherId = s.TeacherId,
+                            Date = s.Date,
+                            Status = s.Status,
+                            })
+                        .ToList();
+					aPIResponse.Result = schedules;
+
+                    }
+                return aPIResponse;
+                }
+            catch(Exception ex)
+                {
+                throw new Exception("An error occurred while fetching class schedules.", ex);
+                }
+			}
+        #endregion
+
         }
     }

@@ -69,7 +69,7 @@ namespace Repositories.ClassSubjectRepository
         /// <returns>a ClassSubject with suitable ClassId</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="Exception"></exception>
-        public List<ClassSubjectDTO> GetClassSubjectByClassId(string classId)
+        public List<ClassSubjectDTO> GetClassSubjectByClassIds(string classId)
         {
             try
             {
@@ -195,5 +195,53 @@ namespace Repositories.ClassSubjectRepository
                 throw new Exception(ex.Message, ex);
             }
         }
+
+        #region Get ClassSubject by MajorId, ClassId, Term
+        public List<ClassSubjectDTO> GetClassSubjectByMajorIdClassIdTerm(string majorId, string classId, int term)
+            {
+            try
+                {
+                List<ClassSubjectDTO> classSubjects = GetAllClassSubjects().Where(cs => cs.MajorId == majorId
+                          && cs.ClassId == classId
+                          && cs.Term == term).ToList();
+                List<ClassSubjectDTO> classSubjectDTOs = new List<ClassSubjectDTO>();
+                foreach(var classSubject in classSubjects)
+                    {
+
+                    }
+                return classSubjects;
+                }
+            catch(Exception ex)
+                {
+                throw new Exception($"Error while fetching ClassSubjects: {ex.Message}", ex);
+                }
+            }
+        #endregion
+
+        #region Lấy danh sách ClassId dựa vào MajorId
+        /// <summary>
+        /// Lấy danh sách ClassId (phân biệt) dựa vào MajorId
+        /// </summary>
+        /// <param name="majorId">Mã chuyên ngành</param>
+        /// <returns>Danh sách ClassId không trùng lặp</returns>
+        public List<string> GetClassIdsByMajorId(string majorId)
+            {
+            try
+                {
+                // Lấy những ClassSubject có MajorId trùng khớp
+                var classIds = GetAllClassSubjects()
+                    .Where(cs => cs.MajorId == majorId)
+                    .Select(cs => cs.ClassId)
+                    .Distinct()
+                    .ToList();
+
+                return classIds;
+                }
+            catch(Exception ex)
+                {
+                throw new Exception($"Lỗi khi lấy ClassId cho MajorId={majorId}: {ex.Message}", ex);
+                }
+            }
+        #endregion
+        }
     }
-}

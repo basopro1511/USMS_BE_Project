@@ -11,16 +11,16 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Services.ClassServices
-{
-    public class ClassSubjectService
     {
+    public class ClassSubjectService
+        {
         private readonly IClassRepository _classRepository;
         private readonly HttpClient _httpClient;
         public ClassSubjectService()
-        {
+            {
             _httpClient = new HttpClient();
             _classRepository = new ClassRepository();
-        }
+            }
 
         #region Get All Class Subject
         /// <summary>
@@ -28,22 +28,22 @@ namespace Services.ClassServices
         /// </summary>
         /// <returns>a list of all Class Subject in DB</returns>
         public APIResponse GetAllClassSubject()
-        {
+            {
             APIResponse aPIResponse = new APIResponse();
             List<ClassSubjectDTO> classSubjects = _classRepository.GetAllClassSubjects();
-            if (classSubjects == null)
-            {
+            if(classSubjects == null)
+                {
                 aPIResponse.IsSuccess = false;
                 aPIResponse.Message = "Don't have any Class Subject available!";
-            }
-            foreach (var item in classSubjects)
-            {
+                }
+            foreach(var item in classSubjects)
+                {
                 var majorName = GetMajorNameById(item.MajorId);
-                item.MajorName = majorName.MajorName?? "Null";
-            }
+                item.MajorName = majorName.MajorName ?? "Null";
+                }
             aPIResponse.Result = classSubjects;
             return aPIResponse;
-        }
+            }
         #endregion
 
         #region get all Major by major API
@@ -53,31 +53,31 @@ namespace Services.ClassServices
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         private List<ClassSubjectDTO>? GetAllMajor()
-        {
-            try
             {
+            try
+                {
                 var response = _httpClient.GetAsync("https://localhost:7067/api/Major").Result;
                 var apiResponse = response.Content.ReadFromJsonAsync<APIResponse>().Result;
-                if (apiResponse == null || !apiResponse.IsSuccess)
-                {
+                if(apiResponse == null || !apiResponse.IsSuccess)
+                    {
                     return null;
-                }
+                    }
                 var dataResponse = apiResponse.Result as JsonElement?;
-                if (dataResponse == null)
-                {
+                if(dataResponse == null)
+                    {
                     return null;
-                }
+                    }
                 var options = new JsonSerializerOptions
-                {
+                    {
                     PropertyNameCaseInsensitive = true
-                };
+                    };
                 return dataResponse.Value.Deserialize<List<ClassSubjectDTO>>(options);
-            }
-            catch (Exception ex)
-            {
+                }
+            catch(Exception ex)
+                {
                 throw new Exception(ex.Message);
+                }
             }
-        }
         #endregion
 
         #region get Major Name by Major Id
@@ -87,22 +87,22 @@ namespace Services.ClassServices
         /// <param name="id">Major Id</param>
         /// <returns>A ClassSubjectDTO containing Major Name if found, otherwise null</returns>
         private ClassSubjectDTO GetMajorNameById(string id)
-        {
-            try
             {
+            try
+                {
                 var majors = GetAllMajor();
                 var major = majors?.FirstOrDefault(x => x.MajorId == id);
-                if (major == null)
-                {
+                if(major == null)
+                    {
                     throw new Exception($"Chuyên ngành với mã '{id}' không tìm thấy.");
-                }
+                    }
                 return major;
-            }
-            catch (Exception ex)
-            {
+                }
+            catch(Exception ex)
+                {
                 return null;
+                }
             }
-        }
         #endregion
 
         #region Get ClassSubject By ClassSubjectId 
@@ -112,17 +112,17 @@ namespace Services.ClassServices
         /// <param name="id"></param>
         /// <returns>a ClassSubject by Id</returns>
         public APIResponse GetClassSubjectById(int id)
-        {
+            {
             APIResponse aPIResponse = new APIResponse();
             ClassSubjectDTO classSubject = _classRepository.GetClassSubjectById(id);
-            if (classSubject == null)
-            {
+            if(classSubject == null)
+                {
                 aPIResponse.IsSuccess = false;
                 aPIResponse.Message = "ClassSubject with Id: " + id + " is not found";
-            }
+                }
             aPIResponse.Result = classSubject;
             return aPIResponse;
-        }
+            }
         #endregion
 
         #region Get ClassSubject By ClassId
@@ -132,123 +132,180 @@ namespace Services.ClassServices
         /// <param name="id"></param>
         /// <returns>a list ClassSubjects by ClassId </returns>
         public APIResponse GetClassSubjectByClassId(string id)
-        {
-            APIResponse aPIResponse = new APIResponse();
-            List<ClassSubjectDTO> classSubjects = _classRepository.GetClassSubjectByClassId(id);
-            if (classSubjects == null || classSubjects.Count == 0)
             {
+            APIResponse aPIResponse = new APIResponse();
+            List<ClassSubjectDTO> classSubjects = _classRepository.GetClassSubjectByClassIds(id);
+            if(classSubjects == null || classSubjects.Count == 0)
+                {
                 aPIResponse.IsSuccess = false;
                 aPIResponse.Message = "ClassSubjects with Id: " + id + " is not found";
-            }
+                }
             aPIResponse.Result = classSubjects;
             return aPIResponse;
-        }
+            }
         #endregion
+
+        #region Get ClassSubject By MajorId, ClassId, Subject Id
+        /// <summary>
+        /// Retrive list ClassSubjects by MajorId, ClassId, Subject Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>a list ClassSubjects byMajorId, ClassId, Subject Id </returns>
+        public APIResponse GetClassSubjectByMajorIdClassIdSubjectId(string majorId, string classId, int term)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            List<ClassSubjectDTO> classSubjects = _classRepository.GetClassSubjectByMajorIdClassIdTerm(majorId, classId, term);
+            if(classSubjects == null || classSubjects.Count == 0)
+                {
+                aPIResponse.IsSuccess = false;
+                aPIResponse.Message = "ClassSubjects is not found";
+                }
+            aPIResponse.Result = classSubjects;
+            return aPIResponse;
+            } 
+            #endregion
 
         #region Add New ClassSubject
-        /// <summary>
-        /// Add New ClassSubject to databse
-        /// </summary>
-        /// <param name="ClassSubject"></param>
-        public APIResponse AddNewClassSubject(AddUpdateClassSubjectDTO classSubject)
-        {
-            APIResponse aPIResponse = new APIResponse();
-            ClassSubjectDTO existingClassSubject = _classRepository.GetExistingClassSubject(classSubject.ClassId,classSubject.SubjectId,classSubject.SemesterId);
-            if (existingClassSubject != null)
-            {
-                return new APIResponse
+            /// <summary>
+            /// Add New ClassSubject to databse
+            /// </summary>
+            /// <param name="ClassSubject"></param>
+            public APIResponse AddNewClassSubject(AddUpdateClassSubjectDTO classSubject)
                 {
+                APIResponse aPIResponse = new APIResponse();
+                ClassSubjectDTO existingClassSubject = _classRepository.GetExistingClassSubject(classSubject.ClassId, classSubject.SubjectId, classSubject.SemesterId);
+                if(existingClassSubject != null)
+                    {
+                    return new APIResponse
+                        {
+                        IsSuccess = false,
+                        Message = "Lớp học với Mã lớp học : " + classSubject.ClassId + " Mã môn học : " + classSubject.SubjectId + ", và Mã kỳ học : " + classSubject.SemesterId + " đã tồn tại !"
+                        };
+                    }
+                bool isAdded = _classRepository.AddNewClassSubject(classSubject);
+                if(isAdded)
+                    {
+                    return new APIResponse
+                        {
+                        IsSuccess = true,
+                        Message = "Thêm mới lớp học thành công !"
+                        };
+                    }
+                return new APIResponse
+                    {
                     IsSuccess = false,
-                    Message = "Lớp học với Mã lớp học : " + classSubject.ClassId+ " Mã môn học : "+ classSubject.SubjectId+", và Mã kỳ học : "+classSubject.SemesterId+" đã tồn tại !"
-                };
-            }
-            bool isAdded = _classRepository.AddNewClassSubject(classSubject);
-            if (isAdded)
-            {
-                return new APIResponse
-                {
-                    IsSuccess = true,
-                    Message = "Thêm mới lớp học thành công !"
-                };
-            }
-            return new APIResponse
-            {
-                IsSuccess = false,
-                Message = "Thêm mới lớp học thất bại!."
-            };
-        }
-        #endregion
+                    Message = "Thêm mới lớp học thất bại!."
+                    };
+                }
+            #endregion
 
         #region Update ClassSubject
-        /// <summary>
-        /// Udate ClassSubject in databse
-        /// </summary>
-        /// <param name="ClassSubject"></param>
-        public APIResponse UpdateClassSubject(AddUpdateClassSubjectDTO classSubject)
-        {
-            APIResponse aPIResponse = new APIResponse();
-            ClassSubjectDTO existingClassSubject = _classRepository.GetClassSubjectById(classSubject.ClassSubjectId);
-            if (existingClassSubject == null)
-            {
-                return new APIResponse
+            /// <summary>
+            /// Udate ClassSubject in databse
+            /// </summary>
+            /// <param name="ClassSubject"></param>
+            public APIResponse UpdateClassSubject(AddUpdateClassSubjectDTO classSubject)
                 {
+                APIResponse aPIResponse = new APIResponse();
+                ClassSubjectDTO existingClassSubject = _classRepository.GetClassSubjectById(classSubject.ClassSubjectId);
+                if(existingClassSubject == null)
+                    {
+                    return new APIResponse
+                        {
+                        IsSuccess = false,
+                        Message = "Class Subject with the given ID is not exists."
+                        };
+                    }
+                bool isAdded = _classRepository.UpdateClassSubject(classSubject);
+                if(isAdded)
+                    {
+                    return new APIResponse
+                        {
+                        IsSuccess = true,
+                        Message = "Cập nhật lớp học thành công!"
+                        };
+                    }
+                return new APIResponse
+                    {
                     IsSuccess = false,
-                    Message = "Class Subject with the given ID is not exists."
-                };
-            }
-            bool isAdded = _classRepository.UpdateClassSubject(classSubject);
-            if (isAdded)
-            {
-                return new APIResponse
-                {
-                    IsSuccess = true,
-                    Message = "Cập nhật lớp học thành công!"
-                };
-            }
-            return new APIResponse
-            {
-                IsSuccess = false,
-                Message = "Cập nhật lớp học thất bại!"
-            };
-        }
+                    Message = "Cập nhật lớp học thất bại!"
+                    };
+                }
         #endregion
 
-        #region Change Class Subject Status
+        #region Get Class Subject by MajorId
         /// <summary>
         /// Change Status of Class Subject
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         public APIResponse ChangeStatusClassSubject(int id)
-        {
-            var response = new APIResponse();
-            ClassSubjectDTO existingClassSubject = _classRepository.GetClassSubjectById(id);
-            if (existingClassSubject == null)
-            {
-                return new APIResponse
                 {
+                var response = new APIResponse();
+                ClassSubjectDTO existingClassSubject = _classRepository.GetClassSubjectById(id);
+                if(existingClassSubject == null)
+                    {
+                    return new APIResponse
+                        {
+                        IsSuccess = false,
+                        Message = "Class Subject with the given ID is not exists."
+                        };
+                    }
+                bool isSuccess = _classRepository.ChangeStatusClassSubject(id);
+                if(isSuccess)
+                    {
+                    return new APIResponse
+                        {
+                        IsSuccess = true,
+                        Message = "Class Subject change status successfully."
+                        };
+                    }
+                return new APIResponse
+                    {
                     IsSuccess = false,
-                    Message = "Class Subject with the given ID is not exists."
-                };
-            }
-            bool isSuccess = _classRepository.ChangeStatusClassSubject(id);
-            if (isSuccess)
-            {
-                return new APIResponse
-                {
-                    IsSuccess = true,
-                    Message = "Class Subject change status successfully."
-                };
-            }
-            return new APIResponse
-            {
-                IsSuccess = false,
-                Message = "Failed to change status of Class Subject."
-            };
-        }
+                    Message = "Failed to change status of Class Subject."
+                    };
+                }
         #endregion
-    }
-}
+
+
+        #region Lấy danh sách ClassId dựa vào MajorId
+        /// <summary>
+        /// Gọi xuống repository để lấy danh sách ClassId theo MajorId.
+        /// Gói kết quả vào APIResponse và trả về cho Controller.
+        /// </summary>
+        /// <param name="majorId"></param>
+        /// <returns></returns>
+        public APIResponse GetClassIdsByMajorId(string majorId)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            try
+                {
+                var classIds = _classRepository.GetClassIdsByMajorId(majorId);
+
+                if(classIds == null || classIds.Count == 0)
+                    {
+                    aPIResponse.IsSuccess = false;
+                    aPIResponse.Message = $"Không tìm thấy bất kỳ ClassId nào cho MajorId = {majorId}.";
+                    }
+                else
+                    {
+                    aPIResponse.IsSuccess = true;
+                    aPIResponse.Message = "Lấy danh sách ClassId thành công.";
+                    }
+                aPIResponse.Result = classIds;
+                }
+            catch(Exception ex)
+                {
+                aPIResponse.IsSuccess = false;
+                aPIResponse.Message = $"Đã xảy ra lỗi: {ex.Message}";
+                }
+            return aPIResponse;
+            }
+        #endregion
+        }
+    } 
+    
 //Copy Paste 
 #region Copy + Pase  
 #endregion
