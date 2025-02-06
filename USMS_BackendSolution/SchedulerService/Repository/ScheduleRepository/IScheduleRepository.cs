@@ -14,6 +14,7 @@ namespace Repositories.ScheduleRepository
         Task<List<Schedule>?> GetSchedulesByDateAndSlot(DateOnly date, int slot);
         public List<ScheduleDTO> GetClassSchedulesByClassSubjectIds(List<int> classSubjectIds);
         public List<ScheduleDTO> GetClassSchedulesByClassSubjectId(int classSubjectId);
+        public List<Schedule> GetSchedulesByClassSubjectId(int classSubjectId);
 
     }
     }

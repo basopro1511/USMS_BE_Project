@@ -143,7 +143,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/Subjects/{id}",
-      "UpstreamHttpMethod": [ "GET", "DELETE" ]
+      "UpstreamHttpMethod": [ "GET" ]
     },
     {
       "DownstreamPathTemplate": "/api/Subjects/ChangeStatus/{id}/{status}",

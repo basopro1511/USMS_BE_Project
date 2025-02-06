@@ -131,5 +131,28 @@ namespace Repositories.ScheduleRepository
             }
         #endregion
 
+        #region Get Schedules By ClassSubjectId
+        /// <summary>
+        /// Lấy danh sách lịch (Schedule) theo ClassSubjectId
+        /// </summary>
+        /// <param name="classSubjectId">Id của ClassSubject</param>
+        /// <returns>Danh sách Schedule</returns>
+        public  List<Schedule> GetSchedulesByClassSubjectId(int classSubjectId)
+            {
+            try
+                {
+                var dbContext = new MyDbContext();
+                List<Schedule> schedules = dbContext.Schedule.Where(s => s.ClassSubjectId == classSubjectId)
+                                 .ToList();
+                return schedules;
+                }
+            catch(Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+                                 
+            }
+        #endregion
+
         }
     }

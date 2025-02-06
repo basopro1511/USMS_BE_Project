@@ -29,9 +29,11 @@ namespace SchedulerService.Controllers.Schedule
 		public async Task<APIResponse> PostSchedule(ClassScheduleDTO schedule)
 		{
 			APIResponse aPIResponse = new APIResponse();
-			aPIResponse = await _scheduleService.PostSchedule(schedule);
+			aPIResponse = await _scheduleService.AddNewSchedule(schedule);
 			return aPIResponse;
 		}
+
+
 
         // GET: api/Customers
         [HttpGet("{id}")]
@@ -41,6 +43,7 @@ namespace SchedulerService.Controllers.Schedule
             aPIResponse = _scheduleService.GetClassSchedulesByStudentIds(id);
             return aPIResponse;
             }
+
         // GET: api/Customers
         [HttpGet("{majorId}/{classId}/{term}/{startDay}/{endDay}")]
         public APIResponse GetClassSchedule(string majorId, string classId, int term, DateTime startDay, DateTime endDay)

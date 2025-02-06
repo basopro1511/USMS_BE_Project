@@ -99,20 +99,20 @@ namespace SchedulerBusinessObject.Migrations
                         new
                         {
                             RoomId = "G304",
-                            CreateAt = new DateTime(2025, 1, 12, 22, 17, 45, 96, DateTimeKind.Local).AddTicks(2675),
+                            CreateAt = new DateTime(2025, 2, 6, 17, 32, 58, 681, DateTimeKind.Local).AddTicks(4781),
                             Location = "Grammar Room 304",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 1, 12, 22, 17, 45, 96, DateTimeKind.Local).AddTicks(2685),
+                            UpdateAt = new DateTime(2025, 2, 6, 17, 32, 58, 681, DateTimeKind.Local).AddTicks(4791),
                             isOnline = false
                         },
                         new
                         {
                             RoomId = "R.ON",
-                            CreateAt = new DateTime(2025, 1, 12, 22, 17, 45, 96, DateTimeKind.Local).AddTicks(2688),
+                            CreateAt = new DateTime(2025, 2, 6, 17, 32, 58, 681, DateTimeKind.Local).AddTicks(4793),
                             Location = "Online",
                             OnlineURL = "https://meet.google.com/koi-kghw-tsy",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 1, 12, 22, 17, 45, 96, DateTimeKind.Local).AddTicks(2689),
+                            UpdateAt = new DateTime(2025, 2, 6, 17, 32, 58, 681, DateTimeKind.Local).AddTicks(4794),
                             isOnline = true
                         });
                 });
@@ -138,6 +138,9 @@ namespace SchedulerBusinessObject.Migrations
 
                     b.Property<int>("SlotId")
                         .HasColumnType("INT");
+
+                    b.Property<int>("SlotNoInSubject")
+                        .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("INT");
