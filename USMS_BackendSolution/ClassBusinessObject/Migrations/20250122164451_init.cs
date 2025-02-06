@@ -17,8 +17,8 @@ namespace ClassBusinessObject.Migrations
                 name: "Semester",
                 columns: table => new
                 {
-                    SemesterId = table.Column<string>(type: "nvarchar(4)", maxLength: 4, nullable: false),
-                    SemesterName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    SemesterId = table.Column<string>(type: "nvarchar(4)", nullable: false),
+                    SemesterName = table.Column<string>(type: "nvarchar(20)", nullable: false),
                     StartDate = table.Column<DateOnly>(type: "date", nullable: false),
                     EndDate = table.Column<DateOnly>(type: "date", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false)
@@ -78,6 +78,26 @@ namespace ClassBusinessObject.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "StudentInClass",
+                columns: table => new
+                {
+                    StudentClassId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ClassSubjectId = table.Column<int>(type: "INT", nullable: false),
+                    StudentId = table.Column<string>(type: "nvarchar(8)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StudentInClass", x => x.StudentClassId);
+                    table.ForeignKey(
+                        name: "FK_StudentInClass_ClassSubject_ClassSubjectId",
+                        column: x => x.ClassSubjectId,
+                        principalTable: "ClassSubject",
+                        principalColumn: "ClassSubjectId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "Semester",
                 columns: new[] { "SemesterId", "EndDate", "SemesterName", "StartDate", "Status" },
@@ -93,20 +113,20 @@ namespace ClassBusinessObject.Migrations
                 columns: new[] { "SubjectId", "CreatedAt", "Description", "MajorId", "NumberOfSlot", "Status", "SubjectName", "Term", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { "CEA201", new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2224), "Introduction to computer architecture", "IT", 18, 1, "Computer Organization and Architecture", 1, new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2225) },
-                    { "DBI202", new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2234), "Database concepts and design", "IT", 20, 1, "Database Systems", 3, new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2235) },
-                    { "LAB211", new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2236), "Practice Object-Oriented Programming", "IT", 20, 1, "OOP with Java Lab", 3, new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2237) },
-                    { "MAD101", new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2229), "Fundamentals of discrete math", "IT", 20, 1, "Discrete Mathematics", 2, new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2230) },
-                    { "MAE101", new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2205), "Engineering mathematics fundamentals", "IT", 25, 1, "Mathematics for Engineering", 1, new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2219) },
-                    { "MAS291", new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2241), "Introduction to statistics", "IT", 20, 1, "Statistics & Probability", 4, new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2242) },
-                    { "MLN111", new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2248), "Core principles of Marxism-Leninism", null, 16, 2, "Philosophy of Marxism – Leninism", 8, new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2249) },
-                    { "NWC203c", new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2231), "Introduction to networking concepts", "IT", 18, 1, "Computer Networking", 2, new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2232) },
-                    { "PRF192", new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2222), "Learn the basics of programming", "IT", 20, 1, "Programming Fundamentals", 1, new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2222) },
-                    { "PRJ301", new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2239), "Developing web apps using Java", "IT", 25, 1, "Java Web Application Development", 4, new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2239) },
-                    { "PRN231", new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2246), "Developing cross-platform applications", "IT", 20, 0, "Building Cross-Platform Back-End Application With .NET", 7, new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2247) },
-                    { "SSL101c", new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2227), "Skills for academic excellence", null, 15, 1, "Academic Skills for University Success", 1, new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2227) },
-                    { "SWP391", new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2244), "Capstone project in software development", "IT", 30, 1, "Software Development Project", 5, new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2244) },
-                    { "WDU203c", new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2251), "Introduction to UI/UX principles", "IT", 18, 1, "UI/UX Design", 8, new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2252) }
+                    { "CEA201", new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6463), "Introduction to computer architecture", "IT", 18, 1, "Computer Organization and Architecture", 1, new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6463) },
+                    { "DBI202", new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6471), "Database concepts and design", "IT", 20, 1, "Database Systems", 3, new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6471) },
+                    { "LAB211", new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6473), "Practice Object-Oriented Programming", "IT", 20, 1, "OOP with Java Lab", 3, new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6473) },
+                    { "MAD101", new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6467), "Fundamentals of discrete math", "IT", 20, 1, "Discrete Mathematics", 2, new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6467) },
+                    { "MAE101", new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6449), "Engineering mathematics fundamentals", "IT", 25, 1, "Mathematics for Engineering", 1, new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6459) },
+                    { "MAS291", new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6476), "Introduction to statistics", "IT", 20, 1, "Statistics & Probability", 4, new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6477) },
+                    { "MLN111", new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6481), "Core principles of Marxism-Leninism", null, 16, 2, "Philosophy of Marxism – Leninism", 8, new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6482) },
+                    { "NWC203c", new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6469), "Introduction to networking concepts", "IT", 18, 1, "Computer Networking", 2, new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6469) },
+                    { "PRF192", new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6461), "Learn the basics of programming", "IT", 20, 1, "Programming Fundamentals", 1, new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6461) },
+                    { "PRJ301", new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6474), "Developing web apps using Java", "IT", 25, 1, "Java Web Application Development", 4, new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6475) },
+                    { "PRN231", new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6480), "Developing cross-platform applications", "IT", 20, 0, "Building Cross-Platform Back-End Application With .NET", 7, new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6480) },
+                    { "SSL101c", new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6465), "Skills for academic excellence", null, 15, 1, "Academic Skills for University Success", 1, new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6465) },
+                    { "SWP391", new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6478), "Capstone project in software development", "IT", 30, 1, "Software Development Project", 5, new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6478) },
+                    { "WDU203c", new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6483), "Introduction to UI/UX principles", "IT", 18, 1, "UI/UX Design", 8, new DateTime(2025, 1, 22, 23, 44, 50, 567, DateTimeKind.Local).AddTicks(6484) }
                 });
 
             migrationBuilder.CreateIndex(
@@ -118,11 +138,19 @@ namespace ClassBusinessObject.Migrations
                 name: "IX_ClassSubject_SubjectId",
                 table: "ClassSubject",
                 column: "SubjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudentInClass_ClassSubjectId",
+                table: "StudentInClass",
+                column: "ClassSubjectId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "StudentInClass");
+
             migrationBuilder.DropTable(
                 name: "ClassSubject");
 

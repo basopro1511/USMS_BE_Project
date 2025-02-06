@@ -32,5 +32,23 @@ namespace SchedulerService.Controllers.Schedule
 			aPIResponse = await _scheduleService.PostSchedule(schedule);
 			return aPIResponse;
 		}
-	}
+
+        // GET: api/Customers
+        [HttpGet("{id}")]
+        public APIResponse GetStudentSchedule(string id)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse = _scheduleService.GetClassSchedulesByStudentIds(id);
+            return aPIResponse;
+            }
+        // GET: api/Customers
+        [HttpGet("{majorId}/{classId}/{term}/{startDay}/{endDay}")]
+        public APIResponse GetClassSchedule(string majorId, string classId, int term, DateTime startDay, DateTime endDay)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse = _scheduleService.GetClassSchedulesForClass(majorId,classId, term, startDay,endDay);
+            return aPIResponse;
+            }
+  
+    }
 }
