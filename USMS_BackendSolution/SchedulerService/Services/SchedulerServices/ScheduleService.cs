@@ -65,7 +65,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
 				// Này lấy hết tất cả lớp của SE1702
 				var classSubjectOfClass = classSubjectList.Where(x => x.ClassId == classSubject.ClassId).ToList();
 				// Này lấy tất cả thời khóa biểu của ngày hôm đó ngay slot đó
-				var existingSchedules = await _scheduleRepository.GetSchedulesByDateAndSlot(schedule.Date, schedule.SlotId);
+				var existingSchedules =  _scheduleRepository.GetSchedulesByDateAndSlot(schedule.Date, schedule.SlotId);
 				// Kiểm tra xung đột lịch học
 				if (CheckSlotConflict(classSubjectOfClass, existingSchedules))
 				{
@@ -166,7 +166,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                     .ToList();
 
                 // 6. Lấy tất cả lịch học đã có ở cùng ngày + slotId => Check xung đột
-                var existingSchedules = await _scheduleRepository.GetSchedulesByDateAndSlot(schedule.Date, schedule.SlotId);
+                var existingSchedules =  _scheduleRepository.GetSchedulesByDateAndSlot(schedule.Date, schedule.SlotId);
 
                 // 7. Check xung đột lịch học (logic cũ)
                 if(CheckSlotConflict(classSubjectOfClass, existingSchedules))
@@ -420,6 +420,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                             TeacherId = s.TeacherId,
                             Date = s.Date,
                             Status = s.Status,
+                            RoomId = s.RoomId
                             })
                         .ToList();
 					aPIResponse.Result = schedules;

@@ -11,7 +11,7 @@ namespace Repositories.ScheduleRepository
 		/// <returns>a list of all schedule</returns>
 		List<Schedule> getAllSchedule();
         Task AddSchedule(Schedule schedule);
-        Task<List<Schedule>?> GetSchedulesByDateAndSlot(DateOnly date, int slot);
+        List<Schedule> GetSchedulesByDateAndSlot(DateOnly date, int slot);
         public List<ScheduleDTO> GetClassSchedulesByClassSubjectIds(List<int> classSubjectIds);
         public List<ScheduleDTO> GetClassSchedulesByClassSubjectId(int classSubjectId);
         public List<Schedule> GetSchedulesByClassSubjectId(int classSubjectId);

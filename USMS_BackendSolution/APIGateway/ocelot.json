@@ -40,6 +40,18 @@
       "UpstreamPathTemplate": "/api/Room/ChangeStatus/{id}/{status}",
       "UpstreamHttpMethod": [ "GET" ]
     },
+    {
+      "DownstreamPathTemplate": "/api/Room/AvailableRooms/{date}/{slotId}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7131
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Room/AvailableRooms/{date}/{slotId}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
     /* Room API End */
 
     /* Slot API Start */
@@ -223,6 +235,18 @@
       "UpstreamPathTemplate": "/api/ClassSubject/ClassIdsByMajorId/{id}",
       "UpstreamHttpMethod": [ "GET" ]
     },
+    {
+      "DownstreamPathTemplate": "/api/ClassSubject/classId/{classId}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7286
+        }
+      ],
+      "UpstreamPathTemplate": "/api/ClassSubject/classId/{classId}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
     /* Class Subject API End */
 
     /* Student In Class API Start */
@@ -247,7 +271,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 7286
+          "Port": 7131
         }
       ],
       "UpstreamPathTemplate": "/api/Schedule",
