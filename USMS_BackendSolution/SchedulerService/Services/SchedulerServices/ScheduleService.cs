@@ -65,7 +65,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
 				// Này lấy hết tất cả lớp của SE1702
 				var classSubjectOfClass = classSubjectList.Where(x => x.ClassId == classSubject.ClassId).ToList();
 				// Này lấy tất cả thời khóa biểu của ngày hôm đó ngay slot đó
-				var existingSchedules = await _scheduleRepository.GetSchedulesByDateAndSlot(schedule.Date, schedule.SlotId);
+				var existingSchedules =  _scheduleRepository.GetSchedulesByDateAndSlot(schedule.Date, schedule.SlotId);
 				// Kiểm tra xung đột lịch học
 				if (CheckSlotConflict(classSubjectOfClass, existingSchedules))
 				{
@@ -103,6 +103,158 @@ namespace SchedulerDataAccess.Services.SchedulerServices
 			}
 			return aPIResponse;
 		}
+        #endregion
+
+        #region Post Schedule (kết hợp check conflict & SlotNoInSubject)
+        /// <summary>
+        /// Thêm mới 1 lịch học (schedule), có kiểm tra xung đột & đảm bảo SlotNoInSubject <= NumberOfSlot của môn
+        /// </summary>
+        public async Task<APIResponse> AddNewSchedule(ClassScheduleDTO schedule)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            try
+                {
+                // 1. Lấy danh sách tất cả ClassSubject (bạn đang gọi 1 hàm GetClassSubjects() ở đâu đó)
+                var classSubjectList = await GetClassSubjects();
+                if(classSubjectList == null || classSubjectList.Count == 0)
+                    {
+                    aPIResponse.IsSuccess = false;
+                    aPIResponse.Message = "Không tìm thấy bất kỳ lớp nào!";
+                    return aPIResponse;
+                    }
+
+                // 2. Tìm ClassSubject tương ứng với schedule.ClassSubjectId
+                var classSubject = classSubjectList
+                    .FirstOrDefault(cs => cs.ClassSubjectId == schedule.ClassSubjectId);
+                if(classSubject == null)
+                    {
+                    aPIResponse.IsSuccess = false;
+                    aPIResponse.Message = "Không tìm thấy lớp này!";
+                    return aPIResponse;
+                    }
+
+                // 3. Lấy môn học (Subject) tương ứng
+                var subjectRes = await GetSubjectById(classSubject.SubjectId);
+                if(subjectRes == null || !subjectRes.IsSuccess || subjectRes.Result == null)
+                    {
+                    aPIResponse.IsSuccess = false;
+                    aPIResponse.Message = "Không lấy được môn học tương ứng!";
+                    return aPIResponse;
+                    }
+
+                //// Giả sử subjectRes.Result là SubjectDTO { NumberOfSlot = ??? }
+                var subjectDto = JsonConvert.DeserializeObject<SubjectDTO>(
+                     subjectRes.Result.ToString()
+                );
+                int maxSlot = subjectDto.NumberOfSlot; // Số tiết tối đa của môn
+
+                // 4. Kiểm tra schedule.SlotNoInSubject với subjectDto.NumberOfSlot
+                //    (SlotNoInSubject là trường mới bạn thêm trong ClassScheduleDTO)
+                var schedulesOfThisClassSubject = _scheduleRepository.GetSchedulesByClassSubjectId(schedule.ClassSubjectId);
+                int nextSlotNoInSubject = 1;
+                if(schedulesOfThisClassSubject.Any())
+                    {
+                    // Lấy max
+                    int currentMax = schedulesOfThisClassSubject.Max(x => x.SlotNoInSubject);
+                    nextSlotNoInSubject = currentMax + 1;
+                    }
+
+
+                // 5. Lấy danh sách tất cả ClassSubject cùng ClassId (ví dụ SE1702) => để check conflict
+                var classSubjectOfClass = classSubjectList
+                    .Where(x => x.ClassId == classSubject.ClassId)
+                    .ToList();
+
+                // 6. Lấy tất cả lịch học đã có ở cùng ngày + slotId => Check xung đột
+                var existingSchedules =  _scheduleRepository.GetSchedulesByDateAndSlot(schedule.Date, schedule.SlotId);
+
+                // 7. Check xung đột lịch học (logic cũ)
+                if(CheckSlotConflict(classSubjectOfClass, existingSchedules))
+                    {
+                    aPIResponse.IsSuccess = false;
+                    aPIResponse.Message = "Lớp này đã có tiết vào thời gian này!";
+                    return aPIResponse;
+                    }
+
+                // 8. Kiểm tra tính hợp lệ phòng học
+                var room = _roomService.GetRoomById(schedule.RoomId);
+                if(!room.IsSuccess || room.Result == null)
+                    {
+                    aPIResponse.IsSuccess = false;
+                    aPIResponse.Message = "Không tìm thấy phòng học!";
+                    return aPIResponse;
+                    }
+
+                // 9. Check xung đột phòng
+                if(CheckRoomConflict(existingSchedules, schedule.RoomId))
+                    {
+                    aPIResponse.IsSuccess = false;
+                    aPIResponse.Message = "Phòng đã được sử dụng vào thời gian này!";
+                    return aPIResponse;
+                    }
+
+                // 10. Không có gì xung đột, tiến hành thêm lịch mới
+                var newSchedule = new Schedule();
+                newSchedule.CopyProperties(schedule); // chép các trường: ClassSubjectId, Date, SlotId, ...
+                newSchedule.Status = 1;              // hoặc schedule.Status, tuỳ
+                                                     // => Quan trọng: trường SlotNoInSubject cũng cần copy
+                newSchedule.SlotNoInSubject = schedule.SlotNoInSubject;
+
+                await _scheduleRepository.AddSchedule(newSchedule);
+
+                aPIResponse.IsSuccess = true;
+                aPIResponse.Message = "Thêm thời khóa biểu thành công!";
+                }
+            catch(Exception ex)
+                {
+                aPIResponse.IsSuccess = false;
+                aPIResponse.Message = ex.Message;
+                }
+            return aPIResponse;
+            }
+        #endregion
+
+        #region Get Subject By Id (gọi qua API Subject)
+        /// <summary>
+        /// Lấy thông tin Subject theo SubjectId, bằng cách gọi API bên SubjectController
+        /// </summary>
+        /// <param name="subjectId">Mã môn học</param>
+        /// <returns>APIResponse chứa thông tin môn học (SubjectDTO) hoặc lỗi</returns>
+        public async Task<APIResponse> GetSubjectById(string subjectId)
+            {
+            APIResponse response = new APIResponse();
+            try
+                {
+                // Ví dụ gọi API: GET /api/Subject/{subjectId}
+                // Tuỳ bạn định nghĩa route, có thể là /api/Subject?subjectId=...
+                using(var client = new HttpClient())
+                    {
+                    // Đây là base URL cho service Subject, bạn thay đổi theo config của bạn
+                    client.BaseAddress = new Uri("https://localhost:7067/");
+
+                    // Gọi API GET
+                    var result = await client.GetAsync($"api/Subjects/{subjectId}");
+                    if(result.IsSuccessStatusCode)
+                        {
+                        var jsonString = await result.Content.ReadAsStringAsync();
+                        var apiRes = JsonConvert.DeserializeObject<APIResponse>(jsonString);
+                        // Gán vào biến response để trả ra ngoài
+                        response = apiRes;
+                        }
+                    else
+                        {
+                        response.IsSuccess = false;
+                        response.Message = $"Không tìm thấy subject với ID: {subjectId}";
+                        }
+                    }
+                }
+            catch(Exception ex)
+                {
+                response.IsSuccess = false;
+                response.Message = $"Lỗi khi gọi API Subject: {ex.Message}";
+                }
+            return response;
+            }
         #endregion
 
         #region Get Class Subject
@@ -268,6 +420,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                             TeacherId = s.TeacherId,
                             Date = s.Date,
                             Status = s.Status,
+                            RoomId = s.RoomId
                             })
                         .ToList();
 					aPIResponse.Result = schedules;

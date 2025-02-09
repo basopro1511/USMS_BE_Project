@@ -67,5 +67,13 @@ namespace SchedulerService.Controllers.RoomController
             aPIResponse = _roomService.ChangeRoomStatus(id,status);
             return aPIResponse;
         }
-    }
+
+        [HttpGet("AvailableRooms/{date}/{slotId}")]
+        public APIResponse GetAvailableRooms( DateOnly date,int slotId)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse = _roomService.GetAvailableRooms(date, slotId);
+            return aPIResponse;
+            }
+        }
 }

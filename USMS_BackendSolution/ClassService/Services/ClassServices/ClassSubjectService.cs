@@ -138,7 +138,7 @@ namespace Services.ClassServices
             if(classSubjects == null || classSubjects.Count == 0)
                 {
                 aPIResponse.IsSuccess = false;
-                aPIResponse.Message = "ClassSubjects with Id: " + id + " is not found";
+                aPIResponse.Message = "Lớp với mã :" + id + " Không tìm thấy !";
                 }
             aPIResponse.Result = classSubjects;
             return aPIResponse;
@@ -158,7 +158,7 @@ namespace Services.ClassServices
             if(classSubjects == null || classSubjects.Count == 0)
                 {
                 aPIResponse.IsSuccess = false;
-                aPIResponse.Message = "ClassSubjects is not found";
+                aPIResponse.Message = "Không tìm thấy lớp học";
                 }
             aPIResponse.Result = classSubjects;
             return aPIResponse;
@@ -213,7 +213,7 @@ namespace Services.ClassServices
                     return new APIResponse
                         {
                         IsSuccess = false,
-                        Message = "Class Subject with the given ID is not exists."
+                        Message = "Lớp học với mã cung cấp không tồn tại."
                         };
                     }
                 bool isAdded = _classRepository.UpdateClassSubject(classSubject);
@@ -248,7 +248,7 @@ namespace Services.ClassServices
                     return new APIResponse
                         {
                         IsSuccess = false,
-                        Message = "Class Subject with the given ID is not exists."
+                        Message = "Lớp học với mã lớp đã cung cấp không tồn tại!"
                         };
                     }
                 bool isSuccess = _classRepository.ChangeStatusClassSubject(id);
@@ -257,13 +257,13 @@ namespace Services.ClassServices
                     return new APIResponse
                         {
                         IsSuccess = true,
-                        Message = "Class Subject change status successfully."
+                        Message = "Thay đổi trạng thái lớp học thành công ."
                         };
                     }
                 return new APIResponse
                     {
                     IsSuccess = false,
-                    Message = "Failed to change status of Class Subject."
+                    Message = "Thay đổi trạng thái lớp học thất bại."
                     };
                 }
         #endregion

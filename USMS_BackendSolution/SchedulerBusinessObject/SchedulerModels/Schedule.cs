@@ -34,6 +34,9 @@ namespace SchedulerBusinessObject.SchedulerModels
         [Required]
         [Column(TypeName = "INT")]
         public int Status { get; set; }
+
+        public int SlotNoInSubject { get; set; }
+
         [JsonIgnore]
         public virtual TimeSlot Slot { get; set; }
         [JsonIgnore]

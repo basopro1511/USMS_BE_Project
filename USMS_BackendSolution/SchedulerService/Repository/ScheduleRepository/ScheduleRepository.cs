@@ -61,15 +61,15 @@ namespace Repositories.ScheduleRepository
         /// <param name="slotId"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<List<Schedule>?> GetSchedulesByDateAndSlot(DateOnly date, int slotId)
+        public  List<Schedule>? GetSchedulesByDateAndSlot(DateOnly date, int slotId)
             {
             try
                 {
                 using(var dbContext = new MyDbContext())
                     {
-                    return await dbContext.Schedule.Where(s => s.Status == 1 &&
+                    return  dbContext.Schedule.Where(s => s.Status == 1 &&
                                                                 s.Date == date &&
-                                                                s.SlotId == slotId).ToListAsync();
+                                                                s.SlotId == slotId).ToList();
                     }
                 }
             catch(Exception ex)
@@ -128,6 +128,28 @@ namespace Repositories.ScheduleRepository
                 {
                 throw new Exception(ex.Message);
                 }
+            }
+        #endregion
+
+        #region Get Schedules By ClassSubjectId
+        /// <summary>
+        /// Lấy danh sách lịch (Schedule) theo ClassSubjectId
+        /// </summary>
+        /// <param name="classSubjectId">Id của ClassSubject</param>
+        /// <returns>Danh sách Schedule</returns>
+        public  List<Schedule> GetSchedulesByClassSubjectId(int classSubjectId)
+            {
+            try
+                {
+                var dbContext = new MyDbContext();
+                List<Schedule> schedules = dbContext.Schedule.Where(s => s.ClassSubjectId == classSubjectId)
+                                 .ToList();
+                return schedules;
+                }
+            catch(Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }                              
             }
         #endregion
 
