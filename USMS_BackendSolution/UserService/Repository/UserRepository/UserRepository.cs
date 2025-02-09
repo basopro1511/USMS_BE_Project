@@ -3,14 +3,9 @@ using BusinessObject.ModelDTOs;
 using BusinessObject.Models;
 using ISUZU_NEXT.Server.Core.Extentions;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 namespace UserService.Repository.UserRepository
 {
-    public class UserRepository : IUserRepository
+	public class UserRepository : IUserRepository
     {
         /// <summary>
         /// show a list full of user

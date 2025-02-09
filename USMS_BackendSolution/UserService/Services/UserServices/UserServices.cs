@@ -1,20 +1,15 @@
-﻿using UserService.Repository.UserRepository;
-using BusinessObject;
+﻿using BusinessObject;
 using BusinessObject.ModelDTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using ISUZU_NEXT;
-using ISUZU_NEXT.Server.Core.Extentions;
-namespace UserService.Services.UserService
+using UserService.Repository.UserRepository;
+namespace UserService.Services.UserServices
 {
-    public class UserService
+	public class UserServices
     {
         private readonly IUserRepository _userRepository;
 
-        public UserService()
+        public UserServices()
         {
             _userRepository = new UserRepository();
         }

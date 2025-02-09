@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SchedulerBusinessObject.ModelDTOs
+﻿namespace SchedulerBusinessObject.ModelDTOs
 {
-    public class ScheduleDTO
+	public class ScheduleDTO
     {
-        public int ClassScheduleId { get; set; }
+        public int ScheduleId { get; set; }
         public int ClassSubjectId { get; set; }
         public int SlotId { get; set; }
         public string RoomId { get; set; }
@@ -22,7 +14,7 @@ namespace SchedulerBusinessObject.ModelDTOs
 
     public class ViewScheduleDTO
         {
-        public int ClassScheduleId { get; set; }
+        public int ScheduleId { get; set; }
         public int ClassSubjectId { get; set; }
         public string ClassId { get; set; }     
         public string SubjectId { get; set; }

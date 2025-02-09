@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BusinessObject.ModelDTOs
+﻿namespace BusinessObject.ModelDTOs
 {
-    public class UserDTO
+	public class UserDTO
     {
         public string UserId { get; set; }
         public string FirstName { get; set; }

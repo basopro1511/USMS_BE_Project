@@ -1,13 +1,7 @@
 ﻿using BusinessObject.ModelDTOs;
-using BusinessObject.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 namespace UserService.Repository.UserRepository
 {
-    public interface IUserRepository
+	public interface IUserRepository
     {
         public List<UserDTO> GetAllUser();
         public UserDTO GetUserById(string id);

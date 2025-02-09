@@ -1,18 +1,16 @@
 ﻿using BusinessObject;
 using BusinessObject.ModelDTOs;
-using UserService.Services;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 
 
 namespace UserService.Controllers.User
 {
-    [Microsoft.AspNetCore.Mvc.Route("api/[controller]")]
+	[Microsoft.AspNetCore.Mvc.Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly Services.UserService.UserService _userService;
-        public UserController(Services.UserService.UserService userService)
+        private readonly Services.UserServices.UserServices _userService;
+        public UserController(Services.UserServices.UserServices userService)
         {
             _userService = userService;
         }
