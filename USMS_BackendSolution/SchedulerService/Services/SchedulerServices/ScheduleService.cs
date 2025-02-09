@@ -9,101 +9,101 @@ using Services.RoomServices;
 using System.Text.Json;
 
 namespace SchedulerDataAccess.Services.SchedulerServices
-{
-	public class ScheduleService
-	{
-		private readonly RoomService _roomService;
-		private readonly IScheduleRepository _scheduleRepository;
-		private readonly HttpClient _httpClient;
-		public ScheduleService(HttpClient httpClient)
-		{
-			_scheduleRepository = new ScheduleRepository();
-			_roomService = new RoomService();
-			_httpClient = httpClient;
-		}
-		#region Get All Schedule
-		public APIResponse GetAllSchedule()
-		{
-			APIResponse aPIResponse = new APIResponse();
-			var schedule = _scheduleRepository.getAllSchedule();
-			if (schedule == null)
-			{
-				aPIResponse.IsSuccess = false;
-				aPIResponse.Message = "Don't have any schedule available!";
-			}
-			aPIResponse.Result = schedule;
-			return aPIResponse;
-		}
-		#endregion
-
-		#region Post Schedule
-		/// <summary>
-		/// Post Schedule
-		/// </summary>
-		/// <param name="schedule"></param>
-		/// <returns></returns>
-		public async Task<APIResponse> PostSchedule(ClassScheduleDTO schedule)
-		{
-			APIResponse aPIResponse = new APIResponse();
-			try
-			{
-				var classSubjectList = await GetClassSubjects();
-				if (classSubjectList == null)
-				{
-					aPIResponse.IsSuccess = false;
-					aPIResponse.Message = "Không tìm thấy bất kỳ lớp nào!";
-					return aPIResponse;
-				}
-				// Dựa theo ClassSubjectId tìm classSubject
-				var classSubject = classSubjectList.FirstOrDefault(cs => cs.ClassSubjectId == schedule.ClassSubjectId);
-				if (classSubject == null)
-				{
-					aPIResponse.IsSuccess = false;
-					aPIResponse.Message = "Không tìm thấy lớp này!";
-					return aPIResponse;
-				}
-				// Này lấy hết tất cả lớp của SE1702
-				var classSubjectOfClass = classSubjectList.Where(x => x.ClassId == classSubject.ClassId).ToList();
-				// Này lấy tất cả thời khóa biểu của ngày hôm đó ngay slot đó
-				var existingSchedules =  _scheduleRepository.GetSchedulesByDateAndSlot(schedule.Date, schedule.SlotId);
-				// Kiểm tra xung đột lịch học
-				if (CheckSlotConflict(classSubjectOfClass, existingSchedules))
-				{
-					aPIResponse.IsSuccess = false;
-					aPIResponse.Message = "Lớp này đã có tiết vào thời gian này!";
-					return aPIResponse;
-				}
-				// Kiểm tra tính hợp lệ của phòng học
-				var room = _roomService.GetRoomById(schedule.RoomId);
-				if (!room.IsSuccess)
-				{
-					aPIResponse.IsSuccess = false;
-					aPIResponse.Message = "Không tìm thấy phòng học!";
-					return aPIResponse;
-				}
-				// Kiểm tra xung đột phòng học
-				if (CheckRoomConflict(existingSchedules, schedule.RoomId))
-				{
-					aPIResponse.IsSuccess = false;
-					aPIResponse.Message = "Phòng đã được sử dụng vào thời gian này!";
-					return aPIResponse;
-				}
-				// Không có gì thay đổi thì thêm lịch mới
-				var newSchedule = new Schedule();
-				newSchedule.CopyProperties(schedule);
-				newSchedule.Status = 1;
-				await _scheduleRepository.AddSchedule(newSchedule);
-				aPIResponse.IsSuccess = true;
-				aPIResponse.Message = "Thêm thời khóa biểu thành công!";
-			}
-			catch (Exception ex)
-			{
-				aPIResponse.IsSuccess = false;
-				aPIResponse.Message = ex.Message;
-			}
-			return aPIResponse;
-		}
+    {
+    public class ScheduleService
+        {
+        private readonly RoomService _roomService;
+        private readonly IScheduleRepository _scheduleRepository;
+        private readonly HttpClient _httpClient;
+        public ScheduleService(HttpClient httpClient)
+            {
+            _scheduleRepository = new ScheduleRepository();
+            _roomService = new RoomService();
+            _httpClient = httpClient;
+            }
+        #region Get All Schedule
+        public APIResponse GetAllSchedule()
+            {
+            APIResponse aPIResponse = new APIResponse();
+            var schedule = _scheduleRepository.getAllSchedule();
+            if(schedule == null)
+                {
+                aPIResponse.IsSuccess = false;
+                aPIResponse.Message = "Don't have any schedule available!";
+                }
+            aPIResponse.Result = schedule;
+            return aPIResponse;
+            }
         #endregion
+
+        //#region Post Schedule
+        ///// <summary>
+        ///// Post Schedule
+        ///// </summary>
+        ///// <param name="schedule"></param>
+        ///// <returns></returns>
+        //public async Task<APIResponse> PostSchedule(ClassScheduleDTO schedule)
+        //{
+        //	APIResponse aPIResponse = new APIResponse();
+        //	try
+        //	{
+        //		var classSubjectList = await GetClassSubjects();
+        //		if (classSubjectList == null)
+        //		{
+        //			aPIResponse.IsSuccess = false;
+        //			aPIResponse.Message = "Không tìm thấy bất kỳ lớp nào!";
+        //			return aPIResponse;
+        //		}
+        //		// Dựa theo ClassSubjectId tìm classSubject
+        //		var classSubject = classSubjectList.FirstOrDefault(cs => cs.ClassSubjectId == schedule.ClassSubjectId);
+        //		if (classSubject == null)
+        //		{
+        //			aPIResponse.IsSuccess = false;
+        //			aPIResponse.Message = "Không tìm thấy lớp này!";
+        //			return aPIResponse;
+        //		}
+        //		// Này lấy hết tất cả lớp của SE1702
+        //		var classSubjectOfClass = classSubjectList.Where(x => x.ClassId == classSubject.ClassId).ToList();
+        //		// Này lấy tất cả thời khóa biểu của ngày hôm đó ngay slot đó
+        //		var existingSchedules =  _scheduleRepository.GetSchedulesByDateAndSlot(schedule.Date, schedule.SlotId);
+        //		// Kiểm tra xung đột lịch học
+        //		if (CheckSlotConflict(classSubjectOfClass, existingSchedules))
+        //		{
+        //			aPIResponse.IsSuccess = false;
+        //			aPIResponse.Message = "Lớp này đã có tiết vào thời gian này!";
+        //			return aPIResponse;
+        //		}
+        //		// Kiểm tra tính hợp lệ của phòng học
+        //		var room = _roomService.GetRoomById(schedule.RoomId);
+        //		if (!room.IsSuccess)
+        //		{
+        //			aPIResponse.IsSuccess = false;
+        //			aPIResponse.Message = "Không tìm thấy phòng học!";
+        //			return aPIResponse;
+        //		}
+        //		// Kiểm tra xung đột phòng học
+        //		if (CheckRoomConflict(existingSchedules, schedule.RoomId))
+        //		{
+        //			aPIResponse.IsSuccess = false;
+        //			aPIResponse.Message = "Phòng đã được sử dụng vào thời gian này!";
+        //			return aPIResponse;
+        //		}
+        //		// Không có gì thay đổi thì thêm lịch mới
+        //		var newSchedule = new Schedule();
+        //		newSchedule.CopyProperties(schedule);
+        //		newSchedule.Status = 1;
+        //		await _scheduleRepository.AddSchedule(newSchedule);
+        //		aPIResponse.IsSuccess = true;
+        //		aPIResponse.Message = "Thêm thời khóa biểu thành công!";
+        //	}
+        //	catch (Exception ex)
+        //	{
+        //		aPIResponse.IsSuccess = false;
+        //		aPIResponse.Message = ex.Message;
+        //	}
+        //	return aPIResponse;
+        //}
+        //      #endregion
 
         #region Post Schedule (kết hợp check conflict & SlotNoInSubject)
         /// <summary>
@@ -166,7 +166,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                     .ToList();
 
                 // 6. Lấy tất cả lịch học đã có ở cùng ngày + slotId => Check xung đột
-                var existingSchedules =  _scheduleRepository.GetSchedulesByDateAndSlot(schedule.Date, schedule.SlotId);
+                var existingSchedules = _scheduleRepository.GetSchedulesByDateAndSlot(schedule.Date, schedule.SlotId);
 
                 // 7. Check xung đột lịch học (logic cũ)
                 if(CheckSlotConflict(classSubjectOfClass, existingSchedules))
@@ -193,12 +193,11 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                     return aPIResponse;
                     }
 
-                // 10. Không có gì xung đột, tiến hành thêm lịch mới
+                // 10. Không có xung đột, tiến hành thêm lịch mới
                 var newSchedule = new Schedule();
-                newSchedule.CopyProperties(schedule); // chép các trường: ClassSubjectId, Date, SlotId, ...
-                newSchedule.Status = 1;              // hoặc schedule.Status, tuỳ
-                                                     // => Quan trọng: trường SlotNoInSubject cũng cần copy
-                newSchedule.SlotNoInSubject = schedule.SlotNoInSubject;
+                newSchedule.CopyProperties(schedule);
+                newSchedule.Status = 1;
+                newSchedule.SlotNoInSubject = nextSlotNoInSubject;
 
                 await _scheduleRepository.AddSchedule(newSchedule);
 
@@ -257,33 +256,33 @@ namespace SchedulerDataAccess.Services.SchedulerServices
             }
         #endregion
 
-        #region Get Class Subject
+        #region Get Class Subjec ( Gọi qua API )
         /// <summary>
         /// Get ClassSubjectOfClass
         /// </summary>
         /// <returns></returns>
         private async Task<List<ClassSubjectDTO>?> GetClassSubjects()
-		{
-			// Lấy danh sách ClassSubject từ API
-			var response = await _httpClient.GetAsync("https://localhost:7067/api/ClassSubject");
-			var apiResponse = await response.Content.ReadFromJsonAsync<APIResponse>();
-			if (apiResponse == null || !apiResponse.IsSuccess)
-			{
-				return null;
-			}
-			//Nhận dạng là một Json
-			var classSubjectResponse = apiResponse.Result as JsonElement?;
-			if (classSubjectResponse == null)
-			{
-				return null;
-			}
+            {
+            // Lấy danh sách ClassSubject từ API
+            var response = await _httpClient.GetAsync("https://localhost:7067/api/ClassSubject");
+            var apiResponse = await response.Content.ReadFromJsonAsync<APIResponse>();
+            if(apiResponse == null || !apiResponse.IsSuccess)
+                {
+                return null;
+                }
+            //Nhận dạng là một Json
+            var classSubjectResponse = apiResponse.Result as JsonElement?;
+            if(classSubjectResponse == null)
+                {
+                return null;
+                }
 
-			var options = new JsonSerializerOptions
-			{
-				PropertyNameCaseInsensitive = true
-			};
-			return classSubjectResponse.Value.Deserialize<List<ClassSubjectDTO>>(options);
-		}
+            var options = new JsonSerializerOptions
+                {
+                PropertyNameCaseInsensitive = true
+                };
+            return classSubjectResponse.Value.Deserialize<List<ClassSubjectDTO>>(options);
+            }
         #endregion
 
         #region Check Slot Conflict
@@ -294,15 +293,15 @@ namespace SchedulerDataAccess.Services.SchedulerServices
         /// <param name="existingSchedules"></param>
         /// <returns></returns>
         private bool CheckSlotConflict(List<ClassSubjectDTO> classSubjectOfClass, List<Schedule>? existingSchedules)
-		{
-			if (existingSchedules == null || existingSchedules.Count == 0)
-			{
-				return false;
-			}
-			return existingSchedules.Any(cs =>
-											classSubjectOfClass.Any(csc =>
-																		csc.ClassSubjectId == cs.ClassSubjectId));
-		}
+            {
+            if(existingSchedules == null || existingSchedules.Count == 0)
+                {
+                return false;
+                }
+            return existingSchedules.Any(cs =>
+                                            classSubjectOfClass.Any(csc =>
+                                                                        csc.ClassSubjectId == cs.ClassSubjectId));
+            }
         #endregion
 
         #region Check Room Conflict
@@ -313,18 +312,18 @@ namespace SchedulerDataAccess.Services.SchedulerServices
         /// <param name="roomId"></param>
         /// <returns></returns>
         private bool CheckRoomConflict(List<Schedule>? existingSchedules, string roomId)
-		{
-			return (existingSchedules != null &&
-				existingSchedules.Any(es =>
-										es.RoomId == roomId));
-		}
+            {
+            return (existingSchedules != null &&
+                existingSchedules.Any(es =>
+                                        es.RoomId == roomId));
+            }
         #endregion
 
-        #region Get Class SubjectIds by Student Id
-		private List<int> getClassSubjectIdsByStudentIds(string id)
-			{
-			try
-				{
+        #region Get Class SubjectIds by Student Id ( Gọi qua API Student In Class )
+        private List<int> getClassSubjectIdsByStudentIds(string id)
+            {
+            try
+                {
                 var response = _httpClient.GetAsync($"https://localhost:7067/api/StudentInClass/ClassSubject/{id}").Result;
                 var apiResponse = response.Content.ReadFromJsonAsync<APIResponse>().Result;
                 if(apiResponse == null || !apiResponse.IsSuccess)
@@ -349,7 +348,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
             }
         #endregion
 
-        #region Get Class SubjectIds by MajorId, ClassId, SubjectId
+        #region Get Class SubjectIds by MajorId, ClassId, SubjectId ( Gọi qua API Class Subject )
         private List<ClassSubjectDTO> getClassSubjectIdsByMajorIdClassIdSubjectId(string majorId, string classId, int term)
             {
             try
@@ -382,7 +381,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
         public APIResponse GetClassSchedulesByStudentIds(string studentId)
             {
             APIResponse aPIResponse = new APIResponse();
-			var classSubjectIds = getClassSubjectIdsByStudentIds(studentId);
+            var classSubjectIds = getClassSubjectIdsByStudentIds(studentId);
             aPIResponse.Result = _scheduleRepository.GetClassSchedulesByClassSubjectIds(classSubjectIds);
             return aPIResponse;
             }
@@ -394,15 +393,15 @@ namespace SchedulerDataAccess.Services.SchedulerServices
             APIResponse aPIResponse = new APIResponse();
             try
                 {
-				var classSubjects = getClassSubjectIdsByMajorIdClassIdSubjectId(majorId, classId, term);
-					if(classSubjects == null)
+                var classSubjects = getClassSubjectIdsByMajorIdClassIdSubjectId(majorId, classId, term);
+                if(classSubjects == null)
                     {
                     aPIResponse.IsSuccess = false;
                     aPIResponse.Message = "Không tìm thấy bất kỳ lớp nào!";
                     return aPIResponse;
                     };
-				List<int> classSubjectIds = classSubjects.Select(s => s.ClassSubjectId).ToList();
-        Dictionary<int, string> subjectMap = classSubjects.ToDictionary(s => s.ClassSubjectId, s => s.SubjectId);
+                List<int> classSubjectIds = classSubjects.Select(s => s.ClassSubjectId).ToList();
+                Dictionary<int, string> subjectMap = classSubjects.ToDictionary(s => s.ClassSubjectId, s => s.SubjectId);
                 using(var _dbContext = new MyDbContext())
                     {
                     var schedules = _dbContext.Schedule
@@ -413,17 +412,18 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                             {
                             ClassScheduleId = s.ScheduleId,
                             ClassSubjectId = s.ClassSubjectId,
-							ClassId = classId,
-							MajorId = majorId,
+                            ClassId = classId,
+                            MajorId = majorId,
                             SubjectId = subjectMap.ContainsKey(s.ClassSubjectId) ? subjectMap[s.ClassSubjectId] : null, // Lấy SubjectId theo ClassSubjectId
                             SlotId = s.SlotId,
                             TeacherId = s.TeacherId,
                             Date = s.Date,
                             Status = s.Status,
-                            RoomId = s.RoomId
+                            RoomId = s.RoomId,
+                            SlotNoInSubject = s.SlotNoInSubject
                             })
                         .ToList();
-					aPIResponse.Result = schedules;
+                    aPIResponse.Result = schedules;
 
                     }
                 return aPIResponse;
@@ -432,8 +432,122 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                 {
                 throw new Exception("An error occurred while fetching class schedules.", ex);
                 }
-			}
+            }
         #endregion
 
+        #region Put Schedule - Update Schedule
+        /// <summary>
+        /// Cập nhật 1 lịch học (schedule), có kiểm tra xung đột
+        /// </summary>
+        public async Task<APIResponse> UpdateSchedule(ScheduleDTO scheduleDto)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            try
+                {
+                // 1. Kiểm tra xem lịch học cần cập nhật có tồn tại không
+                var existingSchedule = _scheduleRepository.GetScheduleById(scheduleDto.ClassScheduleId);
+                if(existingSchedule == null)
+                    {
+                    aPIResponse.IsSuccess = false;
+                    aPIResponse.Message = "Không tìm thấy lịch học cần cập nhật!";
+                    return aPIResponse;
+                    }
+                // 2. Lấy danh sách ClassSubject (các lớp - môn học)
+                var classSubjectList = await GetClassSubjects();
+                if(classSubjectList == null || classSubjectList.Count == 0)
+                    {
+                    aPIResponse.IsSuccess = false;
+                    aPIResponse.Message = "Không tìm thấy bất kỳ lớp nào!";
+                    return aPIResponse;
+                    }
+                // 3. Tìm ClassSubject tương ứng với scheduleDto.ClassSubjectId
+                var classSubject = classSubjectList.FirstOrDefault(cs => cs.ClassSubjectId == scheduleDto.ClassSubjectId);
+                if(classSubject == null)
+                    {
+                    aPIResponse.IsSuccess = false;
+                    aPIResponse.Message = "Không tìm thấy lớp này!";
+                    return aPIResponse;
+                    }
+                // 4. Lấy môn học (Subject) tương ứng
+                var subjectRes = await GetSubjectById(classSubject.SubjectId);
+                if(subjectRes == null || !subjectRes.IsSuccess || subjectRes.Result == null)
+                    {
+                    aPIResponse.IsSuccess = false;
+                    aPIResponse.Message = "Không lấy được môn học tương ứng!";
+                    return aPIResponse;
+                    }
+                // 5. Lấy danh sách tất cả ClassSubject cùng ClassId (cùng lớp)
+                var classSubjectOfClass = classSubjectList
+                    .Where(x => x.ClassId == classSubject.ClassId)
+                    .ToList();
+                // 6. Kiểm tra xung đột lịch học theo ngày & slot (Không được trùng lịch của chính lớp này)
+                var existingSchedules = _scheduleRepository.GetSchedulesByDateAndSlot(scheduleDto.Date, scheduleDto.SlotId)
+                    .Where(sch => sch.ClassSubjectId != scheduleDto.ClassSubjectId) // Không kiểm tra chính nó
+                    .ToList();
+                if(existingSchedules.Any())
+                    {
+                    aPIResponse.IsSuccess = false;
+                    aPIResponse.Message = "Có lớp khác có tiết vào thời gian này!";
+                    return aPIResponse;
+                    }
+                // 7. Kiểm tra xung đột phòng học
+                var room = _roomService.GetRoomById(scheduleDto.RoomId);
+                if(!room.IsSuccess || room.Result == null)
+                    {
+                    aPIResponse.IsSuccess = false;
+                    aPIResponse.Message = "Không tìm thấy phòng học!";
+                    return aPIResponse;
+                    }
+                // Kiểm tra xem phòng đã có lịch trong cùng ngày + slot chưa
+                var roomConflict = _scheduleRepository.GetSchedulesByDateAndSlot(scheduleDto.Date, scheduleDto.SlotId)
+                    .Any(sch => sch.RoomId == scheduleDto.RoomId);
+                if(roomConflict)
+                    {
+                    aPIResponse.IsSuccess = false;
+                    aPIResponse.Message = "Nếu không có bất kì thay đổi nào hãy nhấn nút 'Hủy' để giữ nguyên lịch học";
+                    return aPIResponse;
+                    }
+                // 8. Cập nhật thông tin mới cho lịch học
+                existingSchedule.CopyProperties(scheduleDto);
+                existingSchedule.Status = scheduleDto.Status;
+
+                _scheduleRepository.UpdateSchedule(existingSchedule);
+
+                aPIResponse.IsSuccess = true;
+                aPIResponse.Message = "Cập nhật thời khóa biểu thành công!";
+                }
+            catch(Exception ex)
+                {
+                aPIResponse.IsSuccess = false;
+                aPIResponse.Message = ex.Message;
+                }
+            return aPIResponse;
+            }
+        #endregion
+
+        #region Delete Schedule
+        public APIResponse DeleteSchedule(int scheduleId)
+            {
+            APIResponse response = new APIResponse();
+            try
+                {
+                var result = _scheduleRepository.DeleteScheduleById(scheduleId);
+                if(!result)
+                    {
+                    response.IsSuccess = false;
+                    response.Message = "Không tìm thấy lịch học để xóa!";
+                    return response;
+                    }
+                response.IsSuccess = true;
+                response.Message = "Xóa lịch học thành công!";
+                }
+            catch(Exception ex)
+                {
+                response.IsSuccess = false;
+                response.Message = $"Lỗi khi xóa lịch học: {ex.Message}";
+                }
+            return response;
+            }
+        #endregion
         }
     }
