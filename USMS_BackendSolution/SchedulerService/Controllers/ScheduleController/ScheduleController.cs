@@ -33,7 +33,13 @@ namespace SchedulerService.Controllers.Schedule
 			return aPIResponse;
 		}
 
-
+        [HttpPut]
+        public async Task<APIResponse> UpdateSchedule(ScheduleDTO schedule)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse = await _scheduleService.UpdateSchedule(schedule);
+            return aPIResponse;
+            }
 
         // GET: api/Customers
         [HttpGet("{id}")]
@@ -52,6 +58,14 @@ namespace SchedulerService.Controllers.Schedule
             aPIResponse = _scheduleService.GetClassSchedulesForClass(majorId,classId, term, startDay,endDay);
             return aPIResponse;
             }
-  
+
+        [HttpDelete("{id}")]
+        public APIResponse DeleteSchedule(int id)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse = _scheduleService.DeleteSchedule(id);
+            return aPIResponse;
+            }
+
+        }
     }
-}

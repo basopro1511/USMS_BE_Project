@@ -29,6 +29,33 @@ namespace Repositories.ScheduleRepository
             }
         #endregion
 
+        #region Get Schedule by Id
+        /// <summary>
+        /// Get Schedule By ClassScheduleId
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public ScheduleDTO GetScheduleById(int classScheduleId)
+            {
+            try
+                {
+                var dbContext = new MyDbContext();
+                Schedule schedule = getAllSchedule().FirstOrDefault(x => x.ScheduleId == classScheduleId);
+                if(schedule == null)
+                    {
+                    return null; // Không tìm thấy lịch học => trả về null
+                    }
+                ScheduleDTO scheduleDto = new ScheduleDTO();
+                scheduleDto.CopyProperties(schedule);
+                return scheduleDto;
+                }
+            catch(Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
         #region Add Schedule
         /// <summary>
         /// Add Schedule
@@ -61,13 +88,13 @@ namespace Repositories.ScheduleRepository
         /// <param name="slotId"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public  List<Schedule>? GetSchedulesByDateAndSlot(DateOnly date, int slotId)
+        public List<Schedule>? GetSchedulesByDateAndSlot(DateOnly date, int slotId)
             {
             try
                 {
                 using(var dbContext = new MyDbContext())
                     {
-                    return  dbContext.Schedule.Where(s => s.Status == 1 &&
+                    return dbContext.Schedule.Where(s => s.Status == 1 &&
                                                                 s.Date == date &&
                                                                 s.SlotId == slotId).ToList();
                     }
@@ -137,7 +164,7 @@ namespace Repositories.ScheduleRepository
         /// </summary>
         /// <param name="classSubjectId">Id của ClassSubject</param>
         /// <returns>Danh sách Schedule</returns>
-        public  List<Schedule> GetSchedulesByClassSubjectId(int classSubjectId)
+        public List<Schedule> GetSchedulesByClassSubjectId(int classSubjectId)
             {
             try
                 {
@@ -149,9 +176,64 @@ namespace Repositories.ScheduleRepository
             catch(Exception ex)
                 {
                 throw new Exception(ex.Message);
-                }                              
+                }
             }
         #endregion
 
+
+        #region Update Schedule
+        /// <summary>
+        /// Update Schedule
+        /// </summary>
+        /// <param name="scheduleDto"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool UpdateSchedule(ScheduleDTO scheduleDto)
+            {
+            try
+                {
+                using(var dbContext = new MyDbContext())
+                    {
+                    var schedule = dbContext.Schedule.FirstOrDefault(x => x.ScheduleId == scheduleDto.ClassScheduleId);
+                    if(schedule == null)
+                        return false;
+                    schedule.CopyProperties(scheduleDto); 
+                    dbContext.Entry(schedule).State = EntityState.Modified;
+                    dbContext.SaveChanges();
+                    }
+                return true;
+                }
+            catch(Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
+        #region Delete Schedule
+        /// <summary>
+        /// Delete Schedule bởi Id
+        /// </summary>
+        /// <param name="schedule"></param>
+        public bool DeleteScheduleById(int scheduleId)
+            {
+            try
+                {
+                using(var dbContext = new MyDbContext())
+                    {                                                                                   
+                    var schedule = dbContext.Schedule.FirstOrDefault(s => s.ScheduleId == scheduleId);
+                    if(schedule == null)
+                        return false; 
+                    dbContext.Schedule.Remove(schedule);
+                    dbContext.SaveChanges();
+                    return true; 
+                    }
+                }
+            catch(Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
         }
     }
