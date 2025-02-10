@@ -180,7 +180,6 @@ namespace Repositories.ScheduleRepository
             }
         #endregion
 
-
         #region Update Schedule
         /// <summary>
         /// Update Schedule
