@@ -12,8 +12,8 @@ using SchedulerBusinessObject.AppDBContext;
 namespace SchedulerBusinessObject.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20250206103259_init")]
-    partial class init
+    [Migration("20250211124119_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -73,7 +73,6 @@ namespace SchedulerBusinessObject.Migrations
             modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.Room", b =>
                 {
                     b.Property<string>("RoomId")
-                        .HasMaxLength(6)
                         .HasColumnType("NVARCHAR(6)");
 
                     b.Property<DateTime>("CreateAt")
@@ -82,17 +81,11 @@ namespace SchedulerBusinessObject.Migrations
                     b.Property<string>("Location")
                         .HasColumnType("NVARCHAR(100)");
 
-                    b.Property<string>("OnlineURL")
-                        .HasColumnType("NVARCHAR(MAX)");
-
                     b.Property<int>("Status")
                         .HasColumnType("INT");
 
                     b.Property<DateTime>("UpdateAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<bool>("isOnline")
-                        .HasColumnType("BIT");
 
                     b.HasKey("RoomId");
 
@@ -101,22 +94,83 @@ namespace SchedulerBusinessObject.Migrations
                     b.HasData(
                         new
                         {
-                            RoomId = "G304",
-                            CreateAt = new DateTime(2025, 2, 6, 17, 32, 58, 681, DateTimeKind.Local).AddTicks(4781),
-                            Location = "Grammar Room 304",
+                            RoomId = "G201",
+                            CreateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4358),
+                            Location = "Grammar Room 201",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 2, 6, 17, 32, 58, 681, DateTimeKind.Local).AddTicks(4791),
-                            isOnline = false
+                            UpdateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4368)
                         },
                         new
                         {
-                            RoomId = "R.ON",
-                            CreateAt = new DateTime(2025, 2, 6, 17, 32, 58, 681, DateTimeKind.Local).AddTicks(4793),
-                            Location = "Online",
-                            OnlineURL = "https://meet.google.com/koi-kghw-tsy",
+                            RoomId = "G202",
+                            CreateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4370),
+                            Location = "Grammar Room 202",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 2, 6, 17, 32, 58, 681, DateTimeKind.Local).AddTicks(4794),
-                            isOnline = true
+                            UpdateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4371)
+                        },
+                        new
+                        {
+                            RoomId = "G203",
+                            CreateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4372),
+                            Location = "Grammar Room 203",
+                            Status = 1,
+                            UpdateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4373)
+                        },
+                        new
+                        {
+                            RoomId = "G204",
+                            CreateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4374),
+                            Location = "Grammar Room 204",
+                            Status = 1,
+                            UpdateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4375)
+                        },
+                        new
+                        {
+                            RoomId = "G205",
+                            CreateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4376),
+                            Location = "Grammar Room 205",
+                            Status = 1,
+                            UpdateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4376)
+                        },
+                        new
+                        {
+                            RoomId = "G301",
+                            CreateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4378),
+                            Location = "Grammar Room 301",
+                            Status = 1,
+                            UpdateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4378)
+                        },
+                        new
+                        {
+                            RoomId = "G302",
+                            CreateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4379),
+                            Location = "Grammar Room 302",
+                            Status = 1,
+                            UpdateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4380)
+                        },
+                        new
+                        {
+                            RoomId = "G303",
+                            CreateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4381),
+                            Location = "Grammar Room 303",
+                            Status = 1,
+                            UpdateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4381)
+                        },
+                        new
+                        {
+                            RoomId = "G304",
+                            CreateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4382),
+                            Location = "Grammar Room 304",
+                            Status = 1,
+                            UpdateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4383)
+                        },
+                        new
+                        {
+                            RoomId = "G305",
+                            CreateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4384),
+                            Location = "Grammar Room 305",
+                            Status = 1,
+                            UpdateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4384)
                         });
                 });
 
@@ -136,7 +190,6 @@ namespace SchedulerBusinessObject.Migrations
 
                     b.Property<string>("RoomId")
                         .IsRequired()
-                        .HasMaxLength(6)
                         .HasColumnType("NVARCHAR(6)");
 
                     b.Property<int>("SlotId")
@@ -159,6 +212,28 @@ namespace SchedulerBusinessObject.Migrations
                     b.HasIndex("SlotId");
 
                     b.ToTable("Schedule");
+                });
+
+            modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.StudentInExamSchedule", b =>
+                {
+                    b.Property<int>("StudentExamId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INT");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentExamId"));
+
+                    b.Property<int>("ExamScheduleId")
+                        .HasColumnType("INT");
+
+                    b.Property<string>("StudentId")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR(8)");
+
+                    b.HasKey("StudentExamId");
+
+                    b.HasIndex("ExamScheduleId");
+
+                    b.ToTable("StudentInExamSchedule");
                 });
 
             modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.TimeSlot", b =>
@@ -237,6 +312,20 @@ namespace SchedulerBusinessObject.Migrations
                     b.Navigation("Room");
 
                     b.Navigation("Slot");
+                });
+
+            modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.StudentInExamSchedule", b =>
+                {
+                    b.HasOne("SchedulerBusinessObject.SchedulerModels.ExamSchedule", null)
+                        .WithMany("StudentInExamSchedules")
+                        .HasForeignKey("ExamScheduleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.ExamSchedule", b =>
+                {
+                    b.Navigation("StudentInExamSchedules");
                 });
 
             modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.Room", b =>
