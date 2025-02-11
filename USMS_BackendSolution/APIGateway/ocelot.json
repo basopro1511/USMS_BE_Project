@@ -1,7 +1,7 @@
 {
-  "GlobalConfiguration": {
-    "BaseUrl": "https://localhost:7067"
-  },
+    "GlobalConfiguration": {
+        "BaseUrl": "https://localhost:7067"
+    },
     "Routes": [
         /* Room API Start */
         {
@@ -338,46 +338,47 @@
             "UpstreamHttpMethod": [ "GET" ]
         },
         /* Student In Class API End */
-      
-         /* Student API Start */
-   {
-       "DownstreamPathTemplate": "/api/Student",
-       "DownstreamScheme": "https",
-       "DownstreamHostAndPorts": [
-           {
-               "Host": "localhost",
-               "Port": 7179
-           }
-       ],
-       "UpstreamPathTemplate": "/api/Student",
-       "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
-   },
-   {
-       "DownstreamPathTemplate": "/api/Student/{id}",
-       "DownstreamScheme": "https",
-       "DownstreamHostAndPorts": [
-           {
-               "Host": "localhost",
-               "Port": 7179
-           }
-       ],
-       "UpstreamPathTemplate": "/api/Student/{id}",
-       "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
-   },
-   /* Student API End */
-   /* User API Start */
-    {
-      "DownstreamPathTemplate": "/api/User/{id}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
+
+        /* Student API Start */
         {
-          "Host": "localhost",
-          "Port": 7179
-        }
-      ],
-      "UpstreamPathTemplate": "/api/User/{id}",
-      "UpstreamHttpMethod": [ "GET" ]
-    },
-    /* User API End */
+            "DownstreamPathTemplate": "/api/Student",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7179
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Student",
+            "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Student/{id}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7179
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Student/{id}",
+            "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+        },
+        /* Student API End */
+
+        /* User API Start */
+        {
+            "DownstreamPathTemplate": "/api/User/{id}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7179
+                }
+            ],
+            "UpstreamPathTemplate": "/api/User/{id}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        /* User API End */
     ]
 }
