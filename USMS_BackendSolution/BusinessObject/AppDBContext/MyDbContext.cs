@@ -1,4 +1,4 @@
-﻿using BusinessObject.Models;
+using BusinessObject.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;

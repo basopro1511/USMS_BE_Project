@@ -336,8 +336,36 @@
             ],
             "UpstreamPathTemplate": "/api/StudentInClass/ClassSubject/{id}",
             "UpstreamHttpMethod": [ "GET" ]
-        }
+        },
         /* Student In Class API End */
+      
+         /* Student API Start */
+   {
+       "DownstreamPathTemplate": "/api/Student",
+       "DownstreamScheme": "https",
+       "DownstreamHostAndPorts": [
+           {
+               "Host": "localhost",
+               "Port": 7179
+           }
+       ],
+       "UpstreamPathTemplate": "/api/Student",
+       "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+   },
+   {
+       "DownstreamPathTemplate": "/api/Student/{id}",
+       "DownstreamScheme": "https",
+       "DownstreamHostAndPorts": [
+           {
+               "Host": "localhost",
+               "Port": 7179
+           }
+       ],
+       "UpstreamPathTemplate": "/api/Student/{id}",
+       "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+   }
+
+   /* Student API End */
     ]
 
 }
