@@ -189,7 +189,7 @@ namespace SchedulerService.Repository.ExamScheduleRepository
             {
                 using (var dbContext = new MyDbContext())
                 {
-                    var rooms = dbContext.Room.Where(r => r.Status == 1 && r.isOnline == false  && !dbContext.ExamSchedule. // Check room status is avaialbe or not 
+                    var rooms = dbContext.Room.Where(r => r.Status == 1 && !dbContext.ExamSchedule. // Check room status is avaialbe or not 
                     Any(es => es.RoomId == r.RoomId &&es.Date == date &&                             
                                        es.StartTime < endTime &&                                    // Determine if the time is overlap
                                        es.EndTime > startTime))                                     

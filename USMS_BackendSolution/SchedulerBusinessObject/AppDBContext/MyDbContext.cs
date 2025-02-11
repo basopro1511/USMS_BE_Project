@@ -36,16 +36,16 @@ namespace SchedulerBusinessObject.AppDBContext
 
             //Create Example Rooms, Status = 0 là đang disable, 1 là đang available, 2 là đang trì hoãn ( maintenance )
             modelBuilder.Entity<Room>().HasData(
-               new Room { RoomId="G201", Location="Grammar Room 201", isOnline=false, OnlineURL=null, Status=1, CreateAt=DateTime.Now, UpdateAt=DateTime.Now },
-               new Room { RoomId="G202", Location="Grammar Room 202", isOnline=false, OnlineURL=null, Status=1, CreateAt=DateTime.Now, UpdateAt=DateTime.Now },
-               new Room { RoomId="G203", Location="Grammar Room 203", isOnline=false, OnlineURL=null, Status=1, CreateAt=DateTime.Now, UpdateAt=DateTime.Now },
-               new Room { RoomId="G204", Location="Grammar Room 204", isOnline=false, OnlineURL=null, Status=1, CreateAt=DateTime.Now, UpdateAt=DateTime.Now },
-               new Room { RoomId="G205", Location="Grammar Room 205", isOnline=false, OnlineURL=null, Status=1, CreateAt=DateTime.Now, UpdateAt=DateTime.Now },
-               new Room { RoomId="G301", Location="Grammar Room 301", isOnline=false, OnlineURL=null, Status=1, CreateAt=DateTime.Now, UpdateAt=DateTime.Now },
-               new Room { RoomId="G302", Location="Grammar Room 302", isOnline=false, OnlineURL=null, Status=1, CreateAt=DateTime.Now, UpdateAt=DateTime.Now },
-               new Room { RoomId="G303", Location="Grammar Room 303", isOnline=false, OnlineURL=null, Status=1, CreateAt=DateTime.Now, UpdateAt=DateTime.Now },
-               new Room { RoomId="G304", Location="Grammar Room 304", isOnline=false, OnlineURL=null, Status=1, CreateAt=DateTime.Now, UpdateAt=DateTime.Now },
-               new Room { RoomId="G305", Location="Grammar Room 305", isOnline=false, OnlineURL=null, Status=1, CreateAt=DateTime.Now, UpdateAt=DateTime.Now }
+               new Room { RoomId="G201", Location="Grammar Room 201", Status=1, CreateAt=DateTime.Now, UpdateAt=DateTime.Now },
+               new Room { RoomId="G202", Location="Grammar Room 202", Status=1, CreateAt=DateTime.Now, UpdateAt=DateTime.Now },
+               new Room { RoomId="G203", Location="Grammar Room 203", Status=1, CreateAt=DateTime.Now, UpdateAt=DateTime.Now },
+               new Room { RoomId="G204", Location="Grammar Room 204", Status=1, CreateAt=DateTime.Now, UpdateAt=DateTime.Now },
+               new Room { RoomId="G205", Location="Grammar Room 205", Status=1, CreateAt=DateTime.Now, UpdateAt=DateTime.Now },
+               new Room { RoomId="G301", Location="Grammar Room 301", Status=1, CreateAt=DateTime.Now, UpdateAt=DateTime.Now },
+               new Room { RoomId="G302", Location="Grammar Room 302", Status=1, CreateAt=DateTime.Now, UpdateAt=DateTime.Now },
+               new Room { RoomId="G303", Location="Grammar Room 303", Status=1, CreateAt=DateTime.Now, UpdateAt=DateTime.Now },
+               new Room { RoomId="G304", Location="Grammar Room 304", Status=1, CreateAt=DateTime.Now, UpdateAt=DateTime.Now },
+               new Room { RoomId="G305", Location="Grammar Room 305", Status=1, CreateAt=DateTime.Now, UpdateAt=DateTime.Now }
             );
 
             //modelBuilder.Entity<ExamSchedule>().HasData(
