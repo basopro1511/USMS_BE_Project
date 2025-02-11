@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -8,18 +8,20 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace BusinessObject.Models
-{
-    public class Student
     {
+    public class Student
+        {
         [Key]
         [Column(TypeName = "NVARCHAR(8)")]
+        [ForeignKey("User")]
         public string StudentId { get; set; }
         [ForeignKey("Major")]
         [Column(TypeName = "NVARCHAR(4)")]
         public string? MajorId { get; set; }
         [Column(TypeName = "INT")]
-        public int Term {  get; set; }
+        public int Term { get; set; }
         [JsonIgnore]
-        public Major Major { get; set; }
+        public Major? Major { get; set; }
+        public virtual User? User { get; set; }
+        }
     }
-}

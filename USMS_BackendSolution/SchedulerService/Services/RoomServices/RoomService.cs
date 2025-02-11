@@ -6,15 +6,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Repositories.ScheduleRepository;
 
 namespace Services.RoomServices
 {
     public class RoomService
     {
         private readonly IRoomRepository _roomRepository;
+        private readonly IScheduleRepository _scheduleRepository;
+
         public RoomService()
         {
             _roomRepository = new RoomRepository();
+            _scheduleRepository = new ScheduleRepository();
         }
 
         #region Get All Room
@@ -49,7 +53,7 @@ namespace Services.RoomServices
             if (room == null)
             {
                 aPIResponse.IsSuccess = false;
-                aPIResponse.Message = "Room with RoomId: " + id + " is not found";
+                aPIResponse.Message = "Phòng học với mã: " + id + " không tìm thấy";
             }
             aPIResponse.Result = room;
             return aPIResponse;
@@ -230,5 +234,50 @@ namespace Services.RoomServices
         }
         #endregion
 
+        #region Get AvailableRoom
+        /// <summary>
+        /// Lấy danh sách phòng trống trong ngày date, slotId
+        /// </summary>
+        /// <param name="date">Ngày</param>
+        /// <param name="slotId">Slot (tiết)</param>
+        /// <returns>APIResponse với Result = danh sách phòng (List<Room>)</returns>
+        public APIResponse GetAvailableRooms(DateOnly date, int slotId)
+            {
+            APIResponse response = new APIResponse();
+            try
+                {
+     
+                var allRooms = _roomRepository.GetAllRooms();
+                if(allRooms == null || allRooms.Count == 0)
+                    {
+                    response.IsSuccess = false;
+                    response.Message = "Không có phòng nào trong hệ thống!";
+                    return response;
+                    }
+
+                // 2. Lấy các schedule có date & slotId = ...
+                var schedules = _scheduleRepository.GetSchedulesByDateAndSlot(date, slotId);
+                // 3. Lấy danh sách roomId đã bị chiếm
+                var usedRoomIds =  schedules.Select(sch => sch.RoomId).Distinct().ToHashSet();
+
+                // 4. Lọc ra các phòng còn trống
+                var availableRooms = allRooms
+                    .Where(r => !usedRoomIds.Contains(r.RoomId))
+                    .ToList();
+
+                // 5. Gói vào APIResponse
+                response.IsSuccess = true;
+                response.Message = "Lấy danh sách phòng trống thành công.";
+                response.Result = availableRooms; // hoặc map sang DTO RoomDTO
+                }
+            catch(Exception ex)
+                {
+                response.IsSuccess = false;
+                response.Message = "Lỗi: " + ex.Message;
+                }
+            return response;
+            }
+        #endregion
+
+        }
     }
-}

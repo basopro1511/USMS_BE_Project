@@ -31,6 +31,7 @@ namespace BusinessObject.ModelDTOs
         public string MajorId { get; set; }
         public string MajorName { get; set; }
         public int Status { get; set; }
+        public string Address { get; set; }
 
     }
     public class AddUserDTO
@@ -54,6 +55,7 @@ namespace BusinessObject.ModelDTOs
         public string PhoneNumber { get; set; }
         public int RoleId { get; set; }
         public int Status { get; set; }
+        public string Address { get; set; }
     }
 
     public class UpdateUserDTO
@@ -70,9 +72,10 @@ namespace BusinessObject.ModelDTOs
         public DateOnly DateOfBirth { get; set; }
         public string PersonalEmail { get; set; }
         public string PhoneNumber { get; set; }
+        public string Address { get; set; }
     }
-    public class UpdateStudentStatusDTO
-    {
-        public int Status { get; set; }
-    }
+    //public class UpdateStudentStatusDTO
+    //{
+    //    public int Status { get; set; }
+    //}
 }

@@ -11,6 +11,7 @@ namespace Services.SubjectServices
 		{
 			_subjectRepository = new SubjectRepository();
 		}
+
 		#region Get All Subjects
 		/// <summary>
 		/// Get All Subjects
@@ -226,7 +227,6 @@ namespace Services.SubjectServices
         }
         #endregion
   
-
         #region Get Subject by Major ID and Term
         public APIResponse GetSubjectByMajorIdAndTerm(string majorId, int term)
         {

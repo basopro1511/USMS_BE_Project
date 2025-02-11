@@ -5,6 +5,8 @@ using Repositories.SemesterRepository;
 using Services.ClassServices;
 using Services.SubjectServices;
 using Services.SemesterServices;
+using ClassService.Repositories.StudentInClassRepository;
+using ClassService.Services.StudentInClassServices;
 
 namespace SchedulerDataAccess.Core
 {
@@ -16,13 +18,15 @@ namespace SchedulerDataAccess.Core
             services.AddScoped<IClassRepository, ClassRepository>();
             services.AddScoped<ISubjectRepository, SubjectRepository>();
             services.AddScoped<ISemesterRepository, SemesterRepository>();
+            services.AddScoped<IStudentInClassRepository, StudentInClassRepository>();
             #endregion
 
             #region Register Service
             services.AddScoped<ClassSubjectService>();
             services.AddScoped<SubjectService>();
             services.AddScoped<SemesterService>();
+            services.AddScoped<StudentInClassService>();
             #endregion
-        }
+            }
     }
 }

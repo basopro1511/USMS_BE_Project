@@ -41,5 +41,6 @@ namespace ClassBusinessObject.Models
 
         [ForeignKey("SemesterId")]
         public virtual Semester? Semester { get; set; }
+
     }
 }

@@ -14,12 +14,10 @@ namespace ClassBusinessObject.Models
         [Column(TypeName = "nvarchar(10)")]
         public string SubjectId { get; set; }
 
-        [StringLength(4)]
         [Column(TypeName = "nvarchar(4)")]
         public string? MajorId { get; set; }
 
         [Required]
-        [StringLength(100)]
         [Column(TypeName = "nvarchar(100)")]
         public string SubjectName { get; set; }
 
@@ -27,7 +25,6 @@ namespace ClassBusinessObject.Models
         [Column(TypeName = "int")]
         public int NumberOfSlot { get; set; } 
 
-        [StringLength(200)]
         [Column(TypeName = "nvarchar(200)")]
         public string Description { get; set; }
 

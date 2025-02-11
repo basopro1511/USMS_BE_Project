@@ -17,5 +17,8 @@ namespace BusinessObject.Models
         [Required]
         [Column(TypeName = "NVARCHAR(100)")]
         public string MajorName { get; set; }
-    }
+        public ICollection<User> Users { get; set; } // One-to-Many
+        public ICollection<Student> Students { get; set; } // One-to-Many
+
+        }
 }
