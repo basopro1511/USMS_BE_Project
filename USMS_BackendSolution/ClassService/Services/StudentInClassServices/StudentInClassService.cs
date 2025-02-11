@@ -8,7 +8,8 @@ namespace ClassService.Services.StudentInClassServices
     public class StudentInClassService
         {
         private readonly IStudentInClassRepository _repository;
-        public StudentInClassService() {
+        public StudentInClassService()
+            {
             _repository=new StudentInClassRepository();
             }
 
@@ -17,10 +18,12 @@ namespace ClassService.Services.StudentInClassServices
         ///  Get All Student In Class
         /// </summary>
         /// <returns></returns>
-        public APIResponse GetAllStudentInClass() {
+        public APIResponse GetAllStudentInClass()
+            {
             APIResponse aPIResponse = new APIResponse();
             List<StudentInClassDTO>? studentInClasses = _repository.GetAllStudentInClass();
-            if(studentInClasses==null||studentInClasses.Count==0) {
+            if (studentInClasses==null||studentInClasses.Count==0)
+                {
                 aPIResponse.IsSuccess=false;
                 aPIResponse.Message="Không có học sinh nào trong lớp.";
                 }
@@ -29,19 +32,40 @@ namespace ClassService.Services.StudentInClassServices
             }
         #endregion
 
-        #region Get All Student In Class
+        #region Get Student In Class by Student Id
         /// <summary>
-        ///  Get All Student In Class
+        ///  Get Student In Class by Student Id
         /// </summary>
         /// <returns></returns>
-        public APIResponse GetStudentInClassByStudentId(string student) {
+        public APIResponse GetStudentInClassByStudentId(string student)
+            {
             APIResponse aPIResponse = new APIResponse();
             StudentInClassDTO studentInClasses = _repository.GetStudentInClassByStudentId(student);
-            if(studentInClasses==null) {
+            if (studentInClasses==null)
+                {
                 aPIResponse.IsSuccess=false;
                 aPIResponse.Message="Không tìm thấy học sinh này trong lớp.";
                 }
             aPIResponse.Result=studentInClasses;
+            return aPIResponse;
+            }
+        #endregion
+
+        #region Get Student In Class by ClassId
+        /// <summary>
+        ///  Get Student In Class by ClassId
+        /// </summary>
+        /// <returns></returns>
+        public APIResponse GetStudentInClassByClassId(int id)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            List<StudentInClassDTO> studentsInClasses = _repository.GetStudentInClassByClassId(id);
+            if (studentsInClasses==null)
+                {
+                aPIResponse.IsSuccess=false;
+                aPIResponse.Message="Không có học sinh nào trong lớp này.";
+                }
+            aPIResponse.Result=studentsInClasses;
             return aPIResponse;
             }
         #endregion
@@ -51,10 +75,12 @@ namespace ClassService.Services.StudentInClassServices
         /// Class SubjectId by studentId
         /// </summary>
         /// <returns>a list int of classSubjectId</returns>
-        public APIResponse GetClassSubjectId(string id) {
+        public APIResponse GetClassSubjectId(string id)
+            {
             APIResponse aPIResponse = new APIResponse();
             List<int>? studentInClasses = _repository.GetClassSubjectId(id);
-            if(studentInClasses==null||studentInClasses.Count==0) {
+            if (studentInClasses==null||studentInClasses.Count==0)
+                {
                 aPIResponse.IsSuccess=false;
                 aPIResponse.Message="Sinh viên này đang không có ở trong lớp nào.";
                 }
@@ -69,21 +95,26 @@ namespace ClassService.Services.StudentInClassServices
         /// </summary>
         /// <param name="studentInClassDTO"></param>
         /// <returns>APIResponse indicating success</returns>
-        public APIResponse AddStudentToClass(StudentInClassDTO studentInClassDTO) {
+        public APIResponse AddStudentToClass(StudentInClassDTO studentInClassDTO)
+            {
             APIResponse aPIResponse = new APIResponse();
             var checkExist = _repository.GetStudentInClassByStudentId(studentInClassDTO.StudentId);
-            if(checkExist!=null) {
+            if (checkExist!=null)
+                {
                 aPIResponse.IsSuccess=false;
                 aPIResponse.Message="Sinh viên này đã tồn tại trong lớp học";
                 }
             bool success = _repository.AddStudentToClass(studentInClassDTO);
-            if(success) {
-                return new APIResponse {
+            if (success)
+                {
+                return new APIResponse
+                    {
                     IsSuccess=true,
                     Message="Thêm sinh viên vào lớp thành công"
                     };
                 }
-            return new APIResponse {
+            return new APIResponse
+                {
                 IsSuccess=false,
                 Message="Thêm sinh viên thất bại! "
                 };
@@ -96,13 +127,16 @@ namespace ClassService.Services.StudentInClassServices
         /// </summary>
         /// <param name="studentsInClassDTO"></param>
         /// <returns>APIResponse indicating success</returns>
-        public APIResponse AddMultipleStudentsToClass(List<StudentInClassDTO> studentsInClassDTO) {
+        public APIResponse AddMultipleStudentsToClass(List<StudentInClassDTO> studentsInClassDTO)
+            {
             APIResponse aPIResponse = new APIResponse();
-            foreach(var item in studentsInClassDTO) {
+            foreach (var item in studentsInClassDTO)
+                {
                 var checkExist = _repository.GetStudentInClassByStudentId(item.StudentId);
-                if(checkExist!=null) {
+                if (checkExist!=null)
+                    {
                     aPIResponse.IsSuccess=false;
-                    aPIResponse.Message="Sinh viên với Id = " + item.StudentId +" đã tồn tại trong lớp học!";
+                    aPIResponse.Message="Sinh viên với Id = "+item.StudentId+" đã tồn tại trong lớp học!";
                     return aPIResponse;
                     }
                 }
@@ -119,7 +153,8 @@ namespace ClassService.Services.StudentInClassServices
         /// </summary>
         /// <param name="studentInClassDTO"></param>
         /// <returns>APIResponse indicating success</returns>
-        public APIResponse UpdateStudentInClass(StudentInClassDTO studentInClassDTO) {
+        public APIResponse UpdateStudentInClass(StudentInClassDTO studentInClassDTO)
+            {
             APIResponse aPIResponse = new APIResponse();
             bool success = _repository.UpdateStudentInClass(studentInClassDTO);
             aPIResponse.IsSuccess=success;
@@ -134,7 +169,8 @@ namespace ClassService.Services.StudentInClassServices
         /// </summary>
         /// <param name="studentClassId"></param>
         /// <returns>APIResponse indicating success</returns>
-        public APIResponse DeleteStudentFromClass(int studentClassId) {
+        public APIResponse DeleteStudentFromClass(int studentClassId)
+            {
             APIResponse aPIResponse = new APIResponse();
             bool success = _repository.DeleteStudentFromClass(studentClassId);
             aPIResponse.IsSuccess=success;

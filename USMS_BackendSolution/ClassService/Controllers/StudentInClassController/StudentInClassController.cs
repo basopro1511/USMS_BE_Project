@@ -22,19 +22,26 @@ namespace ClassService.Controllers.StudentInClassController
             return aPIResponse;
             }
 
+        [HttpGet("id")]
+        public APIResponse GetAllStudentInClassByClassId(int id) {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=_service.GetStudentInClassByClassId(id);
+            return aPIResponse;
+            }
+
         [HttpPost]
         public APIResponse AddStudentToClass(StudentInClassDTO studentInClassDTO) {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=_service.AddStudentToClass(studentInClassDTO);
             return aPIResponse;
             }
+
         [HttpPost("AddMutipleStudents")]
         public APIResponse AddStudentToClass(List<StudentInClassDTO> studentInClassDTOs) {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=_service.AddMultipleStudentsToClass(studentInClassDTOs);
             return aPIResponse;
             }
-
 
         [HttpDelete]
         public APIResponse RemoveStudentToClass(int studentId) {

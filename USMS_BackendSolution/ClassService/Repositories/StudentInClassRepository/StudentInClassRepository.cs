@@ -39,6 +39,7 @@ namespace ClassService.Repositories.StudentInClassRepository
                 }
             }
         #endregion
+
         #region Get Student In Class by StudentId
         /// <summary>
         /// Get Student In Class by StudentId
@@ -57,6 +58,25 @@ namespace ClassService.Repositories.StudentInClassRepository
                 }
             catch(Exception ex)
                 {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
+        #region Get Student In Class by ClassId
+        /// <summary>
+        /// Get Student In Class by ClassId
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public List<StudentInClassDTO> GetStudentInClassByClassId(int classSubjectId) {
+            try {
+                using(var _dbContext = new MyDbContext()) {
+                    List<StudentInClassDTO> studentInClassDTOs = GetAllStudentInClass().Where(sic => sic.ClassSubjectId==classSubjectId).ToList(); ;
+                    return studentInClassDTOs;
+                    }
+                }
+            catch(Exception ex) {
                 throw new Exception(ex.Message);
                 }
             }
