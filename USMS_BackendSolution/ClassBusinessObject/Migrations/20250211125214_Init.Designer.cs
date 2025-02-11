@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClassBusinessObject.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20250120051504_init")]
-    partial class init
+    [Migration("20250211125214_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -69,7 +69,6 @@ namespace ClassBusinessObject.Migrations
             modelBuilder.Entity("ClassBusinessObject.Models.Semester", b =>
                 {
                     b.Property<string>("SemesterId")
-                        .HasMaxLength(4)
                         .HasColumnType("nvarchar(4)");
 
                     b.Property<DateOnly>("EndDate")
@@ -77,7 +76,6 @@ namespace ClassBusinessObject.Migrations
 
                     b.Property<string>("SemesterName")
                         .IsRequired()
-                        .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
                     b.Property<DateOnly>("StartDate")
@@ -117,6 +115,45 @@ namespace ClassBusinessObject.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ClassBusinessObject.Models.StudentInClass", b =>
+                {
+                    b.Property<int>("StudentClassId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentClassId"));
+
+                    b.Property<int>("ClassSubjectId")
+                        .HasColumnType("INT");
+
+                    b.Property<string>("StudentId")
+                        .HasColumnType("nvarchar(8)");
+
+                    b.HasKey("StudentClassId");
+
+                    b.ToTable("StudentInClass");
+
+                    b.HasData(
+                        new
+                        {
+                            StudentClassId = 1,
+                            ClassSubjectId = 1,
+                            StudentId = "SE170288"
+                        },
+                        new
+                        {
+                            StudentClassId = 2,
+                            ClassSubjectId = 2,
+                            StudentId = "SE170288"
+                        },
+                        new
+                        {
+                            StudentClassId = 3,
+                            ClassSubjectId = 3,
+                            StudentId = "SE170288"
+                        });
+                });
+
             modelBuilder.Entity("ClassBusinessObject.Models.Subject", b =>
                 {
                     b.Property<string>("SubjectId")
@@ -127,11 +164,9 @@ namespace ClassBusinessObject.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("MajorId")
-                        .HasMaxLength(4)
                         .HasColumnType("nvarchar(4)");
 
                     b.Property<int>("NumberOfSlot")
@@ -142,7 +177,6 @@ namespace ClassBusinessObject.Migrations
 
                     b.Property<string>("SubjectName")
                         .IsRequired()
-                        .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("Term")
@@ -159,168 +193,168 @@ namespace ClassBusinessObject.Migrations
                         new
                         {
                             SubjectId = "MAE101",
-                            CreatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2205),
+                            CreatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1471),
                             Description = "Engineering mathematics fundamentals",
-                            MajorId = "IT",
+                            MajorId = "SE",
                             NumberOfSlot = 25,
                             Status = 1,
                             SubjectName = "Mathematics for Engineering",
                             Term = 1,
-                            UpdatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2219)
+                            UpdatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1479)
                         },
                         new
                         {
                             SubjectId = "PRF192",
-                            CreatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2222),
+                            CreatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1481),
                             Description = "Learn the basics of programming",
-                            MajorId = "IT",
+                            MajorId = "SE",
                             NumberOfSlot = 20,
                             Status = 1,
                             SubjectName = "Programming Fundamentals",
                             Term = 1,
-                            UpdatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2222)
+                            UpdatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1482)
                         },
                         new
                         {
                             SubjectId = "CEA201",
-                            CreatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2224),
+                            CreatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1483),
                             Description = "Introduction to computer architecture",
-                            MajorId = "IT",
+                            MajorId = "SE",
                             NumberOfSlot = 18,
                             Status = 1,
                             SubjectName = "Computer Organization and Architecture",
                             Term = 1,
-                            UpdatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2225)
+                            UpdatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1484)
                         },
                         new
                         {
                             SubjectId = "SSL101c",
-                            CreatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2227),
+                            CreatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1485),
                             Description = "Skills for academic excellence",
                             NumberOfSlot = 15,
                             Status = 1,
                             SubjectName = "Academic Skills for University Success",
                             Term = 1,
-                            UpdatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2227)
+                            UpdatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1486)
                         },
                         new
                         {
                             SubjectId = "MAD101",
-                            CreatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2229),
+                            CreatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1487),
                             Description = "Fundamentals of discrete math",
-                            MajorId = "IT",
+                            MajorId = "SE",
                             NumberOfSlot = 20,
                             Status = 1,
                             SubjectName = "Discrete Mathematics",
                             Term = 2,
-                            UpdatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2230)
+                            UpdatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1488)
                         },
                         new
                         {
                             SubjectId = "NWC203c",
-                            CreatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2231),
+                            CreatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1489),
                             Description = "Introduction to networking concepts",
-                            MajorId = "IT",
+                            MajorId = "SE",
                             NumberOfSlot = 18,
                             Status = 1,
                             SubjectName = "Computer Networking",
                             Term = 2,
-                            UpdatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2232)
+                            UpdatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1489)
                         },
                         new
                         {
                             SubjectId = "DBI202",
-                            CreatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2234),
+                            CreatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1491),
                             Description = "Database concepts and design",
-                            MajorId = "IT",
+                            MajorId = "SE",
                             NumberOfSlot = 20,
                             Status = 1,
                             SubjectName = "Database Systems",
                             Term = 3,
-                            UpdatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2235)
+                            UpdatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1491)
                         },
                         new
                         {
                             SubjectId = "LAB211",
-                            CreatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2236),
+                            CreatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1492),
                             Description = "Practice Object-Oriented Programming",
-                            MajorId = "IT",
+                            MajorId = "SE",
                             NumberOfSlot = 20,
                             Status = 1,
                             SubjectName = "OOP with Java Lab",
                             Term = 3,
-                            UpdatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2237)
+                            UpdatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1493)
                         },
                         new
                         {
                             SubjectId = "PRJ301",
-                            CreatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2239),
+                            CreatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1494),
                             Description = "Developing web apps using Java",
-                            MajorId = "IT",
+                            MajorId = "SE",
                             NumberOfSlot = 25,
                             Status = 1,
                             SubjectName = "Java Web Application Development",
                             Term = 4,
-                            UpdatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2239)
+                            UpdatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1495)
                         },
                         new
                         {
                             SubjectId = "MAS291",
-                            CreatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2241),
+                            CreatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1496),
                             Description = "Introduction to statistics",
-                            MajorId = "IT",
+                            MajorId = "SE",
                             NumberOfSlot = 20,
                             Status = 1,
                             SubjectName = "Statistics & Probability",
                             Term = 4,
-                            UpdatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2242)
+                            UpdatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1496)
                         },
                         new
                         {
                             SubjectId = "SWP391",
-                            CreatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2244),
+                            CreatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1498),
                             Description = "Capstone project in software development",
-                            MajorId = "IT",
+                            MajorId = "SE",
                             NumberOfSlot = 30,
                             Status = 1,
                             SubjectName = "Software Development Project",
                             Term = 5,
-                            UpdatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2244)
+                            UpdatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1498)
                         },
                         new
                         {
                             SubjectId = "PRN231",
-                            CreatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2246),
+                            CreatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1500),
                             Description = "Developing cross-platform applications",
-                            MajorId = "IT",
+                            MajorId = "SE",
                             NumberOfSlot = 20,
                             Status = 0,
                             SubjectName = "Building Cross-Platform Back-End Application With .NET",
                             Term = 7,
-                            UpdatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2247)
+                            UpdatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1500)
                         },
                         new
                         {
                             SubjectId = "MLN111",
-                            CreatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2248),
+                            CreatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1502),
                             Description = "Core principles of Marxism-Leninism",
                             NumberOfSlot = 16,
                             Status = 2,
                             SubjectName = "Philosophy of Marxism – Leninism",
                             Term = 8,
-                            UpdatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2249)
+                            UpdatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1502)
                         },
                         new
                         {
                             SubjectId = "WDU203c",
-                            CreatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2251),
+                            CreatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1503),
                             Description = "Introduction to UI/UX principles",
-                            MajorId = "IT",
+                            MajorId = "SE",
                             NumberOfSlot = 18,
                             Status = 1,
                             SubjectName = "UI/UX Design",
                             Term = 8,
-                            UpdatedAt = new DateTime(2025, 1, 20, 12, 15, 4, 89, DateTimeKind.Local).AddTicks(2252)
+                            UpdatedAt = new DateTime(2025, 2, 11, 19, 52, 14, 125, DateTimeKind.Local).AddTicks(1504)
                         });
                 });
 

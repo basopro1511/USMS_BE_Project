@@ -40,6 +40,18 @@
             "UpstreamPathTemplate": "/api/Room/ChangeStatus/{id}/{status}",
             "UpstreamHttpMethod": [ "GET" ]
         },
+        {
+            "DownstreamPathTemplate": "/api/Room/AvailableRooms/{date}/{slotId}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Room/AvailableRooms/{date}/{slotId}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
         /* Room API End */
 
         /* Slot API Start */
@@ -143,7 +155,7 @@
                 }
             ],
             "UpstreamPathTemplate": "/api/Subjects/{id}",
-            "UpstreamHttpMethod": [ "GET", "DELETE" ]
+            "UpstreamHttpMethod": [ "GET" ]
         },
         {
             "DownstreamPathTemplate": "/api/Subjects/ChangeStatus/{id}/{status}",
@@ -211,34 +223,149 @@
             "UpstreamPathTemplate": "/api/ClassSubject",
             "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
         },
-        /* Class Subject API End */
-        /* Student API Start */
         {
-            "DownstreamPathTemplate": "/api/Student",
+            "DownstreamPathTemplate": "/api/ClassSubject/ClassIdsByMajorId/{id}",
             "DownstreamScheme": "https",
             "DownstreamHostAndPorts": [
                 {
                     "Host": "localhost",
-                    "Port": 7179
+                    "Port": 7286
                 }
             ],
-            "UpstreamPathTemplate": "/api/Student",
+            "UpstreamPathTemplate": "/api/ClassSubject/ClassIdsByMajorId/{id}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/ClassSubject/classId/{classId}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7286
+                }
+            ],
+            "UpstreamPathTemplate": "/api/ClassSubject/classId/{classId}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        /* Class Subject API End */
+
+        /* Schedule API Start */
+        {
+            "DownstreamPathTemplate": "/api/Schedule",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Schedule",
             "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
         },
         {
-            "DownstreamPathTemplate": "/api/Student/{id}",
+            "DownstreamPathTemplate": "/api/Schedule/{id}",
             "DownstreamScheme": "https",
             "DownstreamHostAndPorts": [
                 {
                     "Host": "localhost",
-                    "Port": 7179
+                    "Port": 7131
                 }
             ],
-            "UpstreamPathTemplate": "/api/Student/{id}",
-            "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
-        }
+            "UpstreamPathTemplate": "/api/Schedule/{id}",
+            "UpstreamHttpMethod": [ "GET", "DELETE" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Schedule/{majorId}/{classId}/{term}/{startDay}/{endDay}]",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Schedule/{majorId}/{classId}/{term}/{startDay}/{endDay}]",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        /* Schedule API End */
 
-        /* Student API End */
+        /* Student In Class API Start */
+        {
+            "DownstreamPathTemplate": "/api/StudentInClass",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7286
+                }
+            ],
+            "UpstreamPathTemplate": "/api/StudentInClass",
+            "UpstreamHttpMethod": [ "GET", "POST", "DELETE" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/StudentInClass/{id}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7286
+                }
+            ],
+            "UpstreamPathTemplate": "/api/StudentInClass/{id}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/StudentInClass/AddMutipleStudents",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7286
+                }
+            ],
+            "UpstreamPathTemplate": "/api/StudentInClass/AddMutipleStudents",
+            "UpstreamHttpMethod": [ "POST" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/StudentInClass/ClassSubject/{id}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7286
+                }
+            ],
+            "UpstreamPathTemplate": "/api/StudentInClass/ClassSubject/{id}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        /* Student In Class API End */
+      
+         /* Student API Start */
+   {
+       "DownstreamPathTemplate": "/api/Student",
+       "DownstreamScheme": "https",
+       "DownstreamHostAndPorts": [
+           {
+               "Host": "localhost",
+               "Port": 7179
+           }
+       ],
+       "UpstreamPathTemplate": "/api/Student",
+       "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+   },
+   {
+       "DownstreamPathTemplate": "/api/Student/{id}",
+       "DownstreamScheme": "https",
+       "DownstreamHostAndPorts": [
+           {
+               "Host": "localhost",
+               "Port": 7179
+           }
+       ],
+       "UpstreamPathTemplate": "/api/Student/{id}",
+       "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+   }
+
+   /* Student API End */
     ]
 
 }

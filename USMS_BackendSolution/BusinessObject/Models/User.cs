@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
@@ -10,11 +10,10 @@ using System.Threading.Tasks;
 namespace BusinessObject.Models
 {
     public class User
-    {
+        {
         [Key]
         [Column(TypeName = "NVARCHAR(8)")]
         public string UserId { get; set; }
-
         [Column(TypeName = "NVARCHAR(20)")]
         [Required]
         public string FirstName { get; set; }
@@ -38,16 +37,12 @@ namespace BusinessObject.Models
         [Required]
         [Column(TypeName = "NVARCHAR(15)")]
         public string PhoneNumber { get; set; }
-
         [Required]
         public DateOnly DateOfBirth { get; set; }
-
         [Column(TypeName = "NVARCHAR(MAX)")]
         public string? UserAvartar { get; set; }
-
         [ForeignKey("Role")]
         public int RoleId { get; set; }
-
         public Role Role { get; set; }
         [ForeignKey("Major")]
         public string? MajorId { get; set; }
@@ -56,5 +51,5 @@ namespace BusinessObject.Models
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public virtual Student Student { get; set; }
+        }
     }
-}

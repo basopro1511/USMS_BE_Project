@@ -25,6 +25,6 @@ namespace Core
             services.AddScoped<UserService.Services.UserService.UserService>();
             services.AddScoped<StudentService>();
             #endregion
+            }
         }
-    }
 }

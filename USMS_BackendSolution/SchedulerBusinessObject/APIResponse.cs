@@ -15,4 +15,4 @@ namespace SchedulerBusinessObject
         public List<Error>? Errors { get; set; }
         public object? Result { get; set; }
     }
-}
+    }
