@@ -21,7 +21,6 @@ namespace SchedulerBusinessObject.SchedulerModels
         [Column(TypeName = "INT")]
         public int SlotId { get; set; }
         [Required]
-        [StringLength(6)]
         [ForeignKey("Room")]
         [Column(TypeName = "NVARCHAR(6)")]
         public string RoomId { get; set; }
@@ -34,9 +33,7 @@ namespace SchedulerBusinessObject.SchedulerModels
         [Required]
         [Column(TypeName = "INT")]
         public int Status { get; set; }
-
         public int SlotNoInSubject { get; set; }
-
         public virtual TimeSlot? Slot { get; set; }
         public virtual Room? Room { get; set; }
 

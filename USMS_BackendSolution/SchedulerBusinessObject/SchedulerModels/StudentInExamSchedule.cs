@@ -7,21 +7,16 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace BusinessObject.Models
+namespace SchedulerBusinessObject.SchedulerModels
     {
-    public class Student
+    public class StudentInExamSchedule
         {
         [Key]
-        [Column(TypeName = "NVARCHAR(8)")]
-        [ForeignKey("User")]
-        public string StudentId { get; set; }
-        [ForeignKey("Major")]
-        [Column(TypeName = "NVARCHAR(4)")]
-        public string? MajorId { get; set; }
         [Column(TypeName = "INT")]
-        public int Term { get; set; }
-        [JsonIgnore]
-        public Major? Major { get; set; }
-        public virtual User? User { get; set; }
+        public int StudentExamId { get; set; }
+        [Column(TypeName = "INT")]
+        public int ExamScheduleId { get; set; }
+        [Column(TypeName = "NVARCHAR(8)")]
+        public string StudentId { get; set; }
         }
     }

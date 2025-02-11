@@ -8,6 +8,7 @@ namespace Repositories.ScheduleRepository
     {
     public class ScheduleRepository : IScheduleRepository
         {
+
         #region Get all Schedule
         /// <summary>
         /// Method Test To get all Schedule
@@ -180,7 +181,6 @@ namespace Repositories.ScheduleRepository
             }
         #endregion
 
-
         #region Update Schedule
         /// <summary>
         /// Update Schedule
@@ -235,5 +235,6 @@ namespace Repositories.ScheduleRepository
                 }
             }
         #endregion
+
         }
     }

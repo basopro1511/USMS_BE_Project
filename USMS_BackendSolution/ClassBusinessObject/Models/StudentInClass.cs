@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace ClassBusinessObject.Models
@@ -16,8 +17,7 @@ namespace ClassBusinessObject.Models
         [ForeignKey("ClassSubject")]
         public int ClassSubjectId { get; set; }
         [Column(TypeName = "nvarchar(8)")]
-        public string StudentId { get; set; }
-        [ForeignKey("ClassSubjectId")]
-        public ClassSubject ClassSubject { get; set; } // Many-to-One
+        public string? StudentId { get; set; }
+
         }
 }
