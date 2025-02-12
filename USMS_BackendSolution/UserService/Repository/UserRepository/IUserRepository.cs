@@ -15,6 +15,7 @@ namespace UserService.Repository.UserRepository
         public bool UpdateUser(UserDTO UpdateUserDTO);
         public bool UpdateInfor(UserDTO UpdateInforDTO);
         public bool UpdateStudentStatus(string id, int status);
+        public UserDTO GetUserByEmail (string email);
 
     }
 }

@@ -194,5 +194,24 @@ namespace UserService.Repository.UserRepository
                 throw new Exception(ex.Message, ex);
             }
         }
+        /// <summary>
+        /// User Sefl-update their infor
+        /// </summary>
+        /// <param name="GetUserByEmail"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public UserDTO GetUserByEmail(string email)
+        {
+            try
+            {
+                var users = GetAllUser();
+                UserDTO userDTO = users.FirstOrDefault(x => x.Email == email);
+                return userDTO;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

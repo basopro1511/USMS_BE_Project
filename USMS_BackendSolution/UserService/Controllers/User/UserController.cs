@@ -3,12 +3,14 @@ using BusinessObject.ModelDTOs;
 using UserService.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace UserService.Controllers.User
 {
     [Microsoft.AspNetCore.Mvc.Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly Services.UserService.UserService _userService;
