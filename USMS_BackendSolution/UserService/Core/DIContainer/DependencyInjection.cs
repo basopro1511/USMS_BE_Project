@@ -1,10 +1,9 @@
 ﻿using BusinessObject.AppDBContext;
 using IRepository;
-using IRepository.ICustomerRepository;
-using Services;
-using Services.CustomerService;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using UserService.Services;
+using IRepository.IRoleRepository;
 
 namespace Core
 {
@@ -13,11 +12,11 @@ namespace Core
         public static void ConfigureDependencyInjection(this IServiceCollection services)
         {
             #region Register the repository
-            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
             #endregion
 
             #region Register Service
-            services.AddScoped<CustomerService>();
+            services.AddScoped<UsersService>();
             #endregion
         }
     }

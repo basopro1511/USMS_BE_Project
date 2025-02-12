@@ -10,22 +10,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IRepository.IUserRepository
+namespace IRepository.IRoleRepository
 {
-    public class UserRepository : IUserRepository
+    public class RoleRepository : IRoleRepository
     {
         /// <summary>
-        /// Get All User in Database
+        /// Get All Role in Database
         /// </summary>
-        /// <returns>List of User exist in Database</returns>
-        public List<User> getAllUser()
+        /// <returns>List of Role exist in Database</returns>
+        public List<Role> getAllRole()
         {
             try
             {             
                 using (var dbContext = new MyDbContext())
                 {
-                    List<User> users = dbContext.Users.Include(x => x.Role).ToList();
-                    return users;
+                    List<Role> roles = dbContext.Roles.ToList();
+                    return roles;
                 }
             }
             catch (Exception ex)
@@ -35,22 +35,22 @@ namespace IRepository.IUserRepository
         }
 
         /// <summary>
-        /// Retrieve a User by their email
+        /// Retrieve a Role by id
         /// </summary>
-        /// <param name="email"></param>
-        /// <returns> a User by their email </returns>
+        /// <param name="id"></param>
+        /// <returns> a Role by id</returns>
         /// <exception cref="Exception"></exception>
-        public User GetUserByEmail(string email)
+        public Role GetRoleById(int id)
         {
-            if (string.IsNullOrEmpty(email))
+            if (id == null)
             {
-                throw new ArgumentNullException(nameof(email), "User email cannot be null or empty.");
+                throw new ArgumentNullException(nameof(id), "Role id cannot be null or empty.");
             }
             try
             {
-                var users = getAllUser();
-                User user = users.FirstOrDefault(x => x.Email == email);
-                return user;
+                var roles = getAllRole();
+                Role role = roles.FirstOrDefault(x => x.RoleId == id);
+                return role;
             }
             catch (Exception ex)
             {
@@ -59,17 +59,17 @@ namespace IRepository.IUserRepository
         }
 
         /// <summary>
-        ///  Adds a new user to the database.
+        ///  Adds a new role to the database.
         /// </summary>
-        /// <param name="User"></param>
+        /// <param name="Role"></param>
         /// <exception cref="Exception"></exception>
-        public bool AddNewUser (User user)
+        public bool AddNewRole (Role role)
         {
             try
             {
                 using (var dbContext = new MyDbContext())
                 {
-                    dbContext.Users.Add(user);
+                    dbContext.Roles.Add(role);
                     dbContext.SaveChanges();
                     return true;
                 }
@@ -80,18 +80,18 @@ namespace IRepository.IUserRepository
             }
         }
         /// <summary>
-        /// Detele User by email
+        /// Delete Role by id
         /// </summary>
-        /// <param name="email"></param>
-        /// <returns>A new list without the User just deleted</returns>
-        public bool DeleteUser (string email)
+        /// <param name="id"></param>
+        /// <returns>A new list without the Role just deleted</returns>
+        public bool DeleteRole (int id)
         {
             try
             {
                 using (var dbContext = new MyDbContext())
                 {
-                    var existingUser = GetUserByEmail(email);
-                    dbContext.Users.Remove(existingUser);
+                    var existingRole = GetRoleById(id);
+                    dbContext.Roles.Remove(existingRole);
                     dbContext.SaveChanges();
                     return true;
                 }

@@ -1,7 +1,7 @@
 ﻿using BusinessObject;
 using BusinessObject.ModelDTOs;
 using BusinessObject.Models;
-using IRepository.ICustomerRepository;
+using IRepository.IUserRepository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -81,11 +81,11 @@ namespace UserService.Services
             }
             else
             {
-                if (user.Password == password)
+                if (user.PasswordHash == password)
                 {
                     aPIResponse.IsSuccess=true;
                     aPIResponse.Message = "User found, JWT generated";
-                    jwt = GenerateJwtToken(email, user.Role);
+                    jwt = GenerateJwtToken(email, user.Role.RoleName);
                 }
             }
             aPIResponse.Result = jwt;
