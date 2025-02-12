@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BusinessObject.ModelDTOs
+﻿namespace BusinessObject.ModelDTOs
 {
-    public class UserDTO
+	public class UserDTO
     {
         public string UserId { get; set; }
         public string FirstName { get; set; }
@@ -57,7 +51,6 @@ namespace BusinessObject.ModelDTOs
         public int Status { get; set; }
         public string Address { get; set; }
     }
-
     public class UpdateUserDTO
     {
         public string PersonalEmail { get; set; }
@@ -78,4 +71,9 @@ namespace BusinessObject.ModelDTOs
     //{
     //    public int Status { get; set; }
     //}
+    public class ResetPasswordDTO
+	{
+		public string Email { get; set; }
+		public string Password { get; set; }
+	}
 }
