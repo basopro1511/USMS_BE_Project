@@ -473,6 +473,24 @@ namespace UserService.Services.UserService
 		public APIResponse ResetPassword(ResetPasswordDTO resetPassword)
 		{
 			APIResponse aPIResponse = new APIResponse();
+			if (string.IsNullOrEmpty(resetPassword.Email))
+			{
+				aPIResponse.IsSuccess = false;
+				aPIResponse.Message = "Lỗi hệ thống vui lòng thử lại!";
+				return aPIResponse;
+			}
+			if (string.IsNullOrEmpty(resetPassword.Password))
+			{
+				aPIResponse.IsSuccess = false;
+				aPIResponse.Message = "Vui lòng nhập mật khẩu mới!";
+				return aPIResponse;
+			}
+			if (resetPassword.Password.Length < 8 || resetPassword.Password.Length > 20)
+			{
+				aPIResponse.IsSuccess = false;
+				aPIResponse.Message = "Mật khẩu phải từ 8 đến 20 ký tự!";
+				return aPIResponse;
+			}
 			if (!CheckUserByEmail(resetPassword.Email))
 			{
 				aPIResponse.IsSuccess = false;
