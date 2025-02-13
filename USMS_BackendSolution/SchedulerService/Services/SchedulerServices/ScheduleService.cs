@@ -116,7 +116,6 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                     aPIResponse.Message="Không tìm thấy bất kỳ lớp nào!";
                     return aPIResponse;
                     }
-
                 // 2. Tìm ClassSubject tương ứng với schedule.ClassSubjectId
                 var classSubject = classSubjectList
                     .FirstOrDefault(cs => cs.ClassSubjectId==schedule.ClassSubjectId);
@@ -125,7 +124,6 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                     aPIResponse.Message="Không tìm thấy lớp này!";
                     return aPIResponse;
                     }
-
                 // 3. Lấy môn học (Subject) tương ứng
                 var subjectRes = await GetSubjectById(classSubject.SubjectId);
                 if(subjectRes==null||!subjectRes.IsSuccess||subjectRes.Result==null) {
@@ -133,13 +131,11 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                     aPIResponse.Message="Không lấy được môn học tương ứng!";
                     return aPIResponse;
                     }
-
                 //// Giả sử subjectRes.Result là SubjectDTO { NumberOfSlot = ??? }
                 var subjectDto = JsonConvert.DeserializeObject<SubjectDTO>(
                      subjectRes.Result.ToString()
                 );
                 int maxSlot = subjectDto.NumberOfSlot; // Số tiết tối đa của môn
-
                 // 4. Kiểm tra schedule.SlotNoInSubject với subjectDto.NumberOfSlot
                 //    (SlotNoInSubject là trường mới bạn thêm trong ClassScheduleDTO)
                 var schedulesOfThisClassSubject = _scheduleRepository.GetSchedulesByClassSubjectId(schedule.ClassSubjectId);
@@ -149,23 +145,18 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                     int currentMax = schedulesOfThisClassSubject.Max(x => x.SlotNoInSubject);
                     nextSlotNoInSubject=currentMax+1;
                     }
-
-
                 // 5. Lấy danh sách tất cả ClassSubject cùng ClassId (ví dụ SE1702) => để check conflict
                 var classSubjectOfClass = classSubjectList
                     .Where(x => x.ClassId==classSubject.ClassId)
                     .ToList();
-
                 // 6. Lấy tất cả lịch học đã có ở cùng ngày + slotId => Check xung đột
                 var existingSchedules = _scheduleRepository.GetSchedulesByDateAndSlot(schedule.Date,schedule.SlotId);
-
                 // 7. Check xung đột lịch học (logic cũ)
                 if(CheckSlotConflict(classSubjectOfClass,existingSchedules)) {
                     aPIResponse.IsSuccess=false;
                     aPIResponse.Message="Lớp này đã có tiết vào thời gian này!";
                     return aPIResponse;
                     }
-
                 // 8. Kiểm tra tính hợp lệ phòng học
                 var room = _roomService.GetRoomById(schedule.RoomId);
                 if(!room.IsSuccess||room.Result==null) {
@@ -173,22 +164,18 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                     aPIResponse.Message="Không tìm thấy phòng học!";
                     return aPIResponse;
                     }
-
                 // 9. Check xung đột phòng
                 if(CheckRoomConflict(existingSchedules,schedule.RoomId)) {
                     aPIResponse.IsSuccess=false;
                     aPIResponse.Message="Phòng đã được sử dụng vào thời gian này!";
                     return aPIResponse;
                     }
-
                 // 10. Không có xung đột, tiến hành thêm lịch mới
                 var newSchedule = new Schedule();
                 newSchedule.CopyProperties(schedule);
                 newSchedule.Status=1;
                 newSchedule.SlotNoInSubject=nextSlotNoInSubject;
-
                 await _scheduleRepository.AddSchedule(newSchedule);
-
                 aPIResponse.IsSuccess=true;
                 aPIResponse.Message="Thêm thời khóa biểu thành công!";
                 }
@@ -214,7 +201,6 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                 using(var client = new HttpClient()) {
                     // Đây là base URL cho service Subject, bạn thay đổi theo config của bạn
                     client.BaseAddress=new Uri("https://localhost:7067/");
-
                     // Gọi API GET
                     var result = await client.GetAsync($"api/Subjects/{subjectId}");
                     if(result.IsSuccessStatusCode) {

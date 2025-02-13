@@ -28,18 +28,18 @@ namespace ClassBusinessObject.AppDBContext
         public virtual DbSet<StudentInClass> StudentInClass { get; set; }
         protected override void OnModelCreating(ModelBuilder optionBuilder)
             {
-      
             optionBuilder.Entity<Semester>().HasData(
                 new Semester { SemesterId="SP25", SemesterName="Spring2025", StartDate=new DateOnly(2025, 01, 05), EndDate=new DateOnly(2025, 03, 24), Status=1 },
                 new Semester { SemesterId="SU25", SemesterName="Summer2025", StartDate=new DateOnly(2025, 05, 08), EndDate=new DateOnly(2025, 08, 11), Status=1 },
                 new Semester { SemesterId="FA25", SemesterName="Fall2025", StartDate=new DateOnly(2025, 09, 05), EndDate=new DateOnly(2025, 11, 25), Status=1 }
                 );
             SeedSubjects(optionBuilder);
-            optionBuilder.Entity<StudentInClass>().HasData(
-                new StudentInClass { StudentClassId=1, ClassSubjectId=1, StudentId="SE170288" },
-                new StudentInClass { StudentClassId=2, ClassSubjectId=2, StudentId="SE170288" },
-                new StudentInClass { StudentClassId=3, ClassSubjectId=3, StudentId="SE170288" }
-                 );
+            //optionBuilder.Entity<StudentInClass>().HasData(
+            //    new StudentInClass { StudentClassId=1, ClassSubjectId=1, StudentId="SE0001" },
+            //    new StudentInClass { StudentClassId=2, ClassSubjectId=1, StudentId="SE0002" },
+            //    new StudentInClass { StudentClassId=3, ClassSubjectId=2, StudentId="SE0001" },
+            //    new StudentInClass { StudentClassId=4, ClassSubjectId=3, StudentId="SE0001" }
+            //     );
             //SeedClassSubjects(optionBuilder);
             }
         private void SeedSubjects(ModelBuilder modelBuilder)
@@ -63,14 +63,13 @@ namespace ClassBusinessObject.AppDBContext
            //Another Major Subject
            );
             }
-
         // Phương thức seed dữ liệu ClassSubject sau khi Subject đã tồn tại
         private void SeedClassSubjects(ModelBuilder modelBuilder)
             {
             modelBuilder.Entity<ClassSubject>().HasData(
-                new ClassSubject { ClassSubjectId=1, ClassId="SE1702", SubjectId="PRM392", SemesterId="SP25", MajorId="SE", Term=1, CreatedAt=new DateTime(2024, 11, 25), Status=1 },
-                new ClassSubject { ClassSubjectId=2, ClassId="SE1702", SubjectId="PRN231", SemesterId="SP25", MajorId="SE", Term=1, CreatedAt=new DateTime(2024, 11, 25), Status=1 },
-                new ClassSubject { ClassSubjectId=3, ClassId="SE1702", SubjectId="MLN122", SemesterId="SP25", MajorId="SE", Term=1, CreatedAt=new DateTime(2024, 11, 25), Status=1 }
+                new ClassSubject { ClassSubjectId=1, ClassId="SE0001", SubjectId="PRM392", SemesterId="SP25", MajorId="SE", Term=1, CreatedAt=new DateTime(2024, 11, 25), Status=1 },
+                new ClassSubject { ClassSubjectId=2, ClassId="SE0002", SubjectId="PRN231", SemesterId="SP25", MajorId="SE", Term=1, CreatedAt=new DateTime(2024, 11, 25), Status=1 },
+                new ClassSubject { ClassSubjectId=3, ClassId="SE0003", SubjectId="MLN122", SemesterId="SP25", MajorId="SE", Term=1, CreatedAt=new DateTime(2024, 11, 25), Status=1 }
                 );
             }
         }

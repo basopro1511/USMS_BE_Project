@@ -18,10 +18,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", policy =>
     {
-        policy.WithOrigins("http://localhost:5174") // URL của frontend
-              .AllowAnyMethod()                    // Cho phép tất cả các phương thức (GET, POST, PUT, DELETE, v.v.)
-              .AllowAnyHeader()                    // Cho phép tất cả các headers
-              .AllowCredentials();                 // Cho phép gửi cookies hoặc credentials
+        policy.WithOrigins("http://localhost:5174")
+              .AllowAnyMethod()                    
+              .AllowAnyHeader()                    
+              .AllowCredentials();                 
     });
 });
 

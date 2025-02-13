@@ -13,6 +13,7 @@ namespace UserService.Services.StudentService
             {
             _studentRepository=new StudentRepository();
             }
+
         #region Get All Student
         /// <summary>
         /// Get list all student
@@ -137,8 +138,6 @@ namespace UserService.Services.StudentService
                     Message="Vui lòng chọn chuyên ngành cho sinh viên."
                     };
                 }
-
-
             string generatedUserId = GenerateNextStudentId(addStudentDTO.MajorId);
             var studentDTO = new StudentDTO
                 {
@@ -160,7 +159,6 @@ namespace UserService.Services.StudentService
                 CreatedAt=addStudentDTO.CreatedAt,
                 UpdatedAt=addStudentDTO.UpdatedAt,
                 };
-
             StudentDTO existingUser = _studentRepository.GetStudentById(studentDTO.UserId);
             #region validation cua Add Student
             var validations = new List<(bool condition, string errorMessage)>

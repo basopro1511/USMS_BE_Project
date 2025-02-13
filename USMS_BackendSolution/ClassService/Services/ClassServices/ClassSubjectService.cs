@@ -268,7 +268,6 @@ namespace Services.ClassServices
                 }
         #endregion
 
-
         #region Lấy danh sách ClassId dựa vào MajorId
         /// <summary>
         /// Gọi xuống repository để lấy danh sách ClassId theo MajorId.
@@ -303,6 +302,7 @@ namespace Services.ClassServices
             return aPIResponse;
             }
         #endregion
+
         }
     } 
     

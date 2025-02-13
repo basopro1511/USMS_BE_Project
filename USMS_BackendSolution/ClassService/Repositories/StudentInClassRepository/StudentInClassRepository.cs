@@ -217,6 +217,36 @@ namespace ClassService.Repositories.StudentInClassRepository
                 throw new Exception(ex.Message);
                 }
             }
-        #endregion      
+        #endregion
+
+        #region Get Student in Specific Class
+        /// <summary>
+        /// Check if a student already exists in a specific class
+        /// </summary>
+        /// <param name="studentId"></param>
+        /// <param name="classSubjectId"></param>
+        /// <returns>StudentInClassDTO if exists, otherwise null</returns>
+        public StudentInClassDTO GetStudentInClassByStudentIdAndClass(string studentId, int classSubjectId)
+            {
+            try
+                {
+                using (var dbContext = new MyDbContext())
+                    {
+                    var studentInClass= dbContext.StudentInClass.FirstOrDefault(s => s.StudentId==studentId&&s.ClassSubjectId==classSubjectId);
+                    if (studentInClass==null)
+                        {
+                        return null;
+                        }
+                    StudentInClassDTO studentInClassDTO = new StudentInClassDTO();
+                    studentInClassDTO.CopyProperties(studentInClass);
+                    return studentInClassDTO;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                } 
+           }
+        #endregion
         }
     }
