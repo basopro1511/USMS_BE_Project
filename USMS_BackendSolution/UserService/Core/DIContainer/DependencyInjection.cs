@@ -3,7 +3,6 @@ using UserService.Repository.StudentRepository;
 using UserService.Repository.UserRepository;
 using UserService.Services.MajorServices;
 using UserService.Services.StudentService;
-using UserService.Services.UserServices;
 
 namespace Core
 {
@@ -19,7 +18,7 @@ namespace Core
 
 			#region Register Service
 			services.AddScoped<MajorService>();
-			services.AddScoped<UserServices>();
+			services.AddScoped<UserService.Services.UserService.UserService>();
 			services.AddScoped<StudentService>();
 			#endregion
 		}

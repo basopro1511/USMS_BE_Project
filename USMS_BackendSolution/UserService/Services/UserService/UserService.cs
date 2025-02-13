@@ -1,5 +1,7 @@
 ﻿using BusinessObject;
 using BusinessObject.ModelDTOs;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System.Net;
 using System.Net.Mail;
 using System.Reflection;
@@ -7,13 +9,13 @@ using System.Resources;
 using System.Security.Cryptography;
 using System.Text;
 using UserService.Repository.UserRepository;
-namespace UserService.Services.UserServices
+namespace UserService.Services.UserService
 {
-	public class UserServices
+	public class UserService
 	{
 		private readonly IUserRepository _userRepository;
 
-		public UserServices()
+		public UserService()
 		{
 			_userRepository = new UserRepository();
 		}
@@ -415,10 +417,10 @@ namespace UserService.Services.UserServices
 			APIResponse aPIResponse = new APIResponse();
 			bool isExist = _userRepository.CheckUserByEmail(email);
 
-			if (!isExist)
+			if (!CheckUserByEmail(email))
 			{
 				aPIResponse.IsSuccess = false;
-				aPIResponse.Message = "Email is not exist.";
+				aPIResponse.Message = "Email này không tồn tại trong hệ thống!";
 				return aPIResponse;
 			}
 
@@ -449,7 +451,7 @@ namespace UserService.Services.UserServices
 			catch (Exception ex)
 			{
 				aPIResponse.IsSuccess = false;
-				aPIResponse.Message = "Failed to send OTP: " + ex.Message;
+				aPIResponse.Message = "Lỗi khi gửi OTP: " + ex.Message;
 			}
 
 			return aPIResponse;
@@ -471,18 +473,30 @@ namespace UserService.Services.UserServices
 		public APIResponse ResetPassword(ResetPasswordDTO resetPassword)
 		{
 			APIResponse aPIResponse = new APIResponse();
+			if (!CheckUserByEmail(resetPassword.Email))
+			{
+				aPIResponse.IsSuccess = false;
+				aPIResponse.Message = "Email này không tồn tại trong hệ thống!";
+				return aPIResponse;
+			}
+			resetPassword.Password = HashPassword(resetPassword.Password);
 			bool isReset = _userRepository.ResetPassword(resetPassword);
 			if (isReset)
 			{
 				aPIResponse.IsSuccess = true;
-				aPIResponse.Message = "Password reset successfully.";
+				aPIResponse.Message = "Mật khẩu đã được thay đổi thành công!";
 			}
 			else
 			{
 				aPIResponse.IsSuccess = false;
-				aPIResponse.Message = "Failed to reset password.";
+				aPIResponse.Message = "Thay đổi mật khẩu thất bại do lỗi hệ thống. Vui lòng thử lại!";
 			}
 			return aPIResponse;
+		}
+
+		private bool CheckUserByEmail(string email)
+		{
+			return _userRepository.CheckUserByEmail(email);
 		}
 	}
 }

@@ -1,8 +1,7 @@
 ﻿using BusinessObject;
 using BusinessObject.ModelDTOs;
 using Microsoft.AspNetCore.Mvc;
-using UserService.Services.UserServices;
-
+using Microsoft.IdentityModel.Tokens;
 
 namespace UserService.Controllers.User
 {
@@ -10,8 +9,8 @@ namespace UserService.Controllers.User
 	[ApiController]
 	public class UserController : ControllerBase
 	{
-		private readonly UserServices _userService;
-		public UserController(UserServices userService)
+		private readonly UserService.Services.UserService.UserService _userService;
+		public UserController(UserService.Services.UserService.UserService userService)
 		{
 			_userService = userService;
 		}
@@ -75,6 +74,24 @@ namespace UserService.Controllers.User
 		public APIResponse ResetPassword(ResetPasswordDTO resetPassword)
 		{
 			APIResponse aPIResponse = new APIResponse();
+			if (string.IsNullOrEmpty(resetPassword.Email))
+			{
+				aPIResponse.IsSuccess = false;
+				aPIResponse.Message = "Lỗi hệ thống vui lòng thử lại!";
+				return aPIResponse;
+			}
+			if (string.IsNullOrEmpty(resetPassword.Password))
+			{
+				aPIResponse.IsSuccess = false;
+				aPIResponse.Message = "Vui lòng nhập mật khẩu mới!";
+				return aPIResponse;
+			}
+			if (resetPassword.Password.Length < 8 || resetPassword.Password.Length > 20)
+			{
+				aPIResponse.IsSuccess = false;
+				aPIResponse.Message = "Mật khẩu phải từ 8 đến 20 ký tự!";
+				return aPIResponse;
+			}
 			aPIResponse = _userService.ResetPassword(resetPassword);
 			return aPIResponse;
 		}

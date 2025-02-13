@@ -81,7 +81,6 @@ namespace UserService.Repository.UserRepository
 			{
 				throw new Exception(ex.Message);
 			}
-			return false;
 		}
 		/// <summary>
 		/// admin update a user
@@ -196,14 +195,21 @@ namespace UserService.Repository.UserRepository
 		/// <returns></returns>
 		public bool CheckUserByEmail(string email)
 		{
-			using (var db = new MyDbContext())
+			try
 			{
-				var user = db.User.FirstOrDefault(x => x.Email == email);
-				if (user != null)
+				using (var db = new MyDbContext())
 				{
-					return true;
+					var user = db.User.FirstOrDefault(x => x.Email == email);
+					if (user != null)
+					{
+						return true;
+					}
+					return false;
 				}
-				return false;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(ex.Message, ex);
 			}
 		}
 		/// <summary>
@@ -214,16 +220,23 @@ namespace UserService.Repository.UserRepository
 		/// <returns></returns>
 		public bool ResetPassword(ResetPasswordDTO resetPassword)
 		{
-			using (var db = new MyDbContext())
+			try
 			{
-				var user = db.User.FirstOrDefault(x => x.Email == resetPassword.Email);
-				if (user != null)
+				using (var db = new MyDbContext())
 				{
-					user.PasswordHash = resetPassword.Password;
-					db.SaveChanges();
-					return true;
+					var user = db.User.FirstOrDefault(x => x.Email == resetPassword.Email);
+					if (user != null)
+					{
+						user.PasswordHash = resetPassword.Password;
+						db.SaveChanges();
+						return true;
+					}
+					return false;
 				}
-				return false;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(ex.Message, ex);
 			}
 		}
 	}
