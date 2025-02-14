@@ -24,8 +24,10 @@ namespace ClassBusinessObject.ModelDTOs
                 return $"{SemesterId}_{SubjectId}_{ClassId}";  // Dung de lay chuoi string de hien thi lich cho teacher
             }
         }
+        public int NumberOfStudentInClasss { get; set; }
         public DateTime CreatedAt { get; set; }
         public int Status { get; set; }
+
     }
     public class AddUpdateClassSubjectDTO
     {

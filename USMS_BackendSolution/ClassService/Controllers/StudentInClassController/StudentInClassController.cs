@@ -25,7 +25,7 @@ namespace ClassService.Controllers.StudentInClassController
             return aPIResponse;
             }
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         public APIResponse GetAllStudentInClassByClassId(int id)
             {
             APIResponse aPIResponse = new APIResponse();
@@ -42,18 +42,18 @@ namespace ClassService.Controllers.StudentInClassController
             }
 
         [HttpPost("AddMutipleStudents")]
-        public APIResponse AddStudentToClass(List<StudentInClassDTO> studentInClassDTOs)
+        public APIResponse AddMutipleStudentToClass (List<StudentInClassDTO> studentInClassDTOs)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=_service.AddMultipleStudentsToClass(studentInClassDTOs);
             return aPIResponse;
             }
 
-        [HttpDelete]
-        public APIResponse RemoveStudentToClass(int studentId)
+        [HttpDelete("{id}")]
+        public APIResponse RemoveStudentToClass(int id)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse=_service.DeleteStudentFromClass(studentId);
+            aPIResponse=_service.DeleteStudentFromClass(id);
             return aPIResponse;
             }
 

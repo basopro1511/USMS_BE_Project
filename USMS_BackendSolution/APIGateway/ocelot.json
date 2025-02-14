@@ -311,7 +311,7 @@
                 }
             ],
             "UpstreamPathTemplate": "/api/StudentInClass/{id}",
-            "UpstreamHttpMethod": [ "GET" ]
+            "UpstreamHttpMethod": [ "GET", "DELETE" ]
         },
         {
             "DownstreamPathTemplate": "/api/StudentInClass/AddMutipleStudents",

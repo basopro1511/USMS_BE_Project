@@ -248,5 +248,17 @@ namespace ClassService.Repositories.StudentInClassRepository
                 } 
            }
         #endregion
+
+        #region GetStudentCountByClassSubjectId
+        public int GetStudentCountByClassSubjectId(int classSubjectId)
+            {
+            using (var dbContext = new MyDbContext())
+                {
+                return dbContext.StudentInClass.Count(s => s.ClassSubjectId==classSubjectId);
+                }
+            }
+
+        #endregion
+
         }
     }

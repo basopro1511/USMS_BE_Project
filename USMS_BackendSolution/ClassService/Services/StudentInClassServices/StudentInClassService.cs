@@ -1,5 +1,6 @@
 ﻿using ClassBusinessObject;
 using ClassBusinessObject.ModelDTOs;
+using ClassBusinessObject.Models;
 using ClassService.Repositories.StudentInClassRepository;
 using Repositories.SubjectRepository;
 using System.Net.Http;
@@ -115,6 +116,14 @@ namespace ClassService.Services.StudentInClassServices
                 aPIResponse.Message="Sinh viên này đã tồn tại trong lớp học";
                 return aPIResponse;
                 }
+            int numberOfStudent = GetStudentCountByClassSubjectId(studentInClassDTO.ClassSubjectId);
+            int numberOfStudentAfterAdd = numberOfStudent + 1;
+            if (numberOfStudentAfterAdd>40)
+                {
+                aPIResponse.IsSuccess=false;
+                aPIResponse.Message="Số lượng sinh viên thêm vào đã giới hạn của lớp ( giới hạn 1 lớp có tối đa 40 sinh viên )";
+                return aPIResponse;
+                }
             bool success = _repository.AddStudentToClass(studentInClassDTO);
             if (success)
                 {
@@ -156,7 +165,13 @@ namespace ClassService.Services.StudentInClassServices
                     apiResponse.Message="Tất cả sinh viên đã có trong lớp.";
                     return apiResponse;
                     }
-
+                int numberOfStudent = GetStudentCountByClassSubjectId(classSubjectId);
+                int numberOfStudentAfterAdd = numberOfStudent + newStudents.Count;
+                if (numberOfStudentAfterAdd>40) {
+                    apiResponse.IsSuccess=false;
+                    apiResponse.Message="Số lượng sinh viên thêm vào đã giới hạn của lớp ( giới hạn 1 lớp có tối đa 40 sinh viên )" ;
+                    return apiResponse;
+                    }
                 bool success = _repository.AddMultipleStudentsToClass(newStudents);
                 apiResponse.IsSuccess=success;
                 apiResponse.Message=success ? $"Thêm {newStudents.Count} sinh viên thành công." : "Thêm sinh viên thất bại.";
@@ -350,6 +365,13 @@ namespace ClassService.Services.StudentInClassServices
                 aPIResponse.Result=availableStudents;
                 }
             return aPIResponse;
+            }
+        #endregion
+
+        #region GetStudentCountByClassSubjectId
+        public int GetStudentCountByClassSubjectId(int classSubjectId)
+            {
+            return _repository.GetStudentCountByClassSubjectId(classSubjectId);
             }
         #endregion
 
