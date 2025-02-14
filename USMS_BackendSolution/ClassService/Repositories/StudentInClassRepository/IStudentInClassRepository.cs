@@ -12,5 +12,7 @@ namespace ClassService.Repositories.StudentInClassRepository
         public bool AddMultipleStudentsToClass(List<StudentInClassDTO> studentsInClassDTO);
         public bool UpdateStudentInClass(StudentInClassDTO studentInClassDTO);
         public bool DeleteStudentFromClass(int studentClassId);
+        public StudentInClassDTO GetStudentInClassByStudentIdAndClass(string studentId, int classSubjectId);
+        public int GetStudentCountByClassSubjectId(int classSubjectId);
         }
     }

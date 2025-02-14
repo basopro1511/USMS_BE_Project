@@ -1,6 +1,7 @@
 ﻿using ClassBusinessObject;
 using ClassBusinessObject.ModelDTOs;
 using ClassBusinessObject.Models;
+using ClassService.Services.StudentInClassServices;
 using Repositories.ClassSubjectRepository;
 using System;
 using System.Collections.Generic;
@@ -31,7 +32,15 @@ namespace Services.ClassServices
             {
             APIResponse aPIResponse = new APIResponse();
             List<ClassSubjectDTO> classSubjects = _classRepository.GetAllClassSubjects();
-            if(classSubjects == null)
+
+            StudentInClassService studentInClassService = new StudentInClassService();
+
+            foreach (var item in classSubjects)
+                {
+                int numberOfStudent = studentInClassService.GetStudentCountByClassSubjectId(item.ClassSubjectId);
+                item.NumberOfStudentInClasss=numberOfStudent; // Gán vào thuộc tính đúng
+                }
+            if (classSubjects == null)
                 {
                 aPIResponse.IsSuccess = false;
                 aPIResponse.Message = "Don't have any Class Subject available!";
@@ -41,6 +50,7 @@ namespace Services.ClassServices
                 var majorName = GetMajorNameById(item.MajorId);
                 item.MajorName = majorName.MajorName ?? "Null";
                 }
+
             aPIResponse.Result = classSubjects;
             return aPIResponse;
             }
@@ -268,7 +278,6 @@ namespace Services.ClassServices
                 }
         #endregion
 
-
         #region Lấy danh sách ClassId dựa vào MajorId
         /// <summary>
         /// Gọi xuống repository để lấy danh sách ClassId theo MajorId.
@@ -303,6 +312,7 @@ namespace Services.ClassServices
             return aPIResponse;
             }
         #endregion
+
         }
     } 
     

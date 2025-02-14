@@ -50,20 +50,39 @@ namespace BusinessObject.AppDBContext
         private void SeedUsers(ModelBuilder modelBuilder)
             {
             modelBuilder.Entity<User>().HasData(
+                 new User
+                     {
+                     UserId="AD0001",
+                     FirstName="Nguyễn",
+                     MiddleName="Quốc",
+                     LastName="Hoàng",
+                     MajorId="SE",
+                     PasswordHash="8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+                     Email="Admin@fpt.edu.vn",
+                     PersonalEmail="Admin@gmail.com",
+                     PhoneNumber="0333744591",
+                     DateOfBirth=new DateOnly(2005, 11, 15),
+                     UserAvartar=null,
+                     RoleId=1,
+                     Status=1,
+                     CreatedAt=DateTime.Now,
+                     UpdatedAt=DateTime.Now,
+                     Address="FPT Can Tho"
+                     },
                 new User
                     {
-                    UserId="CE170288",
+                    UserId="SE0001",
                     FirstName="Nguyễn",
                     MiddleName="Quốc",
                     LastName="Hoàng",
                     MajorId="SE",
-                    PasswordHash="123456",
+                    PasswordHash="8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
                     Email="HoangNQCE170288@fpt.edu.vn",
                     PersonalEmail="Hoang@gmail.com",
                     PhoneNumber="0333744591",
                     DateOfBirth=new DateOnly(2005, 11, 15),
                     UserAvartar=null,
-                    RoleId=1,
+                    RoleId=5,
                     Status=1,
                     CreatedAt=DateTime.Now,
                     UpdatedAt=DateTime.Now,
@@ -71,12 +90,12 @@ namespace BusinessObject.AppDBContext
                     },
         new User
             {
-            UserId="CE170289",
+            UserId="SE0002",
             FirstName="Trần",
             MiddleName="Thanh",
             LastName="Tùng",
             MajorId="SE",
-            PasswordHash="654321",
+            PasswordHash="8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
             Email="TungTTCE170289@fpt.edu.vn",
             PersonalEmail="Tung@gmail.com",
             PhoneNumber="0322114477",
@@ -90,12 +109,12 @@ namespace BusinessObject.AppDBContext
             },
         new User
             {
-            UserId="BA170290",
+            UserId="BA0003",
             FirstName="Lê",
             MiddleName="Hồng",
             LastName="Nhung",
             MajorId="BA",
-            PasswordHash="987654",
+            PasswordHash="8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
             Email="NhungLHBA170290@fpt.edu.vn",
             PersonalEmail="Nhung@gmail.com",
             PhoneNumber="0987654321",
@@ -109,12 +128,12 @@ namespace BusinessObject.AppDBContext
             },
         new User
             {
-            UserId="LG170291",
+            UserId="LG0004",
             FirstName="Phạm",
             MiddleName="Minh",
             LastName="Châu",
             MajorId="LG",
-            PasswordHash="112233",
+            PasswordHash="8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
             Email="ChauPMLG170291@fpt.edu.vn",
             PersonalEmail="Chau@gmail.com",
             PhoneNumber="0978111222",
@@ -128,12 +147,12 @@ namespace BusinessObject.AppDBContext
             },
         new User
             {
-            UserId="CT170292",
+            UserId="CT0005",
             FirstName="Đinh",
             MiddleName="Văn",
             LastName="Dũng",
             MajorId="CT",
-            PasswordHash="abcdef",
+            PasswordHash="8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
             Email="DungDVCT170292@fpt.edu.vn",
             PersonalEmail="Dung@gmail.com",
             PhoneNumber="0966998844",
@@ -147,12 +166,12 @@ namespace BusinessObject.AppDBContext
             },
         new User
             {
-            UserId="IT170293",
+            UserId="SE0006",
             FirstName="Vũ",
             MiddleName="Mạnh",
             LastName="Cường",
             MajorId="SE",
-            PasswordHash="password",
+            PasswordHash="8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
             Email="CuongVMIT170293@fpt.edu.vn",
             PersonalEmail="Cuong@gmail.com",
             PhoneNumber="0356677889",
@@ -171,12 +190,12 @@ namespace BusinessObject.AppDBContext
         private void SeedStudents(ModelBuilder modelBuilder)
             {
             modelBuilder.Entity<Student>().HasData(
-         new Student { StudentId="CE170288", MajorId="SE", Term=1 },
-        new Student { StudentId="CE170289", MajorId="SE", Term=1 },
-        new Student { StudentId="BA170290", MajorId="BA", Term=2 },
-        new Student { StudentId="LG170291", MajorId="LG", Term=3 },
-        new Student { StudentId="CT170292", MajorId="CT", Term=1 },
-        new Student { StudentId="IT170293", MajorId="SE", Term=4 });
+        new Student { StudentId="SE0001", MajorId="SE", Term=1 },
+        new Student { StudentId="SE0002", MajorId="SE", Term=1 },
+        new Student { StudentId="BA0003", MajorId="BA", Term=2 },
+        new Student { StudentId="LG0004", MajorId="LG", Term=3 },
+        new Student { StudentId="CT0005", MajorId="CT", Term=4 },
+        new Student { StudentId="SE0006", MajorId="SE", Term=5 });
             }
         }
     }

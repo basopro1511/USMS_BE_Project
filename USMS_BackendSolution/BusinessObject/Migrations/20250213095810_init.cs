@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BusinessObject.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -127,12 +127,13 @@ namespace BusinessObject.Migrations
                 columns: new[] { "UserId", "Address", "CreatedAt", "DateOfBirth", "Email", "FirstName", "LastName", "MajorId", "MiddleName", "PasswordHash", "PersonalEmail", "PhoneNumber", "RoleId", "Status", "UpdatedAt", "UserAvartar" },
                 values: new object[,]
                 {
-                    { "BA170290", "Can Tho", new DateTime(2025, 2, 11, 19, 40, 5, 422, DateTimeKind.Local).AddTicks(2425), new DateOnly(2003, 12, 5), "NhungLHBA170290@fpt.edu.vn", "Lê", "Nhung", "BA", "Hồng", "987654", "Nhung@gmail.com", "0987654321", 5, 1, new DateTime(2025, 2, 11, 19, 40, 5, 422, DateTimeKind.Local).AddTicks(2426), null },
-                    { "CE170288", "Can Tho", new DateTime(2025, 2, 11, 19, 40, 5, 422, DateTimeKind.Local).AddTicks(2408), new DateOnly(2005, 11, 15), "HoangNQCE170288@fpt.edu.vn", "Nguyễn", "Hoàng", "SE", "Quốc", "123456", "Hoang@gmail.com", "0333744591", 1, 1, new DateTime(2025, 2, 11, 19, 40, 5, 422, DateTimeKind.Local).AddTicks(2417), null },
-                    { "CE170289", "Can Tho", new DateTime(2025, 2, 11, 19, 40, 5, 422, DateTimeKind.Local).AddTicks(2422), new DateOnly(2004, 9, 10), "TungTTCE170289@fpt.edu.vn", "Trần", "Tùng", "SE", "Thanh", "654321", "Tung@gmail.com", "0322114477", 5, 1, new DateTime(2025, 2, 11, 19, 40, 5, 422, DateTimeKind.Local).AddTicks(2422), null },
-                    { "CT170292", "Can Tho", new DateTime(2025, 2, 11, 19, 40, 5, 422, DateTimeKind.Local).AddTicks(2432), new DateOnly(2003, 7, 30), "DungDVCT170292@fpt.edu.vn", "Đinh", "Dũng", "CT", "Văn", "abcdef", "Dung@gmail.com", "0966998844", 5, 1, new DateTime(2025, 2, 11, 19, 40, 5, 422, DateTimeKind.Local).AddTicks(2433), null },
-                    { "IT170293", "Can Tho", new DateTime(2025, 2, 11, 19, 40, 5, 422, DateTimeKind.Local).AddTicks(2435), new DateOnly(2001, 8, 25), "CuongVMIT170293@fpt.edu.vn", "Vũ", "Cường", "SE", "Mạnh", "password", "Cuong@gmail.com", "0356677889", 5, 1, new DateTime(2025, 2, 11, 19, 40, 5, 422, DateTimeKind.Local).AddTicks(2436), null },
-                    { "LG170291", "Can Tho", new DateTime(2025, 2, 11, 19, 40, 5, 422, DateTimeKind.Local).AddTicks(2429), new DateOnly(2002, 5, 20), "ChauPMLG170291@fpt.edu.vn", "Phạm", "Châu", "LG", "Minh", "112233", "Chau@gmail.com", "0978111222", 5, 1, new DateTime(2025, 2, 11, 19, 40, 5, 422, DateTimeKind.Local).AddTicks(2430), null }
+                    { "AD0001", "FPT Can Tho", new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3759), new DateOnly(2005, 11, 15), "Admin@fpt.edu.vn", "Nguyễn", "Hoàng", "SE", "Quốc", "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92", "Admin@gmail.com", "0333744591", 1, 1, new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3768), null },
+                    { "BA0003", "Can Tho", new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3779), new DateOnly(2003, 12, 5), "NhungLHBA170290@fpt.edu.vn", "Lê", "Nhung", "BA", "Hồng", "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92", "Nhung@gmail.com", "0987654321", 5, 1, new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3779), null },
+                    { "CT0005", "Can Tho", new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3784), new DateOnly(2003, 7, 30), "DungDVCT170292@fpt.edu.vn", "Đinh", "Dũng", "CT", "Văn", "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92", "Dung@gmail.com", "0966998844", 5, 1, new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3785), null },
+                    { "LG0004", "Can Tho", new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3781), new DateOnly(2002, 5, 20), "ChauPMLG170291@fpt.edu.vn", "Phạm", "Châu", "LG", "Minh", "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92", "Chau@gmail.com", "0978111222", 5, 1, new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3782), null },
+                    { "SE0001", "Can Tho", new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3772), new DateOnly(2005, 11, 15), "HoangNQCE170288@fpt.edu.vn", "Nguyễn", "Hoàng", "SE", "Quốc", "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92", "Hoang@gmail.com", "0333744591", 5, 1, new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3772), null },
+                    { "SE0002", "Can Tho", new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3776), new DateOnly(2004, 9, 10), "TungTTCE170289@fpt.edu.vn", "Trần", "Tùng", "SE", "Thanh", "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92", "Tung@gmail.com", "0322114477", 5, 1, new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3776), null },
+                    { "SE0006", "Can Tho", new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3787), new DateOnly(2001, 8, 25), "CuongVMIT170293@fpt.edu.vn", "Vũ", "Cường", "SE", "Mạnh", "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92", "Cuong@gmail.com", "0356677889", 5, 1, new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3787), null }
                 });
 
             migrationBuilder.InsertData(
@@ -140,12 +141,12 @@ namespace BusinessObject.Migrations
                 columns: new[] { "StudentId", "MajorId", "Term" },
                 values: new object[,]
                 {
-                    { "BA170290", "BA", 2 },
-                    { "CE170288", "SE", 1 },
-                    { "CE170289", "SE", 1 },
-                    { "CT170292", "CT", 1 },
-                    { "IT170293", "SE", 4 },
-                    { "LG170291", "LG", 3 }
+                    { "BA0003", "BA", 2 },
+                    { "CT0005", "CT", 4 },
+                    { "LG0004", "LG", 3 },
+                    { "SE0001", "SE", 1 },
+                    { "SE0002", "SE", 1 },
+                    { "SE0006", "SE", 5 }
                 });
 
             migrationBuilder.CreateIndex(
