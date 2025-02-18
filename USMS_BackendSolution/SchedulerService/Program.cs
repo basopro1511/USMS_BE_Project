@@ -1,14 +1,14 @@
+using Authorization.DependencyInjection;
 using SchedulerDataAccess.Core;
 
 var builder = WebApplication.CreateBuilder(args);
-
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureDependencyInjection();
+builder.Services.AddCommonAuthorization();
 builder.Services.AddHttpClient();
-
 //Add CORS
 builder.Services.AddCors(options =>
 {
@@ -18,9 +18,7 @@ builder.Services.AddCors(options =>
                           .AllowAnyHeader()
                           .AllowCredentials());
 });
-
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -28,11 +26,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseCors("AllowSpecificOrigin");
-
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

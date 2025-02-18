@@ -6,6 +6,8 @@ using BusinessObject;
 using Microsoft.IdentityModel.Tokens;
 using UserService.Repository.UserRepository;
 using Microsoft.AspNetCore.Identity.Data;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Security.Cryptography;
 
 namespace UserService.Services.UserService
 {
@@ -13,16 +15,16 @@ namespace UserService.Services.UserService
     {
         private readonly UserRepository _userRepository; // Directly using repository
         private readonly IConfiguration _config;
-
-        public LoginService(IConfiguration config)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public LoginService(IConfiguration config, IHttpContextAccessor httpContextAccessor)
         {
-            _userRepository = new UserRepository(); // Direct instantiation
+            _userRepository = new UserRepository();
             _config = config;
+            _httpContextAccessor = httpContextAccessor; // Lưu HttpContext để lấy token từ request
         }
         public APIResponse Login(LoginDTO.LoginRequest loginDTO)
         {
             var user = _userRepository.GetUserByEmail(loginDTO.Email);
-
             if (user == null)
             {
                 return new APIResponse
@@ -31,6 +33,7 @@ namespace UserService.Services.UserService
                     Message = "Không tìm thấy người dùng."
                 };
             }
+            loginDTO.Password = HashPassword(loginDTO.Password);
             // Verify password
             if (loginDTO.Password != user.PasswordHash)
             {
@@ -42,7 +45,6 @@ namespace UserService.Services.UserService
             }
             // Generate JWT Token
             var token = GenerateJwtToken(user);
-
             return new APIResponse
             {
                 IsSuccess = true,
@@ -55,7 +57,6 @@ namespace UserService.Services.UserService
             var jwtSettings = _config.GetSection("Jwt");
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.UserId),
@@ -70,6 +71,20 @@ namespace UserService.Services.UserService
                 signingCredentials: credentials
             );
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+        /// <summary>
+        /// Hashing password
+        /// </summary>
+        /// <param name="plainPassword"></param>
+        /// <returns></returns>
+        public string HashPassword(string plainPassword)
+        {
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] bytes = Encoding.UTF8.GetBytes(plainPassword);
+                byte[] hashBytes = sha256.ComputeHash(bytes);
+                return Convert.ToBase64String(hashBytes);
+            }
         }
     }
 }

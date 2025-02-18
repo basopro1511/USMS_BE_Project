@@ -37,6 +37,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassService", "ClassServic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassBusinessObject", "ClassBusinessObject\ClassBusinessObject.csproj", "{BFBC493D-3FF6-453F-9AFF-1CE8D52833F6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5. Common", "5. Common", "{C7D1EE2C-6CF6-43E8-A487-DCAAD74AB5D7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authorization", "Authorization\Authorization.csproj", "{D2B38176-D5F5-481D-B426-F6586E45DAAA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +75,10 @@ Global
 		{BFBC493D-3FF6-453F-9AFF-1CE8D52833F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BFBC493D-3FF6-453F-9AFF-1CE8D52833F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BFBC493D-3FF6-453F-9AFF-1CE8D52833F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2B38176-D5F5-481D-B426-F6586E45DAAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2B38176-D5F5-481D-B426-F6586E45DAAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2B38176-D5F5-481D-B426-F6586E45DAAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2B38176-D5F5-481D-B426-F6586E45DAAA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -89,6 +97,7 @@ Global
 		{865D838B-5F6D-4D13-BA57-1B2D69E92235} = {63FAEA76-64A3-46A6-9A4E-51D79A37FAA9}
 		{A54FB97E-8430-4AC9-AD49-DEFD46753961} = {B9F18FA3-46E3-484A-9344-9C9E9BC430AF}
 		{BFBC493D-3FF6-453F-9AFF-1CE8D52833F6} = {865D838B-5F6D-4D13-BA57-1B2D69E92235}
+		{D2B38176-D5F5-481D-B426-F6586E45DAAA} = {C7D1EE2C-6CF6-43E8-A487-DCAAD74AB5D7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {573A7C18-78AC-4939-AB85-8301BADF26FD}

@@ -4,6 +4,8 @@ using UserService.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using UserService.Services.UserService;
+using Authorization.Services;
 
 
 namespace UserService.Controllers.User
@@ -14,58 +16,115 @@ namespace UserService.Controllers.User
     public class UserController : ControllerBase
     {
         private readonly Services.UserService.UserService _userService;
-        public UserController(Services.UserService.UserService userService)
+        private readonly LoginService _loginService;
+        private readonly IAuthorizationServicee _authorizationService;
+        public UserController(Services.UserService.UserService userService, LoginService loginService, IAuthorizationServicee authorizationServicee)
         {
             _userService = userService;
+            _loginService = loginService;
+            _authorizationService = authorizationServicee;
         }
-
         // GET: api/Users
         [HttpGet]
-        public APIResponse GetAllUser()
+        public async Task<APIResponse> GetAllUser()
         {
-            APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _userService.GetAllUser();
-            return aPIResponse;
+            var authResponse = await _authorizationService.ValidateUserRole(new[] { "1" });
+            if (!authResponse.IsSuccess)
+            {
+                return new APIResponse
+                {
+                    IsSuccess = authResponse.IsSuccess,
+                    Message = authResponse.Message,
+                    Errors = authResponse.Errors,
+                    Result = authResponse.Result
+                };
+            }
+            return _userService.GetAllUser();
         }
         // GET: api/User/{id}
         [HttpGet("{id}")]
-        public APIResponse GetUserById(string id)
+        public async Task<APIResponse> GetUserById(string id)
         {
-            APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _userService.GetUserById(id);
-            return aPIResponse;
+            var authResponse = await _authorizationService.ValidateUserRole(new[] {"1" });
+            if (!authResponse.IsSuccess)
+            {
+                return new APIResponse
+                {
+                    IsSuccess = authResponse.IsSuccess,
+                    Message = authResponse.Message,
+                    Errors = authResponse.Errors,
+                    Result = authResponse.Result
+                };
+            }
+            return _userService.GetUserById(id);
         }
         // POST: api/User
         [HttpPost]
-        public APIResponse AddUser(AddUserDTO addUserDTO)
+        public async Task<APIResponse> AddUser(AddUserDTO addUserDTO)
         {
-            APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _userService.AddUser(addUserDTO);
-            return aPIResponse;
+            var authResponse = await _authorizationService.ValidateUserRole(new[] { "1" });
+            if (!authResponse.IsSuccess)
+            {
+                return new APIResponse
+                {
+                    IsSuccess = authResponse.IsSuccess,
+                    Message = authResponse.Message,
+                    Errors = authResponse.Errors,
+                    Result = authResponse.Result
+                };
+            }
+            return _userService.AddUser(addUserDTO);
         }
         // PUT: api/User/{id}
         [HttpPut("{id}")]
-        public APIResponse UpdateUser(string id, UpdateUserDTO updateUserDTO)
+        public async Task<APIResponse> UpdateUser(string id, UpdateUserDTO updateUserDTO)
         {
-            APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _userService.UpdateUser(id, updateUserDTO);
-            return aPIResponse;
+            var authResponse = await _authorizationService.ValidateUserRole(new[] { "1" });
+            if (!authResponse.IsSuccess)
+            {
+                return new APIResponse
+                {
+                    IsSuccess = authResponse.IsSuccess,
+                    Message = authResponse.Message,
+                    Errors = authResponse.Errors,
+                    Result = authResponse.Result
+                };
+            }
+            return _userService.UpdateUser(id, updateUserDTO);
         }
         //PUT: api/User/{id}
         [HttpPut("/UpdateStudentStatus/{id}")]
-        public APIResponse UpdateStudentStatus(string id, int status)
+        public async Task<APIResponse> UpdateStudentStatus(string id, int status)
         {
-            APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _userService.UpdateStudentStatus(id, status);
-            return aPIResponse;
+            var authResponse = await _authorizationService.ValidateUserRole(new[] { "1" });
+            if (!authResponse.IsSuccess)
+            {
+                return new APIResponse
+                {
+                    IsSuccess = authResponse.IsSuccess,
+                    Message = authResponse.Message,
+                    Errors = authResponse.Errors,
+                    Result = authResponse.Result
+                };
+            }
+            return _userService.UpdateStudentStatus(id, status);
         }
         //PUT: api/User/{id}
         [HttpPut("/UpdateInfor/{id}")]
-        public APIResponse UpdateInfor(string id, UpdateInforDTO updateInforDTO)
+        public async Task<APIResponse> UpdateInfor(string id, UpdateInforDTO updateInforDTO)
         {
-            APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _userService.UpdateInfor(id, updateInforDTO);
-            return aPIResponse;
+            var authResponse = await _authorizationService.ValidateUserRole(new[] { "1" });
+            if (!authResponse.IsSuccess)
+            {
+                return new APIResponse
+                {
+                    IsSuccess = authResponse.IsSuccess,
+                    Message = authResponse.Message,
+                    Errors = authResponse.Errors,
+                    Result = authResponse.Result
+                };
+            }
+            return _userService.UpdateInfor(id, updateInforDTO);
         }
     }
 }
