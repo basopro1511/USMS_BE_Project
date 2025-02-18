@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace SchedulerBusinessObject.ModelDTOs
+﻿namespace SchedulerBusinessObject.ModelDTOs
 {
 	public class ClassSubjectDTO
 	{

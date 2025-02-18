@@ -19,7 +19,8 @@ namespace ClassBusinessObject.AppDBContext
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             IConfigurationRoot configuration = builder.Build();
-            optionsBuilder.UseSqlServer(configuration.GetConnectionString("HoangConnection"));
+            //optionsBuilder.UseSqlServer(configuration.GetConnectionString("HoangConnection"));
+            optionsBuilder.UseSqlServer(configuration.GetConnectionString("NamConnection"));
             }
 
         public virtual DbSet<ClassSubject> ClassSubject { get; set; }
