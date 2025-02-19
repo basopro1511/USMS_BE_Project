@@ -67,5 +67,12 @@ namespace SchedulerService.Controllers.Schedule
             return aPIResponse;
             }
 
+        [HttpGet("AvailableTeachers/{majorId}/{date}/{slot}")]
+        public APIResponse GetAvailableTeachersToAddSchedule(string majorId, DateOnly date, int slot)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=_scheduleService.GetAllTeacherAvailableForAddSchedule(majorId,date,slot);
+            return aPIResponse;
+            }
         }
     }

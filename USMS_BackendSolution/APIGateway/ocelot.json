@@ -414,7 +414,46 @@
             ],
             "UpstreamPathTemplate": "/api/User/{id}",
             "UpstreamHttpMethod": [ "GET" ]
-        }
+        },
         /* User API End */
+
+        /* Teacher API Start */
+        {
+            "DownstreamPathTemplate": "/api/Teacher",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7179
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Teacher",
+            "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Teacher/{id}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7179
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Teacher/{id}",
+            "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Teacher/Available/{majorId}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7179
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Teacher/Available/{majorId}",
+            "UpstreamHttpMethod": [ "GET" ]
+        }
+        /* Teacher API End */
     ]
 }

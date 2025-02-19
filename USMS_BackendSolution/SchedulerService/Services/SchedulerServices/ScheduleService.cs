@@ -1,5 +1,6 @@
 ﻿using ISUZU_NEXT.Server.Core.Extentions;
 using Newtonsoft.Json;
+using NuGet.Protocol.Core.Types;
 using Repositories.ScheduleRepository;
 using SchedulerBusinessObject;
 using SchedulerBusinessObject.AppDBContext;
@@ -112,7 +113,6 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                 // Tuỳ bạn định nghĩa route, có thể là /api/Subject?subjectId=...
                 using (var client = new HttpClient())
                     {
-                    // Đây là base URL cho service Subject, bạn thay đổi theo config của bạn
                     client.BaseAddress=new Uri("https://localhost:7067/");
                     // Gọi API GET
                     var result = await client.GetAsync($"api/Subjects/{subjectId}");
@@ -141,8 +141,10 @@ namespace SchedulerDataAccess.Services.SchedulerServices
 
         #region Post Schedule (kết hợp check conflict & SlotNoInSubject)
         /// <summary>
-        /// Thêm mới 1 lịch học (schedule), có kiểm tra xung đột & đảm bảo SlotNoInSubject <= NumberOfSlot của môn
+        ///  Thêm mới 1 lịch học (schedule), có kiểm tra xung đột & đảm bảo SlotNoInSubject <= NumberOfSlot của môn
         /// </summary>
+        /// <param name="schedule"></param>
+        /// <returns></returns>
         public async Task<APIResponse> AddNewSchedule(ClassScheduleDTO schedule)
             {
             APIResponse aPIResponse = new APIResponse();
@@ -565,6 +567,98 @@ namespace SchedulerDataAccess.Services.SchedulerServices
             catch(Exception ex) {
                 throw new Exception(ex.Message);
                 }
+            }
+        #endregion
+
+        #region Get Schedule By Date And Slot       
+        /// <summary>
+        /// Get Schedule By Date and Slot to check conflict
+        /// </summary>
+        /// <param name="date"></param>
+        /// <param name="slot"></param>
+        /// <returns></returns>
+        public APIResponse GetSchedulesByDateAndSlot(DateOnly date, int slot)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            var schedule = _scheduleRepository.GetSchedulesByDateAndSlot(date,slot);
+            if (schedule==null)
+                {
+                aPIResponse.IsSuccess=false;
+                aPIResponse.Message="Không tìm thấy lịch học khả dụng vào buổi "+ slot + " ngày: " + date ;
+                }
+            aPIResponse.Result=schedule;
+            return aPIResponse;
+            }
+        #endregion
+
+        #region Get Available Teacher
+        private List<TeacherDTO> GetAvailableTeachersByMajorId(string majorId)
+            {
+            try
+                {
+                var response = _httpClient.GetAsync($"https://localhost:7067/api/Teacher/Available/{majorId}").Result;
+                var apiResponse = response.Content.ReadFromJsonAsync<APIResponse>().Result;
+                if (apiResponse==null||!apiResponse.IsSuccess)
+                    {
+                    return null;
+                    }
+                var dataResponse = apiResponse.Result as JsonElement?;
+                if (dataResponse==null)
+                    {
+                    return null;
+                    }
+                var options = new JsonSerializerOptions
+                    {
+                    PropertyNameCaseInsensitive=true
+                    };
+                return dataResponse.Value.Deserialize<List<TeacherDTO>>(options);
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
+        #region Get All Teachers Available
+        /// <summary>
+        /// Get All Teacher Available from Database
+        /// </summary>
+        /// <param name="teacherDto"></param>
+        /// <returns></returns>
+        public APIResponse GetAllTeacherAvailableForAddSchedule(string majorId, DateOnly date, int slot)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            List<TeacherDTO> teachers = GetAvailableTeachersByMajorId(majorId);
+            #region validation 
+            List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
+            {
+                  (teachers == null, "Không tìm thấy giáo viên!"),
+            };
+            foreach (var validation in validations)
+                {
+                if (validation.condition)
+                    {
+                    return new APIResponse
+                        {
+                        IsSuccess=false,
+                        Message=validation.errorMessage
+                        };
+                    }
+                }
+            #endregion       
+            // 2. Lấy các schedule có date & slotId = ...
+            var schedules = _scheduleRepository.GetSchedulesByDateAndSlot(date, slot);
+            // 3. Lấy danh sách teacherId đã bị chiếm
+            var usedTeacherIds = schedules.Select(sch => sch.TeacherId).Distinct().ToHashSet();
+            // 4. Lọc ra các giáo viên còn trống
+            var availableTeacher = teachers
+                .Where(r => !usedTeacherIds.Contains(r.UserId))
+                .ToList();
+            // 5. Gói vào APIResponse
+            aPIResponse.IsSuccess=true;
+            aPIResponse.Result=availableTeacher;
+            return aPIResponse;
             }
         #endregion
         }

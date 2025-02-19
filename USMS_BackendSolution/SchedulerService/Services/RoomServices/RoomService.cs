@@ -234,7 +234,7 @@ namespace Services.RoomServices
         }
         #endregion
 
-        #region Get AvailableRoom
+        #region Get Availabl eRoom
         /// <summary>
         /// Lấy danh sách phòng trống trong ngày date, slotId
         /// </summary>
@@ -246,7 +246,6 @@ namespace Services.RoomServices
             APIResponse response = new APIResponse();
             try
                 {
-     
                 var allRooms = _roomRepository.GetAllRooms();
                 if(allRooms == null || allRooms.Count == 0)
                     {
@@ -254,17 +253,14 @@ namespace Services.RoomServices
                     response.Message = "Không có phòng nào trong hệ thống!";
                     return response;
                     }
-
                 // 2. Lấy các schedule có date & slotId = ...
                 var schedules = _scheduleRepository.GetSchedulesByDateAndSlot(date, slotId);
                 // 3. Lấy danh sách roomId đã bị chiếm
                 var usedRoomIds =  schedules.Select(sch => sch.RoomId).Distinct().ToHashSet();
-
                 // 4. Lọc ra các phòng còn trống
                 var availableRooms = allRooms
                     .Where(r => !usedRoomIds.Contains(r.RoomId))
                     .ToList();
-
                 // 5. Gói vào APIResponse
                 response.IsSuccess = true;
                 response.Message = "Lấy danh sách phòng trống thành công.";

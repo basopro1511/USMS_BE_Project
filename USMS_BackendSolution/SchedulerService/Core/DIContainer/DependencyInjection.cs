@@ -21,6 +21,7 @@ namespace SchedulerDataAccess.Core
             #endregion
 
             #region Register Service
+            services.AddHttpClient();
             services.AddScoped<ScheduleService>();
             services.AddScoped<RoomService>();
             services.AddScoped<ExamScheduleService>();

@@ -28,7 +28,6 @@ namespace SchedulerBusinessObject.ModelDTOs
         public string SubjectId { get; set; }
         public string? MajorId {  get; set; }
         public int SlotId { get; set; }
-
         public string RoomId { get; set; }
         public string? TeacherId { get; set; }
         public DateOnly Date { get; set; }
