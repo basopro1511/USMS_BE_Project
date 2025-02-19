@@ -108,19 +108,20 @@ namespace Repositories.ScheduleRepository
         #endregion
 
         #region Get ClassSchedules by ClassSubjectIds
-        public List<ScheduleDTO> GetClassSchedulesByClassSubjectIds(List<int> classSubjectIds)
+        public List<ViewScheduleDTO> GetClassSchedulesByClassSubjectIds(List<int> classSubjectIds)
             {
             try
                 {
                 using(var _dbContext = new MyDbContext())
                     {
+        
                     var schedules = _dbContext.Schedule
                         .Where(cs => classSubjectIds.Contains(cs.ClassSubjectId))
                         .ToList();
-                    List<ScheduleDTO> classScheduleDTOs = new List<ScheduleDTO>();
+                    List<ViewScheduleDTO> classScheduleDTOs = new List<ViewScheduleDTO>();
                     foreach(var item in schedules)
                         {
-                        ScheduleDTO classScheduleDTO = new ScheduleDTO();
+                        ViewScheduleDTO classScheduleDTO = new ViewScheduleDTO();
                         classScheduleDTO.CopyProperties(item);
                         classScheduleDTOs.Add(classScheduleDTO);
                         }
@@ -135,17 +136,17 @@ namespace Repositories.ScheduleRepository
         #endregion
 
         #region Get ClassSchedules by ClassSubjectId
-        public List<ScheduleDTO> GetClassSchedulesByClassSubjectId(int classSubjectId)
+        public List<ViewScheduleDTO> GetClassSchedulesByClassSubjectId(int classSubjectId)
             {
             try
                 {
                 using(var _dbContext = new MyDbContext())
                     {
                     List<Schedule> schedules = _dbContext.Schedule.Where(cs => classSubjectId == cs.ClassSubjectId).ToList();
-                    List<ScheduleDTO> classScheduleDTOs = new List<ScheduleDTO>();
+                    List<ViewScheduleDTO> classScheduleDTOs = new List<ViewScheduleDTO>();
                     foreach(var item in schedules)
                         {
-                        ScheduleDTO classScheduleDTO = new ScheduleDTO();
+                        ViewScheduleDTO classScheduleDTO = new ViewScheduleDTO();
                         classScheduleDTO.CopyProperties(item);
                         classScheduleDTOs.Add(classScheduleDTO);
                         }
@@ -236,5 +237,76 @@ namespace Repositories.ScheduleRepository
             }
         #endregion
 
+        #region Get Schedules For Academic Staff
+        /// <summary>
+        /// Lấy danh sách lịch (Schedule) theo ClassSubjectId
+        /// </summary>
+        /// <param name="classSubjectId">Id của ClassSubject</param>
+        /// <returns>Danh sách Schedule</returns>
+        public List<ViewScheduleDTO> GetClassSchedulesForStaff(List<int> classSubjectIds, DateTime startDay, DateTime endDay)
+            {
+            try
+                {
+                var dbContext = new MyDbContext();
+                var schedules = dbContext.Schedule
+                         .Where(s => classSubjectIds.Contains(s.ClassSubjectId)
+                                  &&s.Date>=DateOnly.FromDateTime(startDay)
+                                  &&s.Date<=DateOnly.FromDateTime(endDay))
+                         .Select(s => new ViewScheduleDTO
+                             {
+                             ClassScheduleId=s.ScheduleId,
+                             ClassSubjectId=s.ClassSubjectId,
+                             SlotId=s.SlotId,
+                             TeacherId=s.TeacherId,
+                             Date=s.Date,
+                             Status=s.Status,
+                             RoomId=s.RoomId,
+                             SlotNoInSubject=s.SlotNoInSubject
+                             })
+                         .ToList();
+                return schedules;
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
+        #region Get Schedules For Student
+        /// <summary>
+        /// Lấy danh sách lịch (Schedule) theo ClassSubjectId
+        /// </summary>
+        /// <param name="classSubjectId">Id của ClassSubject</param>
+        /// <returns>Danh sách Schedule</returns>
+        public List<ViewScheduleDTO> GetClassSchedulesForStudent(List<int> classSubjectIds, DateTime startDay, DateTime endDay)
+            {
+            try
+                {
+                var dbContext = new MyDbContext();
+                var schedules = dbContext.Schedule
+                         .Where(s => classSubjectIds.Contains(s.ClassSubjectId)
+                                  &&s.Date>=DateOnly.FromDateTime(startDay)
+                                  &&s.Date<=DateOnly.FromDateTime(endDay))
+                         .Select(s => new ViewScheduleDTO
+                             {
+                             ClassScheduleId=s.ScheduleId,
+                             ClassSubjectId=s.ClassSubjectId,
+                             SlotId=s.SlotId,
+                             TeacherId=s.TeacherId,
+                             Date=s.Date,
+                             Status=s.Status,
+                             RoomId=s.RoomId,
+                             SlotNoInSubject=s.SlotNoInSubject
+                             })
+                         .ToList();
+                return schedules;
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
         }
     }

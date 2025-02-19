@@ -275,7 +275,7 @@
             "UpstreamHttpMethod": [ "GET", "DELETE" ]
         },
         {
-            "DownstreamPathTemplate": "/api/Schedule/{majorId}/{classId}/{term}/{startDay}/{endDay}]",
+            "DownstreamPathTemplate": "/api/Schedule/{majorId}/{classId}/{term}/{startDay}/{endDay}",
             "DownstreamScheme": "https",
             "DownstreamHostAndPorts": [
                 {
@@ -283,7 +283,19 @@
                     "Port": 7131
                 }
             ],
-            "UpstreamPathTemplate": "/api/Schedule/{majorId}/{classId}/{term}/{startDay}/{endDay}]",
+            "UpstreamPathTemplate": "/api/Schedule/{majorId}/{classId}/{term}/{startDay}/{endDay}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Schedule/Student/{id}/{startDay}/{endDay}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Schedule/Student/{id}/{startDay}/{endDay}",
             "UpstreamHttpMethod": [ "GET" ]
         },
         /* Schedule API End */

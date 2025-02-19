@@ -13,10 +13,10 @@ namespace Repositories.ScheduleRepository
         public ScheduleDTO GetScheduleById(int classScheduleId);
         Task AddSchedule(Schedule schedule);
         List<Schedule> GetSchedulesByDateAndSlot(DateOnly date, int slot);
-        public List<ScheduleDTO> GetClassSchedulesByClassSubjectIds(List<int> classSubjectIds);
-        public List<ScheduleDTO> GetClassSchedulesByClassSubjectId(int classSubjectId);
+        public List<ViewScheduleDTO> GetClassSchedulesByClassSubjectIds(List<int> classSubjectIds);
         public List<Schedule> GetSchedulesByClassSubjectId(int classSubjectId);
         public bool UpdateSchedule(ScheduleDTO scheduleDto);
         public bool DeleteScheduleById(int scheduleId);
+        public List<ViewScheduleDTO> GetClassSchedulesForStaff(List<int> classSubjectIds,DateTime startDay, DateTime endDay);
     }
     }
