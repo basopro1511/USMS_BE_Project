@@ -42,11 +42,11 @@ namespace SchedulerService.Controllers.Schedule
             }
 
         // GET: api/Customers
-        [HttpGet("{id}")]
-        public APIResponse GetStudentSchedule(string id)
+        [HttpGet("Student/{id}/{startDay}/{endDay}")]
+        public APIResponse GetStudentSchedule(string id, DateTime startDay, DateTime endDay)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _scheduleService.GetClassSchedulesByStudentIds(id);
+            aPIResponse=_scheduleService.GetClassScheduleForStudent(id, startDay, endDay);
             return aPIResponse;
             }
 
@@ -55,7 +55,7 @@ namespace SchedulerService.Controllers.Schedule
         public APIResponse GetClassSchedule(string majorId, string classId, int term, DateTime startDay, DateTime endDay)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _scheduleService.GetClassSchedulesForClass(majorId,classId, term, startDay,endDay);
+            aPIResponse = _scheduleService.GetClassSchedulesForStaff(majorId,classId, term, startDay,endDay);
             return aPIResponse;
             }
 

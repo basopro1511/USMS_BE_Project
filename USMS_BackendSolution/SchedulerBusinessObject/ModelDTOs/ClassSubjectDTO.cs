@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.Identity.Client;
+using System.ComponentModel.DataAnnotations;
 
 namespace SchedulerBusinessObject.ModelDTOs
 {
@@ -11,7 +12,8 @@ namespace SchedulerBusinessObject.ModelDTOs
 		public string SubjectId { get; set; } = null!;
 
 		public string SemesterId { get; set; } = null!;
-
+        public string MajorId { get; set; } = null!;
+        public int Term { get; set; }
 		public int Status { get; set; }
 	}
 }
