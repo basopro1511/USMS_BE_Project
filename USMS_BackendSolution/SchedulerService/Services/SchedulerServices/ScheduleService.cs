@@ -437,7 +437,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
 			try
 			{
 				// 1. Kiểm tra xem lịch học cần cập nhật có tồn tại không
-				var existingSchedule = _scheduleRepository.GetScheduleById(scheduleDto.ClassScheduleId);
+				var existingSchedule = await _scheduleRepository.GetScheduleById(scheduleDto.ClassScheduleId);
 				if (existingSchedule == null)
 				{
 					aPIResponse.IsSuccess = false;
@@ -551,89 +551,16 @@ namespace SchedulerDataAccess.Services.SchedulerServices
 		public async Task<APIResponse> GetScheduleById(int scheduleId)
 		{
 			APIResponse aPIResponse = new APIResponse();
-			ViewScheduleDetailsDTO scheduleDetails = new ViewScheduleDetailsDTO();
 			try
 			{
-				// Sẽ có được Ngày và các ID ClassID, SubjectId, RoomId, TeacherId, SlotId
-				var schedules = _scheduleRepository.GetScheduleById(scheduleId);
+				var schedules = await _scheduleRepository.GetScheduleById(scheduleId);
 				if (schedules == null)
 				{
 					aPIResponse.IsSuccess = false;
 					aPIResponse.Message = "Không tìm thấy lịch học!";
 					return aPIResponse;
 				}
-				// Date nè
-				scheduleDetails.Date = schedules.Date;
-				// SlotNoInSubject nè
-				scheduleDetails.SlotNoInSubject = schedules.SlotNoInSubject;
-				var slot = _scheduleRepository.GetTimeSlotById(schedules.SlotId);
-				if (slot == null)
-				{
-					aPIResponse.IsSuccess = false;
-					aPIResponse.Message = "Không tìm thấy Slot!";
-					return aPIResponse;
-				}
-				// StartTime nè
-				scheduleDetails.startTime = slot.StartTime;
-				// EndTime nè
-				scheduleDetails.endTime = slot.EndTime;
-				var listOfUsers = await GetUsers();
-				if (listOfUsers == null)
-				{
-					aPIResponse.IsSuccess = false;
-					aPIResponse.Message = "Không tìm thấy giáo viên nào trong hệ thống!";
-					return aPIResponse;
-				}
-				var teacher = listOfUsers.FirstOrDefault(u => u.UserId == schedules.TeacherId);
-				// Teacher nè
-				if (teacher != null)
-				{
-					if (string.IsNullOrEmpty(teacher.MiddleName))
-					{
-						scheduleDetails.Teacher = $"{teacher.FirstName} {teacher.LastName}";
-					}
-					else
-					{
-						scheduleDetails.Teacher = $"{teacher.FirstName} {teacher.MiddleName} {teacher.LastName}";
-					}
-				}
-				else
-				{
-					scheduleDetails.Teacher = "Chưa có giáo viên";
-				}
-				var listClassSubjects = await GetClassSubjects();
-				if (listClassSubjects == null)
-				{
-					aPIResponse.IsSuccess = false;
-					aPIResponse.Message = "Không tìm thấy lớp học nào trong hệ thống!";
-					return aPIResponse;
-				}
-				var classSubject = listClassSubjects.FirstOrDefault(cs => cs.ClassSubjectId == schedules.ClassSubjectId);
-				if (classSubject == null)
-				{
-					aPIResponse.IsSuccess = false;
-					aPIResponse.Message = "Không tìm thấy lớp học của bạn!";
-					return aPIResponse;
-				}
-				// ClassName nè
-				scheduleDetails.ClassName = classSubject.ClassId;
-				var listOfSubjects = await GetSubjects();
-				if (listOfSubjects == null)
-				{
-					aPIResponse.IsSuccess = false;
-					aPIResponse.Message = "Không tìm thấy môn học nào trong hệ thống!";
-					return aPIResponse;
-				}
-				var subject = listOfSubjects.FirstOrDefault(s => s.SubjectId == classSubject.SubjectId);
-				if (subject == null)
-				{
-					aPIResponse.IsSuccess = false;
-					aPIResponse.Message = "Không tìm thấy môn học của bạn!";
-					return aPIResponse;
-				}
-				// SubjectName nè
-				scheduleDetails.SubjectName = subject.SubjectName;
-				aPIResponse.Result = scheduleDetails;
+				aPIResponse.Result = schedules;
 				return aPIResponse;
 			}
 			catch (Exception ex)
@@ -641,76 +568,6 @@ namespace SchedulerDataAccess.Services.SchedulerServices
 				aPIResponse.IsSuccess = false;
 				aPIResponse.Message = ex.Message;
 				return aPIResponse;
-			}
-		}
-		#endregion
-
-		#region Get Subjects
-		/// <summary>
-		/// Get Subjects
-		/// </summary>
-		/// <returns></returns>
-		/// <exception cref="Exception"></exception>
-		private async Task<List<SubjectDTO>?> GetSubjects()
-		{
-			try
-			{
-				using (var client = new HttpClient())
-				{
-					client.BaseAddress = new Uri("https://localhost:7067/");
-					var result = await client.GetAsync("api/Subjects");
-					if (result.IsSuccessStatusCode)
-					{
-						var jsonString = await result.Content.ReadAsStringAsync();
-
-						var apiRes = JsonConvert.DeserializeObject<APIResponse>(jsonString);
-						if (apiRes?.Result != null)
-						{
-							var subjectList = JsonConvert.DeserializeObject<List<SubjectDTO>>(apiRes.Result.ToString());
-							return subjectList ?? new List<SubjectDTO>();
-						}
-					}
-					return new List<SubjectDTO>();
-				}
-			}
-			catch (Exception ex)
-			{
-				throw new Exception(ex.Message);
-			}
-		}
-		#endregion
-
-		#region Get Users
-		/// <summary>
-		/// Get Users
-		/// </summary>
-		/// <returns></returns>
-		/// <exception cref="Exception"></exception>
-		private async Task<List<UserDTO>?> GetUsers()
-		{
-			try
-			{
-				using (var client = new HttpClient())
-				{
-					client.BaseAddress = new Uri("https://localhost:7067/");
-					var result = await client.GetAsync("api/User");
-					if (result.IsSuccessStatusCode)
-					{
-						var jsonString = await result.Content.ReadAsStringAsync();
-
-						var apiRes = JsonConvert.DeserializeObject<APIResponse>(jsonString);
-						if (apiRes?.Result != null)
-						{
-							var userList = JsonConvert.DeserializeObject<List<UserDTO>>(apiRes.Result.ToString());
-							return userList ?? new List<UserDTO>();
-						}
-					}
-					return new List<UserDTO>();
-				}
-			}
-			catch (Exception ex)
-			{
-				throw new Exception(ex.Message);
 			}
 		}
 		#endregion

@@ -15,12 +15,12 @@ namespace Repositories.ScheduleRepository
 		/// </summary>
 		/// <returns></returns>
 		/// <exception cref="Exception"></exception>
-		public List<Schedule> getAllSchedule()
+		public async Task<List<Schedule>?> getAllSchedule()
 		{
 			try
 			{
 				var dbContext = new MyDbContext();
-				List<Schedule> schedules = dbContext.Schedule.ToList();
+				var schedules = await dbContext.Schedule.ToListAsync();
 				return schedules;
 			}
 			catch (Exception ex)
@@ -36,12 +36,17 @@ namespace Repositories.ScheduleRepository
 		/// </summary>
 		/// <returns></returns>
 		/// <exception cref="Exception"></exception>
-		public ScheduleDTO GetScheduleById(int classScheduleId)
+		public async Task<ScheduleDTO?> GetScheduleById(int classScheduleId)
 		{
 			try
 			{
 				var dbContext = new MyDbContext();
-				Schedule schedule = getAllSchedule().FirstOrDefault(x => x.ScheduleId == classScheduleId);
+				var scheduleList = await getAllSchedule();
+				if (scheduleList == null)
+				{
+					return null;
+				}
+				var schedule = scheduleList.FirstOrDefault(s => s.ScheduleId == classScheduleId);
 				if (schedule == null)
 				{
 					return null; // Không tìm thấy lịch học => trả về null
@@ -227,29 +232,6 @@ namespace Repositories.ScheduleRepository
 					dbContext.Schedule.Remove(schedule);
 					dbContext.SaveChanges();
 					return true;
-				}
-			}
-			catch (Exception ex)
-			{
-				throw new Exception(ex.Message);
-			}
-		}
-		#endregion
-
-		#region Get TimeSlot by Id
-		/// <summary>
-		/// Get TimeSlot by Id
-		/// </summary>
-		/// <param name="slotId"></param>
-		/// <returns></returns>
-		/// <exception cref="Exception"></exception>
-		public TimeSlot? GetTimeSlotById(int slotId)
-		{
-			try
-			{
-				using (var dbContext = new MyDbContext())
-				{
-					return dbContext.TimeSlot.FirstOrDefault(s => s.SlotId == slotId);
 				}
 			}
 			catch (Exception ex)

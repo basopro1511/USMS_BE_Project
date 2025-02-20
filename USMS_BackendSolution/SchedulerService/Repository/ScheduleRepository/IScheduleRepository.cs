@@ -9,15 +9,14 @@ namespace Repositories.ScheduleRepository
 		/// Method Test to get all Schedule
 		/// </summary>
 		/// <returns>a list of all schedule</returns>
-		List<Schedule> getAllSchedule();
-		public ScheduleDTO GetScheduleById(int classScheduleId);
+		Task<List<Schedule>?> getAllSchedule();
+		Task<ScheduleDTO?> GetScheduleById(int classScheduleId);
 		Task AddSchedule(Schedule schedule);
 		List<Schedule> GetSchedulesByDateAndSlot(DateOnly date, int slot);
-		public List<ScheduleDTO> GetClassSchedulesByClassSubjectIds(List<int> classSubjectIds);
-		public List<ScheduleDTO> GetClassSchedulesByClassSubjectId(int classSubjectId);
-		public List<Schedule> GetSchedulesByClassSubjectId(int classSubjectId);
-		public bool UpdateSchedule(ScheduleDTO scheduleDto);
-		public bool DeleteScheduleById(int scheduleId);
-		public TimeSlot? GetTimeSlotById(int slotId);
+		List<ScheduleDTO> GetClassSchedulesByClassSubjectIds(List<int> classSubjectIds);
+		List<ScheduleDTO> GetClassSchedulesByClassSubjectId(int classSubjectId);
+		List<Schedule> GetSchedulesByClassSubjectId(int classSubjectId);
+		bool UpdateSchedule(ScheduleDTO scheduleDto);
+		bool DeleteScheduleById(int scheduleId);
 	}
 }

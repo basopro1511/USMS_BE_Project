@@ -211,18 +211,18 @@
         /* Major API End */
 
         /* Class Subject API Start */
-        {
-            "DownstreamPathTemplate": "/api/ClassSubject",
-            "DownstreamScheme": "https",
-            "DownstreamHostAndPorts": [
-                {
-                    "Host": "localhost",
-                    "Port": 7286
-                }
-            ],
-            "UpstreamPathTemplate": "/api/ClassSubject",
-            "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
-        },
+      {
+        "DownstreamPathTemplate": "/api/ClassSubject/{everything}",
+        "DownstreamScheme": "https",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 7286
+          }
+        ],
+        "UpstreamPathTemplate": "/api/ClassSubject/{everything}",
+        "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+      },
         {
             "DownstreamPathTemplate": "/api/ClassSubject/ClassIdsByMajorId/{id}",
             "DownstreamScheme": "https",
