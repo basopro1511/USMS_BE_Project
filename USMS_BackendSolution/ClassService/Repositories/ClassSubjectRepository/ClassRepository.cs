@@ -242,6 +242,11 @@ namespace Repositories.ClassSubjectRepository
                 throw new Exception($"Lỗi khi lấy ClassId cho MajorId={majorId}: {ex.Message}", ex);
                 }
             }
-        #endregion
+
+        public List<ClassSubjectDTO> GetClassSubjects(string majorId, string classId, int term)
+        {
+            throw new NotImplementedException();
         }
+        #endregion
+    }
     }

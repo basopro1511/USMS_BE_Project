@@ -22,8 +22,24 @@ namespace UserService.Services.UserService
             _config = config;
             _httpContextAccessor = httpContextAccessor; // Lưu HttpContext để lấy token từ request
         }
-        public APIResponse Login(LoginDTO.LoginRequest loginDTO)
+        public APIResponse Login(LoginDTO loginDTO)
         {
+            if (loginDTO.Email.Length > 100)
+            {
+                return new APIResponse
+                {
+                    IsSuccess = false,
+                    Message = "Độ dài email không thể hơn 100 kí tự."
+                };
+            }
+            if (loginDTO.Password.Length > 36 || loginDTO.Password.Length < 8)
+            {
+                return new APIResponse
+                {
+                    IsSuccess = false,
+                    Message = "Mật khẩu không thể dài hơn 36 kí tự và nhỏ hơn 8 kí tự."
+                };
+            }
             var user = _userRepository.GetUserByEmail(loginDTO.Email);
             if (user == null)
             {

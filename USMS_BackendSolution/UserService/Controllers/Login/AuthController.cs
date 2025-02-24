@@ -23,7 +23,7 @@ namespace UserService.Controllers.Login
             _loginService = loginService;
         }
         [HttpPost("login")]
-        public APIResponse Login([FromBody] LoginDTO.LoginRequest model)
+        public APIResponse Login([FromBody] LoginDTO model)
         {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse = _loginService.Login(model);
