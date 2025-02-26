@@ -1,10 +1,12 @@
 ﻿using BusinessObject.AppDBContext;
 using BusinessObject.ModelDTOs;
+using BusinessObject.Models;
 using ISUZU_NEXT.Server.Core.Extentions;
+using Microsoft.EntityFrameworkCore;
 
 namespace UserService.Repository.TeacherRepository
     {
-    public class TeacherRepository : ITeacherRepository 
+    public class TeacherRepository : ITeacherRepository
         {
         #region Get All Teacher
         /// <summary>
@@ -12,7 +14,7 @@ namespace UserService.Repository.TeacherRepository
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public List<UserDTO> GetAllTeacher()
+        public async Task<List<UserDTO>> GetAllTeacher()
             {
             try
                 {
@@ -43,17 +45,75 @@ namespace UserService.Repository.TeacherRepository
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public List<UserDTO> GetAllTeacherAvailableByMajorId(string majorId)
+        public async Task<List<UserDTO>> GetAllTeacherAvailableByMajorId(string majorId)
             {
             try
                 {
-                var users = GetAllTeacher();
-                var teacherAvailable = users.Where(x => x.Status==1 && x.MajorId == majorId).ToList();
+                var users = await GetAllTeacher();
+                var teacherAvailable = users.Where(x => x.Status==1&&x.MajorId==majorId).ToList();
                 return teacherAvailable;
                 }
             catch (Exception ex)
                 {
                 throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
+        #region Add Teacher
+        /// <summary>
+        /// Thêm giáo viên mới vào database (Async)
+        /// </summary>
+        /// <param name="userDTO"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<bool> AddNewTeacher(UserDTO userDTO)
+            {
+            try
+                {
+                using (var dbContext = new MyDbContext())
+                    {
+                    var teacher = new User();
+                    teacher.CopyProperties(userDTO);
+                    teacher.CreatedAt=DateTime.Now;
+                    dbContext.User.Add(teacher);
+                    await dbContext.SaveChangesAsync();
+                    return true;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception("Lỗi khi thêm giáo viên", ex);
+                }
+            }
+        #endregion
+
+
+        #region Update Techer
+        /// <summary>
+        /// Update Teacher information
+        /// </summary>
+        /// <param name="userDTO"></param>
+        /// <returns></returns>
+        public async Task<bool> UpdateTeacher(UserDTO userDTO)
+            {
+            try
+                {
+                using (var dbContext = new MyDbContext())
+                    {
+                    var user = dbContext.User.FirstOrDefault(x => x.UserId==userDTO.UserId);
+                    user.CopyProperties(userDTO);
+                    if (user==null)
+                        return false;
+                    user.UpdatedAt = DateTime.Now;
+                    dbContext.Entry(user).State=EntityState.Modified;
+                    await dbContext.SaveChangesAsync();
+                    return true;
+                    }
+                }
+            catch (Exception)
+                {
+                throw;
                 }
             }
         #endregion

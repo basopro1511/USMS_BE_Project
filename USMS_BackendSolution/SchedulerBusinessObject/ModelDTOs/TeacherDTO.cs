@@ -16,7 +16,7 @@ namespace SchedulerBusinessObject.ModelDTOs
             {
             get
                 {
-                return $"{FirstName} {MiddleName} {LastName}";
+                return $"{LastName} {MiddleName} {FirstName}";
                 }
             }
         public string Email { get; set; }

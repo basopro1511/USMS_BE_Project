@@ -298,6 +298,30 @@
             "UpstreamPathTemplate": "/api/Schedule/Student/{id}/{startDay}/{endDay}",
             "UpstreamHttpMethod": [ "GET" ]
         },
+        {
+            "DownstreamPathTemplate": "/api/Schedule/AvailableTeachers/{majorId}/{date}/{slot}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Schedule/AvailableTeachers/{majorId}/{date}/{slot}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Schedule/Teacher/{id}/{startDay}/{endDay}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Schedule/Teacher/{id}/{startDay}/{endDay}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
         /* Schedule API End */
 
         /* Student In Class API Start */
@@ -440,20 +464,10 @@
                 }
             ],
             "UpstreamPathTemplate": "/api/Teacher/{id}",
-            "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+            "UpstreamHttpMethod": [ "GET", "POST" ]
         },
-        {
-            "DownstreamPathTemplate": "/api/Teacher/Available/{majorId}",
-            "DownstreamScheme": "https",
-            "DownstreamHostAndPorts": [
-                {
-                    "Host": "localhost",
-                    "Port": 7179
-                }
-            ],
-            "UpstreamPathTemplate": "/api/Teacher/Available/{majorId}",
-            "UpstreamHttpMethod": [ "GET" ]
-        }
+      
+
         /* Teacher API End */
     ]
 }

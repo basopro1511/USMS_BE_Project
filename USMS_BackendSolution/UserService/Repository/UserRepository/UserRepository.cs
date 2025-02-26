@@ -32,8 +32,6 @@ namespace UserService.Repository.UserRepository
                     {
                         UserDTO userDTO = new UserDTO();
                         userDTO.CopyProperties(user);
-                        userDTO.RoleName = user.Role?.RoleName;
-                        userDTO.MajorName = user.Major?.MajorName;
                         userDTOs.Add(userDTO);
                     }
                     return userDTOs;
