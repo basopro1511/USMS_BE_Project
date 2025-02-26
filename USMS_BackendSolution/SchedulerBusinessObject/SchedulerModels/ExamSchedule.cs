@@ -49,6 +49,5 @@ namespace SchedulerBusinessObject.SchedulerModels
         [Column(TypeName = "DATETIME")]
         public DateTime CreatedAt { get; set; }
         public virtual ICollection<StudentInExamSchedule>? StudentInExamSchedules { get; set; }
-
         }
     }

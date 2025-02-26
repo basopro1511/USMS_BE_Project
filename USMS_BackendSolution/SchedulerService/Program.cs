@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using SchedulerBusinessObject.AppDBContext;
 using SchedulerDataAccess.Core;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,8 +8,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.ConfigureDependencyInjection();
 builder.Services.AddHttpClient();
+builder.Services.AddDbContext<MyDbContext>(options =>
+{
+	options.UseSqlServer(builder.Configuration.GetConnectionString("NamConnection"));
+});
+builder.Services.ConfigureDependencyInjection();
 
 //Add CORS
 builder.Services.AddCors(options =>
