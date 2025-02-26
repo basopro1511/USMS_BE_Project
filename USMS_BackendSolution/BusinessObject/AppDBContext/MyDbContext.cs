@@ -1,16 +1,10 @@
 using BusinessObject.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BusinessObject.AppDBContext
-    {
-    public class MyDbContext : DbContext
+{
+	public class MyDbContext : DbContext
         {
         public MyDbContext(DbContextOptions<MyDbContext> options) : base(options) { }
         public MyDbContext() { }
@@ -20,7 +14,7 @@ namespace BusinessObject.AppDBContext
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             IConfigurationRoot configuration = builder.Build();
-            optionsBuilder.UseSqlServer(configuration.GetConnectionString("NamConnection"));
+            optionsBuilder.UseSqlServer(configuration.GetConnectionString("HoangConnection"));
             }
         public virtual DbSet<User> User { get; set; }
         public virtual DbSet<Role> Role { get; set; }
