@@ -12,7 +12,7 @@ namespace BusinessObject.Models
     public class User
         {
         [Key]
-        [Column(TypeName = "NVARCHAR(8)")]
+        [Column(TypeName = "NVARCHAR(16)")]
         public string UserId { get; set; }
         [Column(TypeName = "NVARCHAR(20)")]
         [Required]
@@ -22,8 +22,10 @@ namespace BusinessObject.Models
         [Column(TypeName = "NVARCHAR(20)")]
         [Required]
         public string LastName { get; set; }
-        [Column(TypeName = "NVARCHAR(200)")]
         [Required]
+        public bool Gender { get; set; }
+        [Required]
+        [Column(TypeName = "NVARCHAR(200)")]
         public string PasswordHash { get; set; }
         [Column(TypeName = "NVARCHAR(100)")]
         public string? Email { get; set; }

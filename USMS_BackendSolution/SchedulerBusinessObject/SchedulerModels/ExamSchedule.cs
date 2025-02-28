@@ -38,8 +38,14 @@ namespace SchedulerBusinessObject.SchedulerModels
         [Required]
         [Column(TypeName = "TIME(7)")]
         public TimeOnly EndTime { get; set; }
+        [Required]
+        [Column(TypeName = "INT")]
+        public int Type { get; set; }
+        [Required]
+        [Column(TypeName = "INT")]
+        public int Turn { get; set; }   
 
-        [Column(TypeName = "NVARCHAR(8)")]
+        [Column(TypeName = "NVARCHAR(16)")]
         public string? TeacherId { get; set; }
 
         [Required]

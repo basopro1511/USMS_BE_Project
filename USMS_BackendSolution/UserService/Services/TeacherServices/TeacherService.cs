@@ -126,6 +126,25 @@ namespace UserService.Services.TeacherService
             }
         #endregion
 
+        #region Remove Diacritics 
+        public string RemoveDiacritics(string text)
+            {
+            if (string.IsNullOrWhiteSpace(text))
+                return text;
+            text=text.Normalize(NormalizationForm.FormD); // Chuẩn hóa chuỗi để tách dấu
+            StringBuilder sb = new StringBuilder();
+            foreach (char c in text)
+                {
+                UnicodeCategory uc = CharUnicodeInfo.GetUnicodeCategory(c);
+                if (uc!=UnicodeCategory.NonSpacingMark) // Loại bỏ dấu
+                    {
+                    sb.Append(c);
+                    }
+                }
+            return sb.ToString().Normalize(NormalizationForm.FormC); // Trả về chuỗi không dấu
+            }
+        #endregion
+
         #region Add New Teacher
         /// <summary>
         /// Add New Teacher Into Database
@@ -166,8 +185,10 @@ namespace UserService.Services.TeacherService
                 #endregion
                 #region 2. Generate TeacherID
                 // 1.  Viết hoa chữ cái đầu của họ, tên, và tên đệm ví dụ nguyen quoc hoang => Nguyen Quoc Hoang
-                string firstName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(userDTO.FirstName.ToLower());
-                string lastName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(userDTO.LastName.ToLower());
+                string firstName = RemoveDiacritics(
+                    CultureInfo.CurrentCulture.TextInfo.ToTitleCase(userDTO.FirstName.ToLower())
+                );
+                string lastName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(userDTO.LastName.ToLower()).Substring(0,1);
                 string middleName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(userDTO.MiddleName.ToLower());
                 // 2. Lấy chữ cái đầu tiên của mỗi phần trong MiddleName
                 string secondMidName = "";
@@ -180,7 +201,7 @@ namespace UserService.Services.TeacherService
                         }
                     }
                 // 3. Tạo UserId ví dụ Nguyen Quoc Hoang => HoangNQ
-                userDTO.UserId=userDTO.FirstName+userDTO.LastName.Substring(0, 1)+secondMidName;
+                userDTO.UserId=firstName + lastName +secondMidName;
                 // 4. Kiểm tra xem TeacherId này đã tồn tại trong cơ sở dữ liệu chưa (Check viết hoa hay viết thường)
                 var count = teachers.Count(u => u.UserId.Equals(userDTO.UserId, StringComparison.OrdinalIgnoreCase));
                 // 5. Nếu đã tồn tại, thêm số vào cuối UserId để Id độc nhất
@@ -193,7 +214,7 @@ namespace UserService.Services.TeacherService
                 CloudinaryService _cloudService = new CloudinaryService();
                 userDTO.UserAvartar=_cloudService.UploadImageFromBase64(userDTO.UserAvartar);
                 #endregion
-                //4. tạo Email trường
+                //4. tạo Email trường                                             
                 userDTO.Email=userDTO.UserId+"@fpt.edu.vn";
                 //5. Default Fields
                 userDTO.RoleId=4; //Id teacher là 4
@@ -244,7 +265,6 @@ namespace UserService.Services.TeacherService
                   (!userDTO.PhoneNumber.All(char.IsDigit)&&userDTO.PhoneNumber.Length!=10&&!userDTO.PhoneNumber.StartsWith("0"),
                   "Số điện thoại phải có 10 số và bắt đầu bằng một số từ 0 (ví dụ: 0901234567)."),
                   (!IsValidEmail(userDTO.PersonalEmail), "Vui lòng nhập địa chỉ email hợp lệ (ví dụ: example@example.com)."),
-                  (userDTO.PasswordHash.Length < 8 || userDTO.PasswordHash.Length > 36,"Độ dài mật khẩu phải từ 8 đến 20 ký tự."),
                   (userDTO.DateOfBirth > DateOnly.FromDateTime(DateTime.Now), "Ngày sinh không thể là ngày trong tương lai."),
                   (teacher == null, "Không tìm thấy giáo viên cần cập nhật")
             };

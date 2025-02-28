@@ -16,7 +16,7 @@ namespace SchedulerBusinessObject.SchedulerModels
         public int StudentExamId { get; set; }
         [Column(TypeName = "INT")]
         public int ExamScheduleId { get; set; }
-        [Column(TypeName = "NVARCHAR(8)")]
+        [Column(TypeName = "NVARCHAR(16)")]
         public string StudentId { get; set; }
         }
     }

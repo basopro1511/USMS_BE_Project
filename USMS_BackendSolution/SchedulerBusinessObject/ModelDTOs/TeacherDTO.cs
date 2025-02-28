@@ -19,6 +19,7 @@ namespace SchedulerBusinessObject.ModelDTOs
                 return $"{LastName} {MiddleName} {FirstName}";
                 }
             }
+        public bool Gender { get; set; }
         public string Email { get; set; }
         public string UserAvartar { get; set; }
         public DateOnly DateOfBirth { get; set; }

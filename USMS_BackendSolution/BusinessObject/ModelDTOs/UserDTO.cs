@@ -13,6 +13,7 @@ namespace BusinessObject.ModelDTOs
         public string FirstName { get; set; }
         public string MiddleName { get; set; }
         public string LastName { get; set; }
+        public bool Gender { get; set; }
         public string PasswordHash { get; set; }
         public string Email { get; set; }
         public string PersonalEmail { get; set; }
@@ -23,9 +24,8 @@ namespace BusinessObject.ModelDTOs
         public string MajorId { get; set; }
         public int Status { get; set; }
         public string Address { get; set; }
-        //public IFormFile AvatarFile { get; set; }
-
         }
+
     public class AddUserDTO
     {
         public string FirstName { get; set; }

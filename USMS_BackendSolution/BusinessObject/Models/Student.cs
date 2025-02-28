@@ -12,7 +12,7 @@ namespace BusinessObject.Models
     public class Student
         {
         [Key]
-        [Column(TypeName = "NVARCHAR(8)")]
+        [Column(TypeName = "NVARCHAR(16)")]
         [ForeignKey("User")]
         public string StudentId { get; set; }
         [ForeignKey("Major")]

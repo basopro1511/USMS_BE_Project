@@ -60,7 +60,13 @@ namespace SchedulerBusinessObject.Migrations
                         .HasColumnType("NVARCHAR(10)");
 
                     b.Property<string>("TeacherId")
-                        .HasColumnType("NVARCHAR(8)");
+                        .HasColumnType("NVARCHAR(16)");
+
+                    b.Property<int>("Turn")
+                        .HasColumnType("INT");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("INT");
 
                     b.HasKey("ExamScheduleId");
 
@@ -92,82 +98,82 @@ namespace SchedulerBusinessObject.Migrations
                         new
                         {
                             RoomId = "G201",
-                            CreateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4358),
+                            CreateAt = new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7533),
                             Location = "Grammar Room 201",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4368)
+                            UpdateAt = new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7545)
                         },
                         new
                         {
                             RoomId = "G202",
-                            CreateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4370),
+                            CreateAt = new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7547),
                             Location = "Grammar Room 202",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4371)
+                            UpdateAt = new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7547)
                         },
                         new
                         {
                             RoomId = "G203",
-                            CreateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4372),
+                            CreateAt = new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7549),
                             Location = "Grammar Room 203",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4373)
+                            UpdateAt = new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7549)
                         },
                         new
                         {
                             RoomId = "G204",
-                            CreateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4374),
+                            CreateAt = new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7551),
                             Location = "Grammar Room 204",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4375)
+                            UpdateAt = new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7551)
                         },
                         new
                         {
                             RoomId = "G205",
-                            CreateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4376),
+                            CreateAt = new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7552),
                             Location = "Grammar Room 205",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4376)
+                            UpdateAt = new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7553)
                         },
                         new
                         {
                             RoomId = "G301",
-                            CreateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4378),
+                            CreateAt = new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7554),
                             Location = "Grammar Room 301",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4378)
+                            UpdateAt = new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7555)
                         },
                         new
                         {
                             RoomId = "G302",
-                            CreateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4379),
+                            CreateAt = new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7556),
                             Location = "Grammar Room 302",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4380)
+                            UpdateAt = new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7556)
                         },
                         new
                         {
                             RoomId = "G303",
-                            CreateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4381),
+                            CreateAt = new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7557),
                             Location = "Grammar Room 303",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4381)
+                            UpdateAt = new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7558)
                         },
                         new
                         {
                             RoomId = "G304",
-                            CreateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4382),
+                            CreateAt = new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7559),
                             Location = "Grammar Room 304",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4383)
+                            UpdateAt = new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7560)
                         },
                         new
                         {
                             RoomId = "G305",
-                            CreateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4384),
+                            CreateAt = new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7561),
                             Location = "Grammar Room 305",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 2, 11, 19, 41, 18, 993, DateTimeKind.Local).AddTicks(4384)
+                            UpdateAt = new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7561)
                         });
                 });
 
@@ -199,8 +205,7 @@ namespace SchedulerBusinessObject.Migrations
                         .HasColumnType("INT");
 
                     b.Property<string>("TeacherId")
-                        .HasMaxLength(8)
-                        .HasColumnType("NVARCHAR(8)");
+                        .HasColumnType("NVARCHAR(16)");
 
                     b.HasKey("ScheduleId");
 
@@ -224,7 +229,7 @@ namespace SchedulerBusinessObject.Migrations
 
                     b.Property<string>("StudentId")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR(8)");
+                        .HasColumnType("NVARCHAR(16)");
 
                     b.HasKey("StudentExamId");
 
