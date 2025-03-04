@@ -7,7 +7,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureDependencyInjection();
-builder.Services.AddHttpClient();
 
 //Add CORS
 builder.Services.AddCors(options =>

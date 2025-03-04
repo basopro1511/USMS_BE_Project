@@ -6,75 +6,83 @@ using SchedulerService.Services.ExamScheduleServices;
 using Services.RoomServices;
 
 namespace SchedulerService.Controllers.ExamScheduleController
-{
+    {
     [Route("api/[controller]")]
     [ApiController]
     public class ExamScheduleController : ControllerBase
-    {
+        {
         private readonly ExamScheduleService _examScheduleService;
         public ExamScheduleController(ExamScheduleService examScheduleService)
-        {
-            _examScheduleService = examScheduleService;
-        }
+            {
+            _examScheduleService=examScheduleService;
+            }
 
         // GET: api/ExamSchedules
         [HttpGet]
-        public APIResponse GetAllExamSchedules()
-        {
+        public async Task<APIResponse> GetAllExamSchedules()
+            {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _examScheduleService.GetAllExamSchedules();
+            aPIResponse=await _examScheduleService.GetAllExamSchedules();
             return aPIResponse;
-        }
+            }
 
         // GET: api/UnassignedTeacherExamSchedules
         [HttpGet("UnassignedTeacherExamSchedules")]
-        public APIResponse GetUnassignedTeacherExamSchedules()
-        {
+        public async Task<APIResponse> GetUnassignedTeacherExamSchedules()
+            {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _examScheduleService.GetUnassignedTeacherExamSchedules();
+            aPIResponse=await _examScheduleService.GetUnassignedTeacherExamSchedules();
             return aPIResponse;
-        }
+            }
 
         // GET: api/UnassignedRoomExamSchedules
         [HttpGet("UnassignedRoomExamSchedules")]
-        public APIResponse GetUnassignedRoomExamSchedules()
-        {
+        public async Task<APIResponse> GetUnassignedRoomExamSchedules()
+            {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _examScheduleService.GetUnassignedRoomExamSchedules();
+            aPIResponse=await _examScheduleService.GetUnassignedRoomExamSchedules();
             return aPIResponse;
-        }
+            }
 
-        // GET: api/UnassignedRoomExamSchedules
-        [HttpGet("AvailableRooms")]
-        public APIResponse AvailableRooms(DateOnly date, TimeOnly startTime, TimeOnly endTime)
-        {
-            APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _examScheduleService.GetAvailableRooms(date, startTime,endTime);
-            return aPIResponse;
-        }
-        //POST: api/Rooms
         [HttpPost]
-        public APIResponse AddNewExamSchedule(ExamScheduleDTO examScheduleDTO)
-        {
+        public async Task<APIResponse> AddNewExamSchedule(ExamScheduleDTO examScheduleDTO)
+            {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _examScheduleService.AddNewExamSchedule(examScheduleDTO);
+            aPIResponse=await _examScheduleService.AddNewExamSchedule(examScheduleDTO);
             return aPIResponse;
-        }
+            }
+
+        [HttpPut]
+        public async Task<APIResponse> UpdateExamSchedule(ExamScheduleDTO examScheduleDTO)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=await _examScheduleService.UpdateExamSchedule(examScheduleDTO);
+            return aPIResponse;
+            }
+
 
         [HttpPut("AssignTeacher/{id}/{teacherId}")]
-        public APIResponse AssignTeacher(int id, string teacherId)
-        {
+        public async Task<APIResponse> AssignTeacher(int id, string teacherId)
+            {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _examScheduleService.AssignTeacherToExamSchedule(id,teacherId);
+            aPIResponse=await _examScheduleService.AssignTeacherToExamSchedule(id, teacherId);
             return aPIResponse;
-        }
+            }
 
         [HttpPut("AssignRoom/{id}/{roomId}")]
-        public APIResponse AssignRoom(int id, string roomId)
-        {
+        public async Task<APIResponse> AssignRoom(int id, string roomId)
+            {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _examScheduleService.AssignRoomToExamSchedule(id, roomId);
+            aPIResponse=await _examScheduleService.AssignRoomToExamSchedule(id, roomId);
             return aPIResponse;
+            }
+
+        [HttpGet("AvailableTeachers/{date}/{startTime}/{endTime}")]
+        public async Task<APIResponse> GetAvailableTeachers(DateOnly date, TimeOnly startTime, TimeOnly endTime)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=await _examScheduleService.GetAllTeacherAvailableForAddExamSchedule(date,startTime,endTime);
+            return aPIResponse;
+            }
         }
     }
-}

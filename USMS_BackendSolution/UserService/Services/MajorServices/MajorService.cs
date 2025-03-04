@@ -12,6 +12,7 @@ namespace UserService.Services.MajorServices
         {
             _repository = new MajorRepository();
         }
+
         #region Get All Major
         /// <summary>
         /// Retrive all ClassSubject in Database

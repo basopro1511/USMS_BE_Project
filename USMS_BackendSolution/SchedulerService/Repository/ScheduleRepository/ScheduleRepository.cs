@@ -308,5 +308,39 @@ namespace Repositories.ScheduleRepository
                 }
             }
         #endregion
+
+        #region Get Schedule for Teacher   
+        /// <summary>
+        /// Get Schedule for teacher by Teacher Id and Range Day
+        /// </summary>
+        /// <param name="teacherId"></param>
+        /// <param name="startDay"></param>
+        /// <param name="endDay"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public List<ViewScheduleDTO> GetScheduleForTeacher(string teacherId, DateTime startDay, DateTime endDay) {
+            try
+                {
+                using (var dbcontext= new MyDbContext())
+                    {
+                    var schedules = dbcontext.Schedule.Where(s => s.TeacherId==teacherId&&s.Date>=DateOnly.FromDateTime(startDay)
+                                 &&s.Date<=DateOnly.FromDateTime(endDay)).ToList();
+                    List<ViewScheduleDTO> viewScheduleDTOs = new List<ViewScheduleDTO>();
+                    foreach (var schedule in schedules)
+                        {
+                         ViewScheduleDTO viewScheduleDTO = new ViewScheduleDTO();
+                        viewScheduleDTO.CopyProperties(schedule);
+                        viewScheduleDTOs.Add(viewScheduleDTO);
+                        dbcontext.SaveChanges();
+                        }
+                    return viewScheduleDTOs;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception (ex.Message);
+                }
+            }
+        #endregion
         }
     }

@@ -105,7 +105,7 @@ namespace BusinessObject.Migrations
             modelBuilder.Entity("BusinessObject.Models.Student", b =>
                 {
                     b.Property<string>("StudentId")
-                        .HasColumnType("NVARCHAR(8)");
+                        .HasColumnType("NVARCHAR(16)");
 
                     b.Property<string>("MajorId")
                         .HasColumnType("NVARCHAR(4)");
@@ -161,7 +161,7 @@ namespace BusinessObject.Migrations
             modelBuilder.Entity("BusinessObject.Models.User", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("NVARCHAR(8)");
+                        .HasColumnType("NVARCHAR(16)");
 
                     b.Property<string>("Address")
                         .IsRequired()
@@ -179,6 +179,9 @@ namespace BusinessObject.Migrations
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("NVARCHAR(20)");
+
+                    b.Property<bool>("Gender")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -227,127 +230,141 @@ namespace BusinessObject.Migrations
                         {
                             UserId = "AD0001",
                             Address = "FPT Can Tho",
-                            CreatedAt = new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3759),
+                            CreatedAt = new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5257),
                             DateOfBirth = new DateOnly(2005, 11, 15),
                             Email = "Admin@fpt.edu.vn",
                             FirstName = "Nguyễn",
+                            Gender = false,
                             LastName = "Hoàng",
                             MajorId = "SE",
                             MiddleName = "Quốc",
-                            PasswordHash = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+                            PasswordHash = "FeKw08M4keuw8e9gnsQZQgwg4yDOlMZfvIwzEkSOsiU=",
                             PersonalEmail = "Admin@gmail.com",
                             PhoneNumber = "0333744591",
                             RoleId = 1,
                             Status = 1,
-                            UpdatedAt = new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3768)
+                            UpdatedAt = new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5265),
+                            UserAvartar = "https://res.cloudinary.com/djvanrbcm/image/upload/v1740590249/uso41p6xyup6xbnhufs7.jpg"
                         },
                         new
                         {
                             UserId = "SE0001",
                             Address = "Can Tho",
-                            CreatedAt = new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3772),
+                            CreatedAt = new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5270),
                             DateOfBirth = new DateOnly(2005, 11, 15),
                             Email = "HoangNQCE170288@fpt.edu.vn",
                             FirstName = "Nguyễn",
+                            Gender = false,
                             LastName = "Hoàng",
                             MajorId = "SE",
                             MiddleName = "Quốc",
-                            PasswordHash = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+                            PasswordHash = "FeKw08M4keuw8e9gnsQZQgwg4yDOlMZfvIwzEkSOsiU=",
                             PersonalEmail = "Hoang@gmail.com",
                             PhoneNumber = "0333744591",
                             RoleId = 5,
                             Status = 1,
-                            UpdatedAt = new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3772)
+                            UpdatedAt = new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5270),
+                            UserAvartar = "https://res.cloudinary.com/djvanrbcm/image/upload/v1740590249/uso41p6xyup6xbnhufs7.jpg"
                         },
                         new
                         {
                             UserId = "SE0002",
                             Address = "Can Tho",
-                            CreatedAt = new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3776),
+                            CreatedAt = new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5275),
                             DateOfBirth = new DateOnly(2004, 9, 10),
                             Email = "TungTTCE170289@fpt.edu.vn",
                             FirstName = "Trần",
+                            Gender = false,
                             LastName = "Tùng",
                             MajorId = "SE",
                             MiddleName = "Thanh",
-                            PasswordHash = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+                            PasswordHash = "FeKw08M4keuw8e9gnsQZQgwg4yDOlMZfvIwzEkSOsiU=",
                             PersonalEmail = "Tung@gmail.com",
                             PhoneNumber = "0322114477",
                             RoleId = 5,
                             Status = 1,
-                            UpdatedAt = new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3776)
+                            UpdatedAt = new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5275),
+                            UserAvartar = "https://res.cloudinary.com/djvanrbcm/image/upload/v1740590249/uso41p6xyup6xbnhufs7.jpg"
                         },
                         new
                         {
                             UserId = "BA0003",
                             Address = "Can Tho",
-                            CreatedAt = new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3779),
+                            CreatedAt = new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5278),
                             DateOfBirth = new DateOnly(2003, 12, 5),
                             Email = "NhungLHBA170290@fpt.edu.vn",
                             FirstName = "Lê",
+                            Gender = true,
                             LastName = "Nhung",
                             MajorId = "BA",
                             MiddleName = "Hồng",
-                            PasswordHash = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+                            PasswordHash = "FeKw08M4keuw8e9gnsQZQgwg4yDOlMZfvIwzEkSOsiU=",
                             PersonalEmail = "Nhung@gmail.com",
                             PhoneNumber = "0987654321",
                             RoleId = 5,
                             Status = 1,
-                            UpdatedAt = new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3779)
+                            UpdatedAt = new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5279),
+                            UserAvartar = "https://res.cloudinary.com/djvanrbcm/image/upload/v1740590249/uso41p6xyup6xbnhufs7.jpg"
                         },
                         new
                         {
                             UserId = "LG0004",
                             Address = "Can Tho",
-                            CreatedAt = new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3781),
+                            CreatedAt = new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5281),
                             DateOfBirth = new DateOnly(2002, 5, 20),
                             Email = "ChauPMLG170291@fpt.edu.vn",
                             FirstName = "Phạm",
+                            Gender = true,
                             LastName = "Châu",
                             MajorId = "LG",
                             MiddleName = "Minh",
-                            PasswordHash = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+                            PasswordHash = "FeKw08M4keuw8e9gnsQZQgwg4yDOlMZfvIwzEkSOsiU=",
                             PersonalEmail = "Chau@gmail.com",
                             PhoneNumber = "0978111222",
                             RoleId = 5,
                             Status = 1,
-                            UpdatedAt = new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3782)
+                            UpdatedAt = new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5282),
+                            UserAvartar = "https://res.cloudinary.com/djvanrbcm/image/upload/v1740590249/uso41p6xyup6xbnhufs7.jpg"
                         },
                         new
                         {
                             UserId = "CT0005",
                             Address = "Can Tho",
-                            CreatedAt = new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3784),
+                            CreatedAt = new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5285),
                             DateOfBirth = new DateOnly(2003, 7, 30),
                             Email = "DungDVCT170292@fpt.edu.vn",
                             FirstName = "Đinh",
+                            Gender = false,
                             LastName = "Dũng",
                             MajorId = "CT",
                             MiddleName = "Văn",
-                            PasswordHash = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+                            PasswordHash = "FeKw08M4keuw8e9gnsQZQgwg4yDOlMZfvIwzEkSOsiU=",
                             PersonalEmail = "Dung@gmail.com",
                             PhoneNumber = "0966998844",
                             RoleId = 5,
                             Status = 1,
-                            UpdatedAt = new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3785)
+                            UpdatedAt = new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5285),
+                            UserAvartar = "https://res.cloudinary.com/djvanrbcm/image/upload/v1740590249/uso41p6xyup6xbnhufs7.jpg"
                         },
                         new
                         {
                             UserId = "SE0006",
                             Address = "Can Tho",
-                            CreatedAt = new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3787),
+                            CreatedAt = new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5288),
                             DateOfBirth = new DateOnly(2001, 8, 25),
                             Email = "CuongVMIT170293@fpt.edu.vn",
                             FirstName = "Vũ",
+                            Gender = false,
                             LastName = "Cường",
                             MajorId = "SE",
                             MiddleName = "Mạnh",
-                            PasswordHash = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+                            PasswordHash = "FeKw08M4keuw8e9gnsQZQgwg4yDOlMZfvIwzEkSOsiU=",
                             PersonalEmail = "Cuong@gmail.com",
                             PhoneNumber = "0356677889",
                             RoleId = 5,
                             Status = 1,
-                            UpdatedAt = new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3787)
+                            UpdatedAt = new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5289),
+                            UserAvartar = "https://res.cloudinary.com/djvanrbcm/image/upload/v1740590249/uso41p6xyup6xbnhufs7.jpg"
                         });
                 });
 

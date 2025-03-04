@@ -152,7 +152,6 @@ namespace UserService.Services.UserService
                 Email = GenerateEmail(addUserDTO.FirstName, addUserDTO.MiddleName, addUserDTO.LastName, genUserId),
                 PhoneNumber = addUserDTO.PhoneNumber,
                 RoleId = addUserDTO.RoleId,
-                RoleName = roleName,
                 MajorId = addUserDTO.RoleId == 5 ? addUserDTO.MajorId : null,
                 Status = 1,
             };

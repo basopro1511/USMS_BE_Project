@@ -171,5 +171,38 @@ namespace Repositories.RoomRepository
                 throw new Exception(ex.Message, ex);
             }
         }
+
+        #region Get Available Rooms to Add Exam Schedule
+        /// <summary>
+        /// Lấy tất cả các phòng còn trống trong khoảng thời gian
+        /// </summary>
+        /// <param name="date"></param>
+        /// <param name="startTime"></param>
+        /// <param name="endTime"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<List<Room>> GetAvailableRooms(DateOnly date, TimeOnly startTime, TimeOnly endTime)
+            {
+            try
+                {
+                using (var dbContext = new MyDbContext())
+                    {
+                    var rooms = await dbContext.Room
+                        .Where(r => r.Status==1&&
+                                    !dbContext.ExamSchedule.Any(es => es.RoomId==r.RoomId&&
+                                                                       es.Date==date&&
+                                                                       es.StartTime<endTime&&
+                                                                       es.EndTime>startTime))
+                        .ToListAsync();
+                    return rooms;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
+        }
     }
-}

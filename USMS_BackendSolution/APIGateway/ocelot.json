@@ -52,6 +52,18 @@
             "UpstreamPathTemplate": "/api/Room/AvailableRooms/{date}/{slotId}",
             "UpstreamHttpMethod": [ "GET" ]
         },
+        {
+            "DownstreamPathTemplate": "/api/Room/AvailableRoomsToAddExamSchedule/{date}/{startTime}/{endTime}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Room/AvailableRoomsToAddExamSchedule/{date}/{startTime}/{endTime}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
         /* Room API End */
 
         /* Slot API Start */
@@ -247,6 +259,18 @@
             "UpstreamPathTemplate": "/api/ClassSubject/classId/{classId}",
             "UpstreamHttpMethod": [ "GET" ]
         },
+        {
+            "DownstreamPathTemplate": "/api/ClassSubject/SubjectIds/{majorId}/{semesterId}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7286
+                }
+            ],
+            "UpstreamPathTemplate": "/api/ClassSubject/SubjectIds/{majorId}/{semesterId}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
         /* Class Subject API End */
 
         /* Schedule API Start */
@@ -296,6 +320,30 @@
                 }
             ],
             "UpstreamPathTemplate": "/api/Schedule/Student/{id}/{startDay}/{endDay}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Schedule/AvailableTeachers/{majorId}/{date}/{slot}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Schedule/AvailableTeachers/{majorId}/{date}/{slot}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Schedule/Teacher/{id}/{startDay}/{endDay}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Schedule/Teacher/{id}/{startDay}/{endDay}",
             "UpstreamHttpMethod": [ "GET" ]
         },
         /* Schedule API End */
@@ -414,7 +462,74 @@
             ],
             "UpstreamPathTemplate": "/api/User/{id}",
             "UpstreamHttpMethod": [ "GET" ]
-        }
+        },
         /* User API End */
+
+        /* Teacher API Start */
+        {
+            "DownstreamPathTemplate": "/api/Teacher",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7179
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Teacher",
+            "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Teacher/{id}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7179
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Teacher/{id}",
+            "UpstreamHttpMethod": [ "GET", "POST" ]
+        },
+        /* Teacher API End */
+
+        /* ExamSchedule API Start */
+        {
+            "DownstreamPathTemplate": "/api/ExamSchedule",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/ExamSchedule",
+            "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/ExamSchedule/{id}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/ExamSchedule/{id}",
+            "UpstreamHttpMethod": [ "GET", "POST" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/ExamSchedule/AvailableTeachers/{date}/{startTime}/{endTime}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/ExamSchedule/AvailableTeachers/{date}/{startTime}/{endTime}",
+            "UpstreamHttpMethod": [ "GET", "POST" ]
+        }
+        /* ExamSchedule API End */
+
     ]
 }

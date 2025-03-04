@@ -18,6 +18,8 @@ namespace SchedulerBusinessObject.ModelDTOs
         public DateOnly Date { get; set; }
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }
+        public int Type { get; set; }
+        public int Turn { get; set; }
         public string? TeacherId { get; set; }
         public int Status { get; set; }
         public DateTime CreatedAt { get; set; }

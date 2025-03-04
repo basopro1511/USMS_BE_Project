@@ -18,5 +18,6 @@ namespace SchedulerBusinessObject.ModelDTOs
 
         public int SlotNoInSubject { get; set; }
 
+        public string TeacherId { get; set; }
         }
     }

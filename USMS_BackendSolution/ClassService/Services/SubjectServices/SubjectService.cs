@@ -43,7 +43,7 @@ namespace Services.SubjectServices
             APIResponse aPIResponse = new APIResponse();
             SubjectDTO existingSubject = _subjectRepository.GetSubjectsById(subjectDTO.SubjectId);
             #region validation cua Add
-            var validations = new List<(bool condition, string errorMessage)>
+            List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
             {
                   (existingSubject != null,"Mã môn học đã tồn tại!"),
                   (subjectDTO.SubjectId.Length > 10,"Mã môn học phải có độ dài từ 1 đến 10 ký tự!"),
@@ -242,5 +242,6 @@ namespace Services.SubjectServices
             return aPIResponse;
         }
         #endregion
+
+        }
     }
-}

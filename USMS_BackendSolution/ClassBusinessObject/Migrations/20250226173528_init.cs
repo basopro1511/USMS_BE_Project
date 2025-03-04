@@ -35,7 +35,7 @@ namespace ClassBusinessObject.Migrations
                     StudentClassId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ClassSubjectId = table.Column<int>(type: "INT", nullable: false),
-                    StudentId = table.Column<string>(type: "nvarchar(8)", nullable: true)
+                    StudentId = table.Column<string>(type: "NVARCHAR(16)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -107,20 +107,20 @@ namespace ClassBusinessObject.Migrations
                 columns: new[] { "SubjectId", "CreatedAt", "Description", "MajorId", "NumberOfSlot", "Status", "SubjectName", "Term", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { "CEA201", new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6380), "Introduction to computer architecture", "SE", 18, 1, "Computer Organization and Architecture", 1, new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6380) },
-                    { "DBI202", new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6387), "Database concepts and design", "SE", 20, 1, "Database Systems", 3, new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6387) },
-                    { "LAB211", new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6388), "Practice Object-Oriented Programming", "SE", 20, 1, "OOP with Java Lab", 3, new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6389) },
-                    { "MAD101", new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6383), "Fundamentals of discrete math", "SE", 20, 1, "Discrete Mathematics", 2, new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6384) },
-                    { "MAE101", new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6362), "Engineering mathematics fundamentals", "SE", 25, 1, "Mathematics for Engineering", 1, new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6375) },
-                    { "MAS291", new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6392), "Introduction to statistics", "SE", 20, 1, "Statistics & Probability", 4, new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6392) },
-                    { "MLN111", new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6397), "Core principles of Marxism-Leninism", null, 16, 2, "Philosophy of Marxism – Leninism", 8, new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6398) },
-                    { "NWC203c", new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6385), "Introduction to networking concepts", "SE", 18, 1, "Computer Networking", 2, new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6385) },
-                    { "PRF192", new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6377), "Learn the basics of programming", "SE", 20, 1, "Programming Fundamentals", 1, new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6378) },
-                    { "PRJ301", new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6390), "Developing web apps using Java", "SE", 25, 1, "Java Web Application Development", 4, new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6391) },
-                    { "PRN231", new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6396), "Developing cross-platform applications", "SE", 20, 0, "Building Cross-Platform Back-End Application With .NET", 7, new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6396) },
-                    { "SSL101c", new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6381), "Skills for academic excellence", null, 15, 1, "Academic Skills for University Success", 1, new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6382) },
-                    { "SWP391", new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6394), "Capstone project in software development", "SE", 30, 1, "Software Development Project", 5, new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6394) },
-                    { "WDU203c", new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6399), "Introduction to UI/UX principles", "SE", 18, 1, "UI/UX Design", 8, new DateTime(2025, 2, 13, 16, 57, 53, 80, DateTimeKind.Local).AddTicks(6399) }
+                    { "CEA201", new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(240), "Introduction to computer architecture", "SE", 18, 1, "Computer Organization and Architecture", 1, new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(240) },
+                    { "DBI202", new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(248), "Database concepts and design", "SE", 20, 1, "Database Systems", 3, new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(248) },
+                    { "LAB211", new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(250), "Practice Object-Oriented Programming", "SE", 20, 1, "OOP with Java Lab", 3, new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(251) },
+                    { "MAD101", new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(244), "Fundamentals of discrete math", "SE", 20, 1, "Discrete Mathematics", 2, new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(245) },
+                    { "MAE101", new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(220), "Engineering mathematics fundamentals", "SE", 25, 1, "Mathematics for Engineering", 1, new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(234) },
+                    { "MAS291", new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(254), "Introduction to statistics", "SE", 20, 1, "Statistics & Probability", 4, new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(255) },
+                    { "MLN111", new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(260), "Core principles of Marxism-Leninism", null, 16, 2, "Philosophy of Marxism – Leninism", 8, new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(261) },
+                    { "NWC203c", new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(246), "Introduction to networking concepts", "SE", 18, 1, "Computer Networking", 2, new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(246) },
+                    { "PRF192", new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(237), "Learn the basics of programming", "SE", 20, 1, "Programming Fundamentals", 1, new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(238) },
+                    { "PRJ301", new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(252), "Developing web apps using Java", "SE", 25, 1, "Java Web Application Development", 4, new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(253) },
+                    { "PRN231", new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(258), "Developing cross-platform applications", "SE", 20, 0, "Building Cross-Platform Back-End Application With .NET", 7, new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(259) },
+                    { "SSL101c", new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(242), "Skills for academic excellence", null, 15, 1, "Academic Skills for University Success", 1, new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(242) },
+                    { "SWP391", new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(256), "Capstone project in software development", "SE", 30, 1, "Software Development Project", 5, new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(257) },
+                    { "WDU203c", new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(262), "Introduction to UI/UX principles", "SE", 18, 1, "UI/UX Design", 8, new DateTime(2025, 2, 27, 0, 35, 27, 621, DateTimeKind.Local).AddTicks(263) }
                 });
 
             migrationBuilder.CreateIndex(

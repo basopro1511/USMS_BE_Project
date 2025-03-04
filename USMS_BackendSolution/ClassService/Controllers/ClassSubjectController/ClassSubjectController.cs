@@ -93,6 +93,15 @@ namespace ClassService.Controllers.ClassSubjectController
             }
         #endregion
 
+        #region Get SubjectIds by MajorId and SemesterId
+        [HttpGet("SubjectIds/{majorId}/{semesterId}")]
+        public async Task<APIResponse> GetSubjectIdsByMajorIdAndSemesterId(string majorId, string semesterId)
+            {
+            var response = await _classSubjectService.GetSubjectIdsByMajorIdAndSemesterId(majorId, semesterId);
+            return response;
+            }
+        #endregion
+
         }
 
     }

@@ -16,7 +16,7 @@ namespace ClassBusinessObject.Models
         [Column(TypeName = "INT")]
         [ForeignKey("ClassSubject")]
         public int ClassSubjectId { get; set; }
-        [Column(TypeName = "nvarchar(8)")]
+        [Column(TypeName = "NVARCHAR(16)")]
         public string? StudentId { get; set; }
 
         }

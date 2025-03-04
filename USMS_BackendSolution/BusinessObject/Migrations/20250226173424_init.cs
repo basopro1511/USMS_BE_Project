@@ -42,10 +42,11 @@ namespace BusinessObject.Migrations
                 name: "User",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "NVARCHAR(8)", nullable: false),
+                    UserId = table.Column<string>(type: "NVARCHAR(16)", nullable: false),
                     FirstName = table.Column<string>(type: "NVARCHAR(20)", nullable: false),
                     MiddleName = table.Column<string>(type: "NVARCHAR(20)", nullable: true),
                     LastName = table.Column<string>(type: "NVARCHAR(20)", nullable: false),
+                    Gender = table.Column<bool>(type: "bit", nullable: false),
                     PasswordHash = table.Column<string>(type: "NVARCHAR(200)", nullable: false),
                     Email = table.Column<string>(type: "NVARCHAR(100)", nullable: true),
                     PersonalEmail = table.Column<string>(type: "NVARCHAR(100)", nullable: false),
@@ -79,7 +80,7 @@ namespace BusinessObject.Migrations
                 name: "Student",
                 columns: table => new
                 {
-                    StudentId = table.Column<string>(type: "NVARCHAR(8)", nullable: false),
+                    StudentId = table.Column<string>(type: "NVARCHAR(16)", nullable: false),
                     MajorId = table.Column<string>(type: "NVARCHAR(4)", nullable: true),
                     Term = table.Column<int>(type: "INT", nullable: false)
                 },
@@ -124,16 +125,16 @@ namespace BusinessObject.Migrations
 
             migrationBuilder.InsertData(
                 table: "User",
-                columns: new[] { "UserId", "Address", "CreatedAt", "DateOfBirth", "Email", "FirstName", "LastName", "MajorId", "MiddleName", "PasswordHash", "PersonalEmail", "PhoneNumber", "RoleId", "Status", "UpdatedAt", "UserAvartar" },
+                columns: new[] { "UserId", "Address", "CreatedAt", "DateOfBirth", "Email", "FirstName", "Gender", "LastName", "MajorId", "MiddleName", "PasswordHash", "PersonalEmail", "PhoneNumber", "RoleId", "Status", "UpdatedAt", "UserAvartar" },
                 values: new object[,]
                 {
-                    { "AD0001", "FPT Can Tho", new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3759), new DateOnly(2005, 11, 15), "Admin@fpt.edu.vn", "Nguyễn", "Hoàng", "SE", "Quốc", "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92", "Admin@gmail.com", "0333744591", 1, 1, new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3768), null },
-                    { "BA0003", "Can Tho", new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3779), new DateOnly(2003, 12, 5), "NhungLHBA170290@fpt.edu.vn", "Lê", "Nhung", "BA", "Hồng", "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92", "Nhung@gmail.com", "0987654321", 5, 1, new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3779), null },
-                    { "CT0005", "Can Tho", new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3784), new DateOnly(2003, 7, 30), "DungDVCT170292@fpt.edu.vn", "Đinh", "Dũng", "CT", "Văn", "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92", "Dung@gmail.com", "0966998844", 5, 1, new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3785), null },
-                    { "LG0004", "Can Tho", new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3781), new DateOnly(2002, 5, 20), "ChauPMLG170291@fpt.edu.vn", "Phạm", "Châu", "LG", "Minh", "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92", "Chau@gmail.com", "0978111222", 5, 1, new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3782), null },
-                    { "SE0001", "Can Tho", new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3772), new DateOnly(2005, 11, 15), "HoangNQCE170288@fpt.edu.vn", "Nguyễn", "Hoàng", "SE", "Quốc", "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92", "Hoang@gmail.com", "0333744591", 5, 1, new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3772), null },
-                    { "SE0002", "Can Tho", new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3776), new DateOnly(2004, 9, 10), "TungTTCE170289@fpt.edu.vn", "Trần", "Tùng", "SE", "Thanh", "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92", "Tung@gmail.com", "0322114477", 5, 1, new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3776), null },
-                    { "SE0006", "Can Tho", new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3787), new DateOnly(2001, 8, 25), "CuongVMIT170293@fpt.edu.vn", "Vũ", "Cường", "SE", "Mạnh", "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92", "Cuong@gmail.com", "0356677889", 5, 1, new DateTime(2025, 2, 13, 16, 58, 10, 383, DateTimeKind.Local).AddTicks(3787), null }
+                    { "AD0001", "FPT Can Tho", new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5257), new DateOnly(2005, 11, 15), "Admin@fpt.edu.vn", "Nguyễn", false, "Hoàng", "SE", "Quốc", "FeKw08M4keuw8e9gnsQZQgwg4yDOlMZfvIwzEkSOsiU=", "Admin@gmail.com", "0333744591", 1, 1, new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5265), "https://res.cloudinary.com/djvanrbcm/image/upload/v1740590249/uso41p6xyup6xbnhufs7.jpg" },
+                    { "BA0003", "Can Tho", new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5278), new DateOnly(2003, 12, 5), "NhungLHBA170290@fpt.edu.vn", "Lê", true, "Nhung", "BA", "Hồng", "FeKw08M4keuw8e9gnsQZQgwg4yDOlMZfvIwzEkSOsiU=", "Nhung@gmail.com", "0987654321", 5, 1, new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5279), "https://res.cloudinary.com/djvanrbcm/image/upload/v1740590249/uso41p6xyup6xbnhufs7.jpg" },
+                    { "CT0005", "Can Tho", new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5285), new DateOnly(2003, 7, 30), "DungDVCT170292@fpt.edu.vn", "Đinh", false, "Dũng", "CT", "Văn", "FeKw08M4keuw8e9gnsQZQgwg4yDOlMZfvIwzEkSOsiU=", "Dung@gmail.com", "0966998844", 5, 1, new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5285), "https://res.cloudinary.com/djvanrbcm/image/upload/v1740590249/uso41p6xyup6xbnhufs7.jpg" },
+                    { "LG0004", "Can Tho", new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5281), new DateOnly(2002, 5, 20), "ChauPMLG170291@fpt.edu.vn", "Phạm", true, "Châu", "LG", "Minh", "FeKw08M4keuw8e9gnsQZQgwg4yDOlMZfvIwzEkSOsiU=", "Chau@gmail.com", "0978111222", 5, 1, new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5282), "https://res.cloudinary.com/djvanrbcm/image/upload/v1740590249/uso41p6xyup6xbnhufs7.jpg" },
+                    { "SE0001", "Can Tho", new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5270), new DateOnly(2005, 11, 15), "HoangNQCE170288@fpt.edu.vn", "Nguyễn", false, "Hoàng", "SE", "Quốc", "FeKw08M4keuw8e9gnsQZQgwg4yDOlMZfvIwzEkSOsiU=", "Hoang@gmail.com", "0333744591", 5, 1, new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5270), "https://res.cloudinary.com/djvanrbcm/image/upload/v1740590249/uso41p6xyup6xbnhufs7.jpg" },
+                    { "SE0002", "Can Tho", new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5275), new DateOnly(2004, 9, 10), "TungTTCE170289@fpt.edu.vn", "Trần", false, "Tùng", "SE", "Thanh", "FeKw08M4keuw8e9gnsQZQgwg4yDOlMZfvIwzEkSOsiU=", "Tung@gmail.com", "0322114477", 5, 1, new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5275), "https://res.cloudinary.com/djvanrbcm/image/upload/v1740590249/uso41p6xyup6xbnhufs7.jpg" },
+                    { "SE0006", "Can Tho", new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5288), new DateOnly(2001, 8, 25), "CuongVMIT170293@fpt.edu.vn", "Vũ", false, "Cường", "SE", "Mạnh", "FeKw08M4keuw8e9gnsQZQgwg4yDOlMZfvIwzEkSOsiU=", "Cuong@gmail.com", "0356677889", 5, 1, new DateTime(2025, 2, 27, 0, 34, 24, 152, DateTimeKind.Local).AddTicks(5289), "https://res.cloudinary.com/djvanrbcm/image/upload/v1740590249/uso41p6xyup6xbnhufs7.jpg" }
                 });
 
             migrationBuilder.InsertData(

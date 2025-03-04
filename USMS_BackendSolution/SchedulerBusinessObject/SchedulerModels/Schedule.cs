@@ -24,8 +24,7 @@ namespace SchedulerBusinessObject.SchedulerModels
         [ForeignKey("Room")]
         [Column(TypeName = "NVARCHAR(6)")]
         public string RoomId { get; set; }
-        [StringLength(8)]
-        [Column(TypeName = "NVARCHAR(8)")]
+        [Column(TypeName = "NVARCHAR(16)")]
         public string? TeacherId { get; set; }
         [Required]
         [Column(TypeName = "DATE")]

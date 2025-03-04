@@ -41,7 +41,6 @@ namespace SchedulerService.Controllers.Schedule
             return aPIResponse;
             }
 
-        // GET: api/Customers
         [HttpGet("Student/{id}/{startDay}/{endDay}")]
         public APIResponse GetStudentSchedule(string id, DateTime startDay, DateTime endDay)
             {
@@ -50,7 +49,14 @@ namespace SchedulerService.Controllers.Schedule
             return aPIResponse;
             }
 
-        // GET: api/Customers
+        [HttpGet("Teacher/{id}/{startDay}/{endDay}")]
+        public APIResponse GetTeacherSchedule(string id, DateTime startDay, DateTime endDay)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=_scheduleService.GetClassSchedulesForTeacher(id, startDay, endDay);
+            return aPIResponse;
+            }
+
         [HttpGet("{majorId}/{classId}/{term}/{startDay}/{endDay}")]
         public APIResponse GetClassSchedule(string majorId, string classId, int term, DateTime startDay, DateTime endDay)
             {
@@ -67,5 +73,12 @@ namespace SchedulerService.Controllers.Schedule
             return aPIResponse;
             }
 
+        [HttpGet("AvailableTeachers/{majorId}/{date}/{slot}")]
+        public APIResponse GetAvailableTeachersToAddSchedule(string majorId, DateOnly date, int slot)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=_scheduleService.GetAllTeacherAvailableForAddSchedule(majorId,date,slot);
+            return aPIResponse;
+            }
         }
     }
