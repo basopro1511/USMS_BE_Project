@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SchedulerBusinessObject;
 using SchedulerBusinessObject.ModelDTOs;
+using SchedulerService.Services.ExamScheduleServices;
 using Services.RoomServices;
 
 namespace SchedulerService.Controllers.RoomController
@@ -69,11 +70,22 @@ namespace SchedulerService.Controllers.RoomController
         }
 
         [HttpGet("AvailableRooms/{date}/{slotId}")]
-        public APIResponse GetAvailableRooms( DateOnly date,int slotId)
+        public APIResponse GetAvailableRooms(DateOnly date,int slotId)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse = _roomService.GetAvailableRooms(date, slotId);
             return aPIResponse;
             }
+
+
+        [HttpGet("AvailableRoomsToAddExamSchedule/{date}/{startTime}/{endTime}")]
+        public async Task<APIResponse> AvailableRooms(DateOnly date, TimeOnly startTime, TimeOnly endTime)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=await _roomService.GetAvailableRooms(date, startTime, endTime);
+            return aPIResponse;
+            }
         }
+
+
 }

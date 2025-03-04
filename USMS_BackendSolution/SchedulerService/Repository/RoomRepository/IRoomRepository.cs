@@ -1,4 +1,5 @@
 ﻿using SchedulerBusinessObject.ModelDTOs;
+using SchedulerBusinessObject.SchedulerModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,5 +16,6 @@ namespace Repositories.RoomRepository
         public bool UpdateRoom(RoomDTO updateRoomDTO);
         public bool DeleteRoom(string id);
         public bool ChangeRoomStatus(string roomId, int newStatus);
+        public Task<List<Room>> GetAvailableRooms(DateOnly date, TimeOnly startTime, TimeOnly endTime);
+        }
     }
-}

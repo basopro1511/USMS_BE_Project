@@ -44,15 +44,6 @@ namespace SchedulerService.Controllers.ExamScheduleController
             return aPIResponse;
             }
 
-        // GET: api/UnassignedRoomExamSchedules
-        [HttpGet("AvailableRooms")]
-        public async Task<APIResponse> AvailableRooms(DateOnly date, TimeOnly startTime, TimeOnly endTime)
-            {
-            APIResponse aPIResponse = new APIResponse();
-            aPIResponse=await _examScheduleService.GetAvailableRooms(date, startTime, endTime);
-            return aPIResponse;
-            }
-        //POST: api/Rooms
         [HttpPost]
         public async Task<APIResponse> AddNewExamSchedule(ExamScheduleDTO examScheduleDTO)
             {
@@ -60,6 +51,15 @@ namespace SchedulerService.Controllers.ExamScheduleController
             aPIResponse=await _examScheduleService.AddNewExamSchedule(examScheduleDTO);
             return aPIResponse;
             }
+
+        [HttpPut]
+        public async Task<APIResponse> UpdateExamSchedule(ExamScheduleDTO examScheduleDTO)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=await _examScheduleService.UpdateExamSchedule(examScheduleDTO);
+            return aPIResponse;
+            }
+
 
         [HttpPut("AssignTeacher/{id}/{teacherId}")]
         public async Task<APIResponse> AssignTeacher(int id, string teacherId)
@@ -74,6 +74,14 @@ namespace SchedulerService.Controllers.ExamScheduleController
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _examScheduleService.AssignRoomToExamSchedule(id, roomId);
+            return aPIResponse;
+            }
+
+        [HttpGet("AvailableTeachers/{date}/{startTime}/{endTime}")]
+        public async Task<APIResponse> GetAvailableTeachers(DateOnly date, TimeOnly startTime, TimeOnly endTime)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=await _examScheduleService.GetAllTeacherAvailableForAddExamSchedule(date,startTime,endTime);
             return aPIResponse;
             }
         }

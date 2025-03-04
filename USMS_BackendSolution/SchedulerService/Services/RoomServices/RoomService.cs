@@ -234,7 +234,7 @@ namespace Services.RoomServices
         }
         #endregion
 
-        #region Get Availabl eRoom
+        #region Get Available Room for Add Schedule
         /// <summary>
         /// Lấy danh sách phòng trống trong ngày date, slotId
         /// </summary>
@@ -274,6 +274,29 @@ namespace Services.RoomServices
             return response;
             }
         #endregion
+
+        #region Get Available Rooms to Add Exam Schedule
+        /// <summary>
+        /// Retrive all Rooms in Database
+        /// </summary>
+        /// <returns>a list of all Rooms in DB</returns>
+        public async Task<APIResponse> GetAvailableRooms(DateOnly date, TimeOnly startTime, TimeOnly endTime)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            var availableRooms = await _roomRepository.GetAvailableRooms(date, startTime, endTime);
+            if (availableRooms==null||availableRooms.Count==0)
+                {
+                aPIResponse.IsSuccess=false;
+                aPIResponse.Message="Không có phòng trống nào khả dụng trong thời gian đã chọn !";
+                }
+            else
+                {
+                aPIResponse.Result=availableRooms;
+                }
+            return aPIResponse;
+            }
+        #endregion
+
 
         }
     }

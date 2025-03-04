@@ -251,21 +251,29 @@ namespace Repositories.ClassSubjectRepository
         /// <param name="majorId"></param>
         /// <param name="semesterId"></param>
         /// <returns></returns>
-        public async Task<List<string>> GetSubjectInClassSubjectByMajorIdAndSemesterId(string majorId, string semesterId)
+        public async Task<List<ClassSubjectDTO>> GetSubjectInClassSubjectByMajorIdAndSemesterId(string majorId, string semesterId)
             {
             try
                 {
                 using (var dbContext = new MyDbContext())
                     {
-                    List<string> subjectIds = await dbContext.ClassSubject.Where(x => x.MajorId==majorId&&x.SemesterId==semesterId)
-                     .Select(x => x.SubjectId).ToListAsync();
-                    return subjectIds;
+                    List<ClassSubject>? classSubjects = await dbContext.ClassSubject.Where(x => x.MajorId==majorId&&x.SemesterId==semesterId)
+                        .GroupBy(x => x.SubjectId)
+                        .Select(g => g.First())
+                        .ToListAsync();
+                    List<ClassSubjectDTO> classSubjectDTOs = new List<ClassSubjectDTO>();
+                    foreach (var item in classSubjects)
+                        {
+                        ClassSubjectDTO classSubjectDTO = new ClassSubjectDTO();
+                        classSubjectDTO.CopyProperties(item);
+                        classSubjectDTOs.Add(classSubjectDTO);
+                        }
+                    return classSubjectDTOs;
                     }
                 }
-            catch (Exception)
+            catch (Exception ex)
                 {
-
-                throw;
+                throw new Exception(ex.Message);
                 }
             }
         #endregion

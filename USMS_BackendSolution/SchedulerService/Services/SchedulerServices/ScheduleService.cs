@@ -706,11 +706,11 @@ namespace SchedulerDataAccess.Services.SchedulerServices
             var availableTeacher = teachers
                 .Where(r => !usedTeacherIds.Contains(r.UserId))
                 .ToList();
-            // 5. Gói vào APIResponse
             aPIResponse.IsSuccess=true;
             aPIResponse.Result=availableTeacher;
             return aPIResponse;
             }
-        #endregion
+        #endregion    
+
         }
     }

@@ -327,7 +327,7 @@ namespace Services.ClassServices
         public async Task<APIResponse> GetSubjectIdsByMajorIdAndSemesterId(string majorId, string semesterId)
             {
             APIResponse aPIResponse = new APIResponse();
-            List<string> subjectIds = await _classRepository.GetSubjectInClassSubjectByMajorIdAndSemesterId(majorId, semesterId);
+            List<ClassSubjectDTO> subjectIds = await _classRepository.GetSubjectInClassSubjectByMajorIdAndSemesterId(majorId, semesterId);
             if (subjectIds==null||subjectIds.Count==0)
                 {
                 aPIResponse.IsSuccess=false;

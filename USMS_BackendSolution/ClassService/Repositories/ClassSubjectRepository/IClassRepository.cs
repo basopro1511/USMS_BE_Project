@@ -18,6 +18,6 @@ namespace Repositories.ClassSubjectRepository
         public ClassSubjectDTO GetExistingClassSubject(string classId, string subjectId, string semesterId);
         public List<ClassSubjectDTO> GetClassSubjectByMajorIdClassIdTerm(string majorId, string classId, int term);
         List<string> GetClassIdsByMajorId(string majorId);
-        public Task<List<string>> GetSubjectInClassSubjectByMajorIdAndSemesterId(string majorId, string semesterId);
+        public Task<List<ClassSubjectDTO>> GetSubjectInClassSubjectByMajorIdAndSemesterId(string majorId, string semesterId);
         }
     }
