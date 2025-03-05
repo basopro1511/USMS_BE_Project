@@ -4,6 +4,7 @@ using SchedulerBusinessObject;
 using SchedulerBusinessObject.ModelDTOs;
 using SchedulerService.Services.ExamScheduleServices;
 using Services.RoomServices;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SchedulerService.Controllers.ExamScheduleController
     {
@@ -82,6 +83,22 @@ namespace SchedulerService.Controllers.ExamScheduleController
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _examScheduleService.GetAllTeacherAvailableForAddExamSchedule(date,startTime,endTime);
+            return aPIResponse;
+            }
+
+        [HttpGet("Student/{id}")]
+        public async Task<APIResponse> GetExamScheduleForStudent(string id)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=await _examScheduleService.GetExamScheduleForStudent(id);
+            return aPIResponse;
+            }
+
+        [HttpGet("Teacher/{id}")]
+        public async Task<APIResponse> GetExamScheduleForTeacher(string id)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=await _examScheduleService.GetExamScheduleForTeacher(id);
             return aPIResponse;
             }
         }

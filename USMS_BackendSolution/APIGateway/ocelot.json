@@ -528,8 +528,83 @@
             ],
             "UpstreamPathTemplate": "/api/ExamSchedule/AvailableTeachers/{date}/{startTime}/{endTime}",
             "UpstreamHttpMethod": [ "GET", "POST" ]
-        }
+        },
+        {
+            "DownstreamPathTemplate": "/api/ExamSchedule/Student/{id}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/ExamSchedule/Student/{id}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/ExamSchedule/Teacher/{id}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/ExamSchedule/Teacher/{id}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
         /* ExamSchedule API End */
+
+        /* StudentInExamSchedule API Start */
+        {
+            "DownstreamPathTemplate": "/api/StudentInExamSchedule",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/StudentInExamSchedule",
+            "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/StudentInExamSchedule/{id}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/StudentInExamSchedule/{id}",
+            "UpstreamHttpMethod": [ "GET", "DELETE" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/StudentInExamSchedule/AddMutipleStudents",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/StudentInExamSchedule/AddMutipleStudents",
+            "UpstreamHttpMethod": [ "POST" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/StudentInExamSchedule/AvailableStudents/{id}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/StudentInExamSchedule/AvailableStudents/{id}",
+            "UpstreamHttpMethod": [ "GET" ]
+        }
+        /* StudentInExamSchedule API End */
 
     ]
 }

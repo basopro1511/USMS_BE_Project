@@ -21,6 +21,7 @@ namespace SchedulerBusinessObject.ModelDTOs
         public int Type { get; set; }
         public int Turn { get; set; }
         public string? TeacherId { get; set; }
+        public int NumberOfStudentInExamSchedule { get; set; }
         public int Status { get; set; }
         public DateTime CreatedAt { get; set; }
     }

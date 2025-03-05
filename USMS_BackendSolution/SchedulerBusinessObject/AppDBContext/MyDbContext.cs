@@ -21,6 +21,7 @@ namespace SchedulerBusinessObject.AppDBContext
         public virtual DbSet<Room> Room { get; set; }
         public virtual DbSet<TimeSlot> TimeSlot { get; set; }
         public virtual DbSet<ExamSchedule> ExamSchedule { get; set; }
+        public virtual DbSet<StudentInExamSchedule> StudentInExamSchedule { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
             //Create Default Time Slots

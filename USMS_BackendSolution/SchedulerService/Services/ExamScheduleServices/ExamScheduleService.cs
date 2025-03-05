@@ -4,6 +4,7 @@ using SchedulerBusinessObject;
 using SchedulerBusinessObject.ModelDTOs;
 using SchedulerBusinessObject.SchedulerModels;
 using SchedulerService.Repository.ExamScheduleRepository;
+using SchedulerService.Services.StudentInExamScheduleServices;
 using Services.RoomServices;
 using System.Net.Http;
 using System.Text.Json;
@@ -16,7 +17,7 @@ namespace SchedulerService.Services.ExamScheduleServices
         private readonly HttpClient _httpClient;
         public ExamScheduleService(HttpClient httpClient)
             {
-            _examScheduleRepository= new ExamScheduleRepository();
+            _examScheduleRepository=new ExamScheduleRepository();
             _httpClient=httpClient;
             }
 
@@ -33,6 +34,11 @@ namespace SchedulerService.Services.ExamScheduleServices
                 {
                 aPIResponse.IsSuccess=false;
                 aPIResponse.Message="Không tìm thấy lịch thi khả dụng!";
+                }
+            foreach (var item in examSchedules)
+                {
+                int numberOfStudent = await _examScheduleRepository.CountStudentInExamSchedule(item.ExamScheduleId);
+                item.NumberOfStudentInExamSchedule =numberOfStudent;
                 }
             aPIResponse.Result=examSchedules;
             return aPIResponse;
@@ -99,11 +105,11 @@ namespace SchedulerService.Services.ExamScheduleServices
                 {
                 return "Mã môn học không thể dài hơn 10 ký tự";
                 }
-            if (examSchedule.StartTime > examSchedule.EndTime)
+            if (examSchedule.StartTime>examSchedule.EndTime)
                 {
                 return "Thời gian kết thúc không thể sớm hơn thời gian bắt đầu.";
                 }
-            if (examSchedule.Date < DateOnly.FromDateTime(DateTime.Now))
+            if (examSchedule.Date<DateOnly.FromDateTime(DateTime.Now))
                 {
                 return " Ngày thi không thể là ngày đã xảy ra trong quá khứ.";
                 }
@@ -177,7 +183,6 @@ namespace SchedulerService.Services.ExamScheduleServices
                 };
             }
         #endregion
-
 
         #region Assign Room into Exam Schedule
         public async Task<APIResponse> AssignRoomToExamSchedule(int id, string roomId)
@@ -353,7 +358,7 @@ namespace SchedulerService.Services.ExamScheduleServices
 
         #region Get all Teacher for Add ExamSchedule
         private async Task<List<TeacherDTO>> GetAvailableTeachers()
-        {
+            {
             try
                 {
                 var response = _httpClient.GetAsync($"https://localhost:7067/api/Teacher").Result;
@@ -386,7 +391,7 @@ namespace SchedulerService.Services.ExamScheduleServices
         /// </summary>
         /// <param name="teacherDto"></param>
         /// <returns></returns>
-        public async Task<APIResponse> GetAllTeacherAvailableForAddExamSchedule(DateOnly date,TimeOnly startTime, TimeOnly endTime)
+        public async Task<APIResponse> GetAllTeacherAvailableForAddExamSchedule(DateOnly date, TimeOnly startTime, TimeOnly endTime)
             {
             APIResponse aPIResponse = new APIResponse();
             List<TeacherDTO> teachers = await GetAvailableTeachers();
@@ -444,89 +449,154 @@ namespace SchedulerService.Services.ExamScheduleServices
                 string semesterId,
                 string majorId,
                 string type)
-                {
-                // Chuẩn bị kết quả
-                List<ExamScheduleDTO> examSchedules = new List<ExamScheduleDTO>();
-                // Giả lập danh sách phòng
-                List<string> rooms = new List<string> { "G301", "G302", "G303", "G304", "G305" };
-                // Giả lập danh sách môn
-                List<string> subjects = new List<string> { "PRN231", "PRM392", "MLN111" };
-                // Giả lập danh sách giáo viên
-                List<string> teachers = new List<string> { "HieuNT", "DaQL" };
+            {
+            // Chuẩn bị kết quả
+            List<ExamScheduleDTO> examSchedules = new List<ExamScheduleDTO>();
+            // Giả lập danh sách phòng
+            List<string> rooms = new List<string> { "G301", "G302", "G303", "G304", "G305" };
+            // Giả lập danh sách môn
+            List<string> subjects = new List<string> { "PRN231", "PRM392", "MLN111" };
+            // Giả lập danh sách giáo viên
+            List<string> teachers = new List<string> { "HieuNT", "DaQL" };
 
-                // Giả lập số lượng sinh viên cho từng môn
-                Dictionary<string, int> subjectStudentCounts = new Dictionary<string, int>
+            // Giả lập số lượng sinh viên cho từng môn
+            Dictionary<string, int> subjectStudentCounts = new Dictionary<string, int>
                   {
                 { "PRN231", 60 },
                 { "PRM392", 80 },
                 { "MLN111", 30 }
                     };
 
-                int roomCapacity = 20; // Sức chứa tối đa mỗi phòng
-                Random random = new Random();
-                int turn = 1; // Thi lần đầu
-                int breakTime = 30; // Thời gian nghỉ giữa ca (phút)
+            int roomCapacity = 20; // Sức chứa tối đa mỗi phòng
+            Random random = new Random();
+            int turn = 1; // Thi lần đầu
+            int breakTime = 30; // Thời gian nghỉ giữa ca (phút)
 
-                foreach (var subject in subjects)
+            foreach (var subject in subjects)
+                {
+                // Tổng số sinh viên cần thi môn này
+                int totalStudents = subjectStudentCounts[subject];
+                // Tính số phòng cần thiết
+                int requiredRooms = (int)Math.Ceiling((double)totalStudents/roomCapacity);
+
+                // Lưu thời gian bắt đầu gốc cho môn học
+                TimeOnly subjectStartTime = startTime;
+
+                for (int i = 0; i<requiredRooms; i++)
                     {
-                    // Tổng số sinh viên cần thi môn này
-                    int totalStudents = subjectStudentCounts[subject];
-                    // Tính số phòng cần thiết
-                    int requiredRooms = (int)Math.Ceiling((double)totalStudents/roomCapacity);
+                    if (i>=rooms.Count) break; // Nếu vượt quá số phòng, dừng (hoặc chuyển sang ngày hôm sau tuỳ logic)
+                    string room = rooms[i];
+                    string teacher = teachers[random.Next(teachers.Count)];
+                    // 80 phút nếu là PE, 120 phút nếu là FE
+                    int duration = (type=="PE") ? 80 : 120;
 
-                    // Lưu thời gian bắt đầu gốc cho môn học
-                    TimeOnly subjectStartTime = startTime;
-
-                    for (int i = 0; i<requiredRooms; i++)
+                    // Tạo lịch thi
+                    var examSchedule = new ExamScheduleDTO
                         {
-                        if (i>=rooms.Count) break; // Nếu vượt quá số phòng, dừng (hoặc chuyển sang ngày hôm sau tuỳ logic)
-                        string room = rooms[i];
-                        string teacher = teachers[random.Next(teachers.Count)];
-                        // 80 phút nếu là PE, 120 phút nếu là FE
-                        int duration = (type=="PE") ? 80 : 120;
+                        SemesterId=semesterId,
+                        MajorId=majorId,
+                        SubjectId=subject,
+                        RoomId=room,
+                        Type=(type=="PE") ? 1 : 2, // convert sang int, tuỳ bạn
+                        Turn=turn,
+                        Date=date,
+                        StartTime=subjectStartTime,
+                        EndTime=subjectStartTime.AddMinutes(duration),
+                        TeacherId=teacher,
+                        Status=1,
+                        CreatedAt=DateTime.Now
+                        };
 
-                        // Tạo lịch thi
-                        var examSchedule = new ExamScheduleDTO
-                            {
-                            SemesterId=semesterId,
-                            MajorId=majorId,
-                            SubjectId=subject,
-                            RoomId=room,
-                            Type=(type=="PE") ? 1 : 2, // convert sang int, tuỳ bạn
-                            Turn=turn,
-                            Date=date,
-                            StartTime=subjectStartTime,
-                            EndTime=subjectStartTime.AddMinutes(duration),
-                            TeacherId=teacher,
-                            Status=1,
-                            CreatedAt=DateTime.Now
-                            };
-
-                        examSchedules.Add(examSchedule);
-                        }
-
-                    // Sau khi xếp xong các phòng cho môn này, cập nhật thời gian bắt đầu cho môn tiếp theo
-                    startTime=subjectStartTime.AddMinutes(
-                        (type=="PE" ? 80 : 120)+breakTime
-                    );
-
-                    // Ví dụ: nếu sang 18h => chuyển ngày
-                    if (startTime.Hour>=18)
-                        {
-                        startTime=new TimeOnly(7, 0, 0);
-                        date=date.AddDays(1);
-                        }
+                    examSchedules.Add(examSchedule);
                     }
 
-                // Nếu bạn muốn lưu luôn kết quả vào DB (bảng ExamSchedule),
-                // thì có thể gọi repository tại đây. Ví dụ:
-                // await _examScheduleRepository.AddRangeAsync(examSchedules);
-                // await _examScheduleRepository.SaveChangesAsync();
+                // Sau khi xếp xong các phòng cho môn này, cập nhật thời gian bắt đầu cho môn tiếp theo
+                startTime=subjectStartTime.AddMinutes(
+                    (type=="PE" ? 80 : 120)+breakTime
+                );
 
-                return examSchedules;
+                // Ví dụ: nếu sang 18h => chuyển ngày
+                if (startTime.Hour>=18)
+                    {
+                    startTime=new TimeOnly(7, 0, 0);
+                    date=date.AddDays(1);
+                    }
                 }
+
+            // Nếu bạn muốn lưu luôn kết quả vào DB (bảng ExamSchedule),
+            // thì có thể gọi repository tại đây. Ví dụ:
+            // await _examScheduleRepository.AddRangeAsync(examSchedules);
+            // await _examScheduleRepository.SaveChangesAsync();
+
+            return examSchedules;
+            }
         #endregion
 
+        #region Get Exam Schedule for Student by StudentId
+        /// <summary>
+        /// Get Exam SChedule for Student 
+        /// </summary>
+        /// <param name="studentId"></param>
+        /// <returns></returns>
+        public async Task<APIResponse> GetExamScheduleForStudent(string studentId)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            var examSchedules = await _examScheduleRepository.GetExamScheduleForStudent(studentId);
+            #region validation 
+            List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
+            {
+                  (examSchedules == null, "Không tìm thấy sinh viên!"),
+            };
+            foreach (var validation in validations)
+                {
+                if (validation.condition)
+                    {
+                    return new APIResponse
+                        {
+                        IsSuccess=false,
+                        Message=validation.errorMessage
+                        };
+                    }
+                }
+            #endregion       
+            aPIResponse.IsSuccess=true;
+            aPIResponse.Result=examSchedules;
+            return aPIResponse;
+            }
+        #endregion
+
+        #region Get Exam Schedule for Teacher by TeacherID
+        /// <summary>
+        /// Get Exam SChedule for Teacher 
+        /// </summary>
+        /// <param name="teacherId"></param>
+        /// <returns></returns>
+        public async Task<APIResponse> GetExamScheduleForTeacher(string teacherId)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            var examSchedules = await _examScheduleRepository.GetExamScheduleForTeacher(teacherId);
+            #region validation 
+            List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
+            {
+                  (examSchedules == null, "Không tìm thấy giáo viên!"),
+            };
+            foreach (var validation in validations)
+                {
+                if (validation.condition)
+                    {
+                    return new APIResponse
+                        {
+                        IsSuccess=false,
+                        Message=validation.errorMessage
+                        };
+                    }
+                }
+            #endregion       
+            aPIResponse.IsSuccess=true;
+            aPIResponse.Result=examSchedules;
+            return aPIResponse;
+            }
+        #endregion
         }
     }
 
