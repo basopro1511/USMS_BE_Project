@@ -46,6 +46,7 @@ namespace SchedulerService.Services.StudentInExamScheduleServices
                         {
                         aPIResponse.IsSuccess=false;
                         aPIResponse.Message="Không tìm thấy học sinh với ID = "+item.StudentId;
+                        return aPIResponse;
                         }
                     studentDTO.ExamScheduleId=examScheduleId;
                     studentDTO.StudentExamId=item.StudentExamId;
@@ -285,13 +286,14 @@ namespace SchedulerService.Services.StudentInExamScheduleServices
                 {
                 aPIResponse.IsSuccess=false;
                 aPIResponse.Message="Tất cả sinh viên đã có trong lớp.";
+                return aPIResponse;
                 }
             else
                 {
                 aPIResponse.IsSuccess=true;
                 aPIResponse.Result=availableStudents;
+                return aPIResponse;
                 }
-            return aPIResponse;
             }
         #endregion
 

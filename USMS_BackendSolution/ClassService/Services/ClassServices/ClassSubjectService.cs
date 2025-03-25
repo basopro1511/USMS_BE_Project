@@ -1,7 +1,10 @@
 ﻿using ClassBusinessObject;
+using ClassBusinessObject.AppDBContext;
 using ClassBusinessObject.ModelDTOs;
 using ClassBusinessObject.Models;
 using ClassService.Services.StudentInClassServices;
+using ISUZU_NEXT.Server.Core.Extentions;
+using Microsoft.EntityFrameworkCore;
 using Repositories.ClassSubjectRepository;
 using System;
 using System.Collections.Generic;
@@ -29,10 +32,10 @@ namespace Services.ClassServices
         /// Retrive all ClassSubject in Database
         /// </summary>
         /// <returns>a list of all Class Subject in DB</returns>
-        public APIResponse GetAllClassSubject()
+        public async Task<APIResponse> GetAllClassSubject()
             {
             APIResponse aPIResponse = new APIResponse();
-            List<ClassSubjectDTO> classSubjects = _classRepository.GetAllClassSubjects();
+            List<ClassSubjectDTO> classSubjects = await _classRepository.GetAllClassSubjects();
 
             StudentInClassService studentInClassService = new StudentInClassService();
 
@@ -48,7 +51,7 @@ namespace Services.ClassServices
                 }
             foreach (var item in classSubjects)
                 {
-                var majorName = GetMajorNameById(item.MajorId);
+                var majorName =await GetMajorNameById(item.MajorId);
                 item.MajorName=majorName.MajorName??"Null";
                 }
 
@@ -63,7 +66,7 @@ namespace Services.ClassServices
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        private List<ClassSubjectDTO>? GetAllMajor()
+        private async Task<List<ClassSubjectDTO>>? GetAllMajor()
             {
             try
                 {
@@ -97,11 +100,11 @@ namespace Services.ClassServices
         /// </summary>
         /// <param name="id">Major Id</param>
         /// <returns>A ClassSubjectDTO containing Major Name if found, otherwise null</returns>
-        private ClassSubjectDTO GetMajorNameById(string id)
+        private async Task<ClassSubjectDTO> GetMajorNameById(string id)
             {
             try
                 {
-                var majors = GetAllMajor();
+                var majors = await GetAllMajor();
                 var major = majors?.FirstOrDefault(x => x.MajorId==id);
                 if (major==null)
                     {
@@ -122,10 +125,10 @@ namespace Services.ClassServices
         /// </summary>
         /// <param name="id"></param>
         /// <returns>a ClassSubject by Id</returns>
-        public APIResponse GetClassSubjectById(int id)
+        public async Task<APIResponse> GetClassSubjectById(int id)
             {
             APIResponse aPIResponse = new APIResponse();
-            ClassSubjectDTO classSubject = _classRepository.GetClassSubjectById(id);
+            ClassSubjectDTO classSubject =await _classRepository.GetClassSubjectById(id);
             if (classSubject==null)
                 {
                 aPIResponse.IsSuccess=false;
@@ -142,10 +145,10 @@ namespace Services.ClassServices
         /// </summary>
         /// <param name="id"></param>
         /// <returns>a list ClassSubjects by ClassId </returns>
-        public APIResponse GetClassSubjectByClassId(string id)
+        public async Task<APIResponse> GetClassSubjectByClassId(string id)
             {
             APIResponse aPIResponse = new APIResponse();
-            List<ClassSubjectDTO> classSubjects = _classRepository.GetClassSubjectByClassIds(id);
+            List<ClassSubjectDTO> classSubjects =await _classRepository.GetClassSubjectByClassIds(id);
             if (classSubjects==null||classSubjects.Count==0)
                 {
                 aPIResponse.IsSuccess=false;
@@ -162,10 +165,10 @@ namespace Services.ClassServices
         /// </summary>
         /// <param name="id"></param>
         /// <returns>a list ClassSubjects byMajorId, ClassId, Subject Id </returns>
-        public APIResponse GetClassSubjectByMajorIdClassIdSubjectId(string majorId, string classId, int term)
+        public async Task<APIResponse> GetClassSubjectByMajorIdClassIdSubjectId(string majorId, string classId, int term)
             {
             APIResponse aPIResponse = new APIResponse();
-            List<ClassSubjectDTO> classSubjects = _classRepository.GetClassSubjectByMajorIdClassIdTerm(majorId, classId, term);
+            List<ClassSubjectDTO> classSubjects =await _classRepository.GetClassSubjectByMajorIdClassIdTerm(majorId, classId, term);
             if (classSubjects==null||classSubjects.Count==0)
                 {
                 aPIResponse.IsSuccess=false;
@@ -178,50 +181,48 @@ namespace Services.ClassServices
 
         #region Add New ClassSubject
         /// <summary>
-        /// Add New ClassSubject to databse
+        /// Add New ClassSubject to database
         /// </summary>
-        /// <param name="ClassSubject"></param>
-        public APIResponse AddNewClassSubject(AddUpdateClassSubjectDTO classSubject)
+        /// <param name="classSubject"></param>
+        public async Task<APIResponse> AddNewClassSubject(AddUpdateClassSubjectDTO classSubject)
             {
             APIResponse aPIResponse = new APIResponse();
-
             int count = 1;
             string subtringSemesterId = classSubject.SemesterId.Substring(2); // Ví dụ FA25 -> "25"
-            // Tạo ClassId ban đầu
-            classSubject.ClassId=classSubject.MajorId+"C"+subtringSemesterId+count.ToString("D2");
-            // Kiểm tra trùng lặp bằng vòng lặp while
-            while (_classRepository.GetAllClassSubjects()
-                .Any(x => x.ClassId==classSubject.ClassId&&x.SubjectId==classSubject.SubjectId&&x.SemesterId==classSubject.SemesterId))
+            using (var dbContext = new MyDbContext()) // Truy vấn trực tiếp từ database
                 {
-                count++; // Tăng số thứ tự
-                classSubject.ClassId=classSubject.MajorId+"C"+subtringSemesterId+count.ToString("D2");
-                }
-            bool isAdded = _classRepository.AddNewClassSubject(classSubject);
-            if (isAdded)
-                {
+                // Tạo ClassId ban đầu
+                classSubject.ClassId=$"{classSubject.MajorId}C{subtringSemesterId}{count:D2}";
+                // Kiểm tra trùng lặp với vòng lặp while
+                while (await dbContext.ClassSubject
+                    .AnyAsync(x => x.ClassId==classSubject.ClassId&&x.SubjectId==classSubject.SubjectId&&x.SemesterId==classSubject.SemesterId))
+                    {
+                    count++; // Tăng số thứ tự
+                    classSubject.ClassId=$"{classSubject.MajorId}C{subtringSemesterId}{count:D2}";
+                    }
+                var classSubjectEntity = new ClassSubject();
+                classSubjectEntity.CopyProperties(classSubject);
+                dbContext.ClassSubject.Add(classSubjectEntity);
+                await dbContext.SaveChangesAsync(); // Lưu thay đổi vào DB
                 return new APIResponse
                     {
                     IsSuccess=true,
-                    Message="Thêm mới lớp học thành công! Mã lớp học là: "+classSubject.ClassId
+                    Message=$"Thêm mới lớp học thành công! Mã lớp học là: {classSubject.ClassId}"
                     };
                 }
-            return new APIResponse
-                {
-                IsSuccess=false,
-                Message="Thêm mới lớp học thất bại!."
-                };
             }
         #endregion
+
 
         #region Update ClassSubject
         /// <summary>
         /// Udate ClassSubject in databse
         /// </summary>
         /// <param name="ClassSubject"></param>
-        public APIResponse UpdateClassSubject(AddUpdateClassSubjectDTO classSubject)
+        public async Task<APIResponse> UpdateClassSubject(AddUpdateClassSubjectDTO classSubject)
             {
             APIResponse aPIResponse = new APIResponse();
-            var existClass = _classRepository.GetExistingClassSubject(classSubject.ClassId, classSubject.SubjectId, classSubject.SemesterId);
+            var existClass =await _classRepository.GetExistingClassSubject(classSubject.ClassId, classSubject.SubjectId, classSubject.SemesterId);
             if (existClass != null)
                 {
                 return new APIResponse
@@ -230,7 +231,7 @@ namespace Services.ClassServices
                     Message=$"Lớp học có mã {classSubject.ClassId} cho học kỳ {classSubject.SemesterId} và môn {classSubject.SubjectId} đã tồn tại. Vui lòng chọn mã khác hoặc kiểm tra lại thông tin."
                     };
                 }
-            bool isAdded = _classRepository.UpdateClassSubject(classSubject);
+            bool isAdded =await _classRepository.UpdateClassSubject(classSubject);
             if (isAdded)
                 {
                 return new APIResponse
@@ -253,10 +254,10 @@ namespace Services.ClassServices
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public APIResponse ChangeStatusClassSubject(int id)
+        public async Task<APIResponse> ChangeStatusClassSubject(int id)
             {
             var response = new APIResponse();
-            ClassSubjectDTO existingClassSubject = _classRepository.GetClassSubjectById(id);
+            ClassSubjectDTO existingClassSubject = await _classRepository.GetClassSubjectById(id);
             if (existingClassSubject==null)
                 {
                 return new APIResponse
@@ -265,7 +266,7 @@ namespace Services.ClassServices
                     Message="Lớp học với mã lớp đã cung cấp không tồn tại!"
                     };
                 }
-            bool isSuccess = _classRepository.ChangeStatusClassSubject(id);
+            bool isSuccess =await _classRepository.ChangeStatusClassSubject(id);
             if (isSuccess)
                 {
                 return new APIResponse
@@ -289,12 +290,12 @@ namespace Services.ClassServices
         /// </summary>
         /// <param name="majorId"></param>
         /// <returns></returns>
-        public APIResponse GetClassIdsByMajorId(string majorId)
+        public async Task<APIResponse> GetClassIdsByMajorId(string majorId)
             {
             APIResponse aPIResponse = new APIResponse();
             try
                 {
-                var classIds = _classRepository.GetClassIdsByMajorId(majorId);
+                var classIds = await _classRepository.GetClassIdsByMajorId(majorId);
 
                 if (classIds==null||classIds.Count==0)
                     {

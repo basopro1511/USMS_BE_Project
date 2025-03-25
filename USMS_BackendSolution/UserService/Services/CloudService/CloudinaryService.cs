@@ -18,7 +18,7 @@ namespace UserService.Services.CloudService
             _cloudinary=new Cloudinary(account);
             }
 
-        public string? UploadImageFromBase64(string? base64Image)
+        public async Task<string>? UploadImageFromBase64(string? base64Image)
             {
             try
                 {
@@ -31,7 +31,7 @@ namespace UserService.Services.CloudService
                 int commaIndex = base64Image.IndexOf(",");
                 if (commaIndex!=-1)
                     {
-                    base64Image=base64Image.Substring(commaIndex+1);
+                    base64Image= base64Image.Substring(commaIndex+1);
                     }
                 // 3. Kiểm tra xem base64 có đúng định dạng không
                 if (!IsBase64String(base64Image))
@@ -39,7 +39,7 @@ namespace UserService.Services.CloudService
                     throw new FormatException("Base64 image format is invalid.");
                     }
                 // 4. Chuyển base64 thành mảng byte
-                byte[] imageBytes = Convert.FromBase64String(base64Image);
+                byte[] imageBytes =  Convert.FromBase64String(base64Image);
                 // 5. Upload ảnh lên Cloudinary
                 using MemoryStream? stream = new MemoryStream(imageBytes);
                 var uploadParams = new ImageUploadParams
@@ -47,9 +47,8 @@ namespace UserService.Services.CloudService
                     File=new FileDescription("image_file", stream)
                     };
 
-                var uploadResult = _cloudinary.Upload(uploadParams);
-                // 6. Trả về URL của ảnh (hoặc null nếu có lỗi)
-                return uploadResult?.SecureUrl?.ToString();
+                var uploadResult =  _cloudinary.Upload(uploadParams);
+                return  uploadResult?.SecureUrl?.ToString();
                 }
             catch (Exception ex)
                 {

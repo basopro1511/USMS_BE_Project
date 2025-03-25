@@ -19,62 +19,62 @@ namespace ClassService.Controllers.ClassSubjectController
 
         // GET: api/ClassSubject
         [HttpGet]
-        public APIResponse GetAllClassSubject()
+        public async Task<APIResponse> GetAllClassSubject()
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _classSubjectService.GetAllClassSubject();
+            aPIResponse = await _classSubjectService.GetAllClassSubject();
             return aPIResponse;
             }
 
         // GET: api/ClassSubject/1
         [HttpGet("{id}")]
-        public APIResponse GetClassSubjectById(int id)
+        public async Task<APIResponse> GetClassSubjectById(int id)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _classSubjectService.GetClassSubjectById(id);
+            aPIResponse =await _classSubjectService.GetClassSubjectById(id);
             return aPIResponse;
             }
 
         // GET: api/ClassSubject/1
         [HttpGet("classId/{classId}")]
-        public APIResponse GetClassSubjectByClassId(string classId)
+        public async Task<APIResponse> GetClassSubjectByClassId(string classId)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _classSubjectService.GetClassSubjectByClassId(classId);
+            aPIResponse =await _classSubjectService.GetClassSubjectByClassId(classId);
             return aPIResponse;
             }
 
         // POST: api/ClassSubject
         [HttpPost]
-        public APIResponse AddNewClassSubject(AddUpdateClassSubjectDTO classSubjectDTO)
+        public async Task<APIResponse> AddNewClassSubject(AddUpdateClassSubjectDTO classSubjectDTO)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _classSubjectService.AddNewClassSubject(classSubjectDTO);
+            aPIResponse =await _classSubjectService.AddNewClassSubject(classSubjectDTO);
             return aPIResponse;
             }
 
         // PUT: api/ClassSubject
         [HttpPut]
-        public APIResponse UpdateClassSubject(AddUpdateClassSubjectDTO classSubjectDTO)
+        public async Task<APIResponse> UpdateClassSubject(AddUpdateClassSubjectDTO classSubjectDTO)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _classSubjectService.UpdateClassSubject(classSubjectDTO);
+            aPIResponse =await _classSubjectService.UpdateClassSubject(classSubjectDTO);
             return aPIResponse;
             }
 
         [HttpPut("ChangeStatus/{id}")]
-        public APIResponse ChangeStatusClassSubject(int id)
+        public async Task<APIResponse> ChangeStatusClassSubject(int id)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _classSubjectService.ChangeStatusClassSubject(id);
+            aPIResponse =await _classSubjectService.ChangeStatusClassSubject(id);
             return aPIResponse;
             }
 
         [HttpGet("ClassSubject")]
-        public APIResponse GetClassSubjects(string majorId, string classId, int term)
+        public async Task<APIResponse> GetClassSubjects(string majorId, string classId, int term)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _classSubjectService.GetClassSubjectByMajorIdClassIdSubjectId(majorId, classId, term);
+            aPIResponse =await _classSubjectService.GetClassSubjectByMajorIdClassIdSubjectId(majorId, classId, term);
             return aPIResponse;
             }
 
@@ -86,9 +86,9 @@ namespace ClassService.Controllers.ClassSubjectController
         /// <param name="majorId">Mã chuyên ngành</param>
         /// <returns>APIResponse chứa danh sách ClassId</returns>
         [HttpGet("ClassIdsByMajorId/{majorId}")]
-        public APIResponse GetClassIdsByMajorId(string majorId)
+        public async Task<APIResponse> GetClassIdsByMajorId(string majorId)
             {
-            var response = _classSubjectService.GetClassIdsByMajorId(majorId);
+            var response =await _classSubjectService.GetClassIdsByMajorId(majorId);
             return response;
             }
         #endregion

@@ -19,45 +19,45 @@ namespace SchedulerService.Controllers.SlotController
 
         // GET: api/Rooms
         [HttpGet]
-        public APIResponse GetAllSlots()
+        public async Task<APIResponse> GetAllSlots()
         {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _slotService.GetAllSlots();
+            aPIResponse =await _slotService.GetAllSlots();
             return aPIResponse;
         }
 
         //GET: api/Rooms/{Id}
         [HttpGet("{id}")]
-        public APIResponse GeSlotById(int id)
+        public async Task<APIResponse> GeSlotById(int id)
         {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _slotService.GetSlotById(id);
+            aPIResponse =await _slotService.GetSlotById(id);
             return aPIResponse;
         }
 
         //POST: api/Rooms
         [HttpPost]
-        public APIResponse AddNewSlot(TimeSlotDTO slotDTO)
+        public async Task<APIResponse> AddNewSlot(TimeSlotDTO slotDTO)
         {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _slotService.AddNewSlot(slotDTO);
+            aPIResponse =await _slotService.AddNewSlot(slotDTO);
             return aPIResponse;
         }
 
         //PUT: api/Rooms
         [HttpPut]
-        public APIResponse UpdateSlot(TimeSlotDTO slotDTO)
+        public async Task<APIResponse> UpdateSlot(TimeSlotDTO slotDTO)
         {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _slotService.UpdateTimeSlot(slotDTO);
+            aPIResponse =await _slotService.UpdateTimeSlot(slotDTO);
             return aPIResponse;
         }
 
         [HttpGet("ChangeStatus/{id}/{status}")]
-        public APIResponse ChangeSlotStatus(int id, int status)
+        public async Task<APIResponse> ChangeSlotStatus(int id, int status)
         {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _slotService.ChangeSlotStatus(id, status);
+            aPIResponse =await _slotService.ChangeSlotStatus(id, status);
             return aPIResponse;
         }
     }

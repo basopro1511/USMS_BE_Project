@@ -275,12 +275,13 @@ namespace ClassService.Services.StudentInClassServices
                     {
                     StudentDTO studentDTO = new StudentDTO();
                     studentDTO=getStudentData(item.StudentId);
-                    studentDTO.StudentClassId = item.StudentClassId;
                     if (studentDTO==null)
                         {
                         aPIResponse.IsSuccess=false;
                         aPIResponse.Message="Không tìm thấy học sinh với ID = "+item.StudentId;
+                        return aPIResponse;
                         }
+                    studentDTO.StudentClassId=item.StudentClassId;
                     studentDTOs.Add(studentDTO);
                     }
                 aPIResponse.Result=studentDTOs;

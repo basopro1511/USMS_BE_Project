@@ -18,10 +18,10 @@ namespace UserService.Services.MajorServices
         /// Retrive all ClassSubject in Database
         /// </summary>
         /// <returns>a list of all Class Subject in DB</returns>
-        public APIResponse GetAllMajor()
+        public async Task<APIResponse> GetAllMajor()
         {
             APIResponse aPIResponse = new APIResponse();
-            List<MajorDTO> classSubjects = _repository.GetAllMajor();
+            List<MajorDTO> classSubjects = await _repository.GetAllMajor();
             if (classSubjects == null)
             {
                 aPIResponse.IsSuccess = false;

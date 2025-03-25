@@ -33,40 +33,10 @@ namespace BusinessObject.ModelDTOs
         public string MajorName { get; set; }
         public string Address { get; set; }
     }
-    public class AddStudentDTO
+    public class StudentTableDTO
     {
-        public string FirstName { get; set; }
-        public string? MiddleName { get; set; }
-        public string LastName { get; set; }
-        public string PasswordHash { get; set; }
-        public string PersonalEmail { get; set; }
-        public string PhoneNumber { get; set; }
-        public DateOnly DateOfBirth { get; set; }
-        public string? UserAvartar { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
-        public string MajorId { get; set; }
-        [JsonIgnore]
+        public string StudentId { get; set; }
+        public string? MajorId { get; set; }
         public int Term { get; set; }
-        public string Address { get; set; }
-    }
-    public class UpdateStudentDTO
-    {
-        public string FirstName { get; set; }
-        public string? MiddleName { get; set; }
-        public string LastName { get; set; }
-        public string PersonalEmail { get; set; }
-        public string PhoneNumber { get; set; }
-        public DateOnly DateOfBirth { get; set; }
-        public string? UserAvartar { get; set; }
-        public int Term { get; set; }
-
-        public int Status { get; set; }
-        public string MajorId { get; set; }
-        public string Address { get; set; }
-    }
-    public class UpdateStudentStatusDTO
-    {
-        public int Status { get; set; }
-    }
+        }
 }

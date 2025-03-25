@@ -2,13 +2,15 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using UserService.Repository.MajorRepository;
+using UserService.Repository.StaffRepository;
 using UserService.Repository.StudentRepository;
 using UserService.Repository.TeacherRepository;
 using UserService.Repository.UserRepository;
 using UserService.Services.MajorServices;
-using UserService.Services.StudentService;
+using UserService.Services.StaffServices;
+using UserService.Services.StudentServices;
 using UserService.Services.TeacherService;
-using UserService.Services.UserService;
+using UserService.Services.UserServices;
 
 namespace Core
 {
@@ -21,13 +23,15 @@ namespace Core
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IStudentRepository, StudentRepository>();
             services.AddScoped<ITeacherRepository, TeacherRepository>();
+            services.AddScoped<IStaffRepository, StaffRepository>();
             #endregion
 
             #region Register Service
             services.AddScoped<MajorService>();
-            services.AddScoped<UserService.Services.UserService.UserService>();
+            services.AddScoped<UserService.Services.UserServices.UserService>();
             services.AddScoped<StudentService>();
             services.AddScoped<TeacherService>();
+            services.AddScoped<StaffService>();
             services.AddHttpClient();
             #endregion
             }

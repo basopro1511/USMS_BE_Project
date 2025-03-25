@@ -213,13 +213,13 @@ namespace SchedulerService.Repository.StudentInExamScheduleRepository
         /// <param name="studentId"></param>
         /// <param name="examScheduleId"></param>
         /// <returns>StudentInExamScheduleDTO if exists, otherwise null</returns>
-        public StudentInExamScheduleDTO GetStudentInClassByStudentIdAndClass(string studentId, int examScheduleId)
+        public async Task<StudentInExamScheduleDTO> GetStudentInClassByStudentIdAndClass(string studentId, int examScheduleId)
             {
             try
                 {
                 using (var dbContext = new MyDbContext())
                     {
-                    var studentInClass = dbContext.StudentInExamSchedule.FirstOrDefault(s => s.StudentId==studentId&&s.ExamScheduleId==examScheduleId);
+                    var studentInClass = await dbContext.StudentInExamSchedule.FirstOrDefaultAsync(s => s.StudentId==studentId&&s.ExamScheduleId==examScheduleId);
                     if (studentInClass==null)
                         {
                         return null;

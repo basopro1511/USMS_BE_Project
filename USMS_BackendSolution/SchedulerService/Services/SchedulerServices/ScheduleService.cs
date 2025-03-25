@@ -23,14 +23,14 @@ namespace SchedulerDataAccess.Services.SchedulerServices
             _httpClient=httpClient;
             }
         #region Get All Schedule
-        public APIResponse GetAllSchedule()
+        public async Task<APIResponse> GetAllSchedule()
             {
             APIResponse aPIResponse = new APIResponse();
             var schedule = _scheduleRepository.getAllSchedule();
             if (schedule==null)
                 {
                 aPIResponse.IsSuccess=false;
-                aPIResponse.Message="Don't have any schedule available!";
+                aPIResponse.Message="Không có bất kì lịch học nào tồn tại!";
                 }
             aPIResponse.Result=schedule;
             return aPIResponse;
@@ -185,7 +185,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                 int maxSlot = subjectDto.NumberOfSlot; // Số tiết tối đa của môn
                 // 4. Kiểm tra schedule.SlotNoInSubject với subjectDto.NumberOfSlot
                 //    (SlotNoInSubject là trường mới bạn thêm trong ClassScheduleDTO)
-                var schedulesOfThisClassSubject = _scheduleRepository.GetSchedulesByClassSubjectId(schedule.ClassSubjectId);
+                var schedulesOfThisClassSubject =await _scheduleRepository.GetSchedulesByClassSubjectId(schedule.ClassSubjectId);
                 int nextSlotNoInSubject = 1;
                 if (schedulesOfThisClassSubject.Any())
                     {
@@ -208,7 +208,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                     return aPIResponse;
                     }
                 // 8. Kiểm tra tính hợp lệ phòng học
-                var room = _roomService.GetRoomById(schedule.RoomId);
+                var room =await _roomService.GetRoomById(schedule.RoomId);
                 if (!room.IsSuccess||room.Result==null)
                     {
                     aPIResponse.IsSuccess=false;
@@ -250,7 +250,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
             try
                 {
                 // 1. Kiểm tra xem lịch học cần cập nhật có tồn tại không
-                var existingSchedule = _scheduleRepository.GetScheduleById(scheduleDto.ClassScheduleId);
+                var existingSchedule =await _scheduleRepository.GetScheduleById(scheduleDto.ClassScheduleId);
                 if (existingSchedule==null)
                     {
                     aPIResponse.IsSuccess=false;
@@ -288,7 +288,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                     return aPIResponse;
                     }
                 // 8. Kiểm tra tính hợp lệ phòng học
-                var room = _roomService.GetRoomById(scheduleDto.RoomId);
+                var room =await _roomService.GetRoomById(scheduleDto.RoomId);
                 if (!room.IsSuccess||room.Result==null)
                     {
                     aPIResponse.IsSuccess=false;
@@ -328,12 +328,12 @@ namespace SchedulerDataAccess.Services.SchedulerServices
         #endregion
 
         #region Delete Schedule
-        public APIResponse DeleteSchedule(int scheduleId)
+        public async Task<APIResponse> DeleteSchedule(int scheduleId)
             {
             APIResponse response = new APIResponse();
             try
                 {
-                var result = _scheduleRepository.DeleteScheduleById(scheduleId);
+                var result =await _scheduleRepository.DeleteScheduleById(scheduleId);
                 if (!result)
                     {
                     response.IsSuccess=false;
@@ -524,7 +524,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
         /// <param name="startDay"></param>
         /// <param name="endDay"></param>
         /// <returns></returns>
-        public APIResponse GetClassScheduleForStudent(string studentId, DateTime startDay, DateTime endDay)
+        public async Task<APIResponse> GetClassScheduleForStudent(string studentId, DateTime startDay, DateTime endDay)
             {
             APIResponse aPIResponse = new APIResponse();
             var classSubjectIds = getClassSubjectIdsByStudentIds(studentId);
@@ -534,7 +534,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                 aPIResponse.Message="Không tìm thấy lớp học của sinh viên có Id = "+studentId+"!";
                 return aPIResponse;
                 }
-            List<ViewScheduleDTO>? schedules = _scheduleRepository.GetClassSchedulesForStaff(classSubjectIds, startDay, endDay);
+            List<ViewScheduleDTO>? schedules =await _scheduleRepository.GetClassSchedulesForStaff(classSubjectIds, startDay, endDay);
             foreach (var item in schedules)
                 {
                 var classSubject = getClassSubjectByClassSubjectId(item.ClassSubjectId);
@@ -558,7 +558,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
         /// <param name="endDay"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public APIResponse GetClassSchedulesForStaff(string majorId, string classId, int term, DateTime startDay, DateTime endDay)
+        public async Task<APIResponse> GetClassSchedulesForStaff(string majorId, string classId, int term, DateTime startDay, DateTime endDay)
             {
             APIResponse aPIResponse = new APIResponse();
             try
@@ -572,7 +572,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                     };
                 List<int> classSubjectIds = classSubjects.Select(s => s.ClassSubjectId).ToList();
                 Dictionary<int, string> subjectMap = classSubjects.ToDictionary(s => s.ClassSubjectId, s => s.SubjectId);
-                var schedules = _scheduleRepository.GetClassSchedulesForStaff(classSubjectIds, startDay, endDay);
+                var schedules =await _scheduleRepository.GetClassSchedulesForStaff(classSubjectIds, startDay, endDay);
                 foreach (var schedule in schedules)
                     {
                     schedule.MajorId=majorId;
@@ -598,12 +598,12 @@ namespace SchedulerDataAccess.Services.SchedulerServices
         /// <param name="endDay"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public APIResponse GetClassSchedulesForTeacher(string teacherId, DateTime startDay, DateTime endDay)
+        public async Task<APIResponse> GetClassSchedulesForTeacher(string teacherId, DateTime startDay, DateTime endDay)
             {
             APIResponse aPIResponse = new APIResponse();
             try
                 {
-                var schedules = _scheduleRepository.GetScheduleForTeacher(teacherId, startDay, endDay);
+                var schedules =await _scheduleRepository.GetScheduleForTeacher(teacherId, startDay, endDay);
                 foreach (var item in schedules)
                     {
                     var classSubject = getClassSubjectByClassSubjectId(item.ClassSubjectId);
@@ -677,7 +677,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
         /// </summary>
         /// <param name="teacherDto"></param>
         /// <returns></returns>
-        public APIResponse GetAllTeacherAvailableForAddSchedule(string majorId, DateOnly date, int slot)
+        public async Task<APIResponse> GetAllTeacherAvailableForAddSchedule(string majorId, DateOnly date, int slot)
             {
             APIResponse aPIResponse = new APIResponse();
             List<TeacherDTO> teachers = GetAvailableTeachersByMajorId(majorId);

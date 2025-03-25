@@ -14,7 +14,7 @@ namespace Repositories.SubjectRepository
 		/// <param name="SubjectDTO"></param>
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <exception cref="Exception"></exception>
-		public bool CreateSubject(SubjectDTO SubjectDTO)
+		public async Task<bool> CreateSubject(SubjectDTO SubjectDTO)
 		{
 			if (SubjectDTO == null)
 			{
@@ -22,7 +22,8 @@ namespace Repositories.SubjectRepository
 			}
 			try
 			{
-				var checkSubject = GetAllSubjects().Find(x => x.SubjectId == SubjectDTO.SubjectId);
+                var checkSubject = await GetAllSubjects();
+                checkSubject.Find(x => x.SubjectId == SubjectDTO.SubjectId);
 				if (checkSubject != null)
 				{
 					return false;
@@ -34,7 +35,7 @@ namespace Repositories.SubjectRepository
 				using (var _db = new MyDbContext())
 				{
 					_db.Add(subject);
-					_db.SaveChanges();
+					await _db.SaveChangesAsync();
 					return true;
 				}
 			}
@@ -50,7 +51,7 @@ namespace Repositories.SubjectRepository
 		/// <param name="SubjectDTO"></param>
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <exception cref="Exception"></exception>
-		public bool UpdateSubject(SubjectDTO SubjectDTO)
+		public async Task<bool> UpdateSubject(SubjectDTO SubjectDTO)
 		{
 			if (SubjectDTO == null)
 			{
@@ -58,7 +59,8 @@ namespace Repositories.SubjectRepository
 			}
 			try
 			{
-				var checkSubject = GetAllSubjects().Find(x => x.SubjectId == SubjectDTO.SubjectId);
+                var checkSubject = await GetAllSubjects();
+                checkSubject.Find(x => x.SubjectId == SubjectDTO.SubjectId);
 				if (checkSubject == null)
 				{
 					return false;
@@ -69,7 +71,7 @@ namespace Repositories.SubjectRepository
 				using (var _db = new MyDbContext())
 				{
 					_db.Entry(subject).State = EntityState.Modified;
-					_db.SaveChanges();
+				await	_db.SaveChangesAsync();
 					return true;
 				}
 			}
@@ -84,7 +86,7 @@ namespace Repositories.SubjectRepository
 		/// </summary>
 		/// <returns></returns>
 		/// <exception cref="Exception"></exception>
-		public List<SubjectDTO>? GetAllSubjects()
+		public async Task<List<SubjectDTO>>? GetAllSubjects()
 		{
 			try
 			{
@@ -92,7 +94,7 @@ namespace Repositories.SubjectRepository
 				var subjects = new List<Subject>();
 				using (var _db = new MyDbContext())
 				{
-					subjects = _db.Subject.ToList();
+					subjects =await _db.Subject.ToListAsync();
 				}
 				foreach (var item in subjects)
 				{
@@ -108,18 +110,17 @@ namespace Repositories.SubjectRepository
 			}
 		}
 
-
         /// <summary>
         /// Get Subjects By Id
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public SubjectDTO GetSubjectsById(string subjectId)
+        public async Task<SubjectDTO> GetSubjectsById(string subjectId)
         {
             try
             {
-                var subject = GetAllSubjects();
-				SubjectDTO subjectDTO = subject.FirstOrDefault(x => x.SubjectId == subjectId);
+                var subject = await GetAllSubjects();
+				SubjectDTO subjectDTO =  subject.FirstOrDefault(x => x.SubjectId==subjectId);
 				return subjectDTO;
             }
             catch (Exception ex)
@@ -136,7 +137,7 @@ namespace Repositories.SubjectRepository
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="Exception"></exception>
-        public bool SwitchStateSubject(string subjectId, int status)
+        public async Task<bool> SwitchStateSubject(string subjectId, int status)
 		{
 			try
 			{
@@ -145,12 +146,12 @@ namespace Repositories.SubjectRepository
 					using (var dbContext = new MyDbContext())
 					{
 						{
-							var existingSubject = dbContext.Subject.Find(subjectId);
+							var existingSubject =await dbContext.Subject.FindAsync(subjectId);
 							if (existingSubject == null) return false;
 							existingSubject.CopyProperties(existingSubjectDTO);
                             existingSubject.Status = status;
 							dbContext.Entry(existingSubject).State = EntityState.Modified;
-							dbContext.SaveChanges();
+							await dbContext.SaveChangesAsync();
 						}
 						return true;
 					}
@@ -161,5 +162,31 @@ namespace Repositories.SubjectRepository
 				throw new Exception(ex.Message, ex);
 			}
 		}
-	}
-}
+
+        #region Get Subject Available ( Status = 1 )
+        public async Task<List<SubjectDTO>>? GetAllSubjectsAvailable()
+            {
+            try
+                {
+                var result = new List<SubjectDTO>();
+                var subjects = new List<Subject>();
+                using (var _db = new MyDbContext())
+                    {
+                    subjects=await _db.Subject.Where(x=> x.Status == 1).ToListAsync();
+                    }
+                foreach (var item in subjects)
+                    {
+                    SubjectDTO temp = new SubjectDTO();
+                    temp.CopyProperties(item);
+                    result.Add(temp);
+                    }
+                return result;
+                }
+            catch (Exception ex)
+                {
+                throw new Exception($"{nameof(GetAllSubjects)}", ex);
+                }
+            }
+        #endregion
+        }
+    }

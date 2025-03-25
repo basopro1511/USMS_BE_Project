@@ -1,6 +1,7 @@
 ﻿using BusinessObject;
 using BusinessObject.ModelDTOs;
 using Microsoft.AspNetCore.Mvc;
+using UserService.Services.StudentServices;
 
 namespace UserService.Controllers.StudentController
 {
@@ -8,50 +9,59 @@ namespace UserService.Controllers.StudentController
     [ApiController]
     public class StudentController : Controller
     {
-        private readonly Services.StudentService.StudentService _studentService;
-        public StudentController(Services.StudentService.StudentService studentService)
+        private readonly StudentService _service;
+        public StudentController(StudentService studentService)
         {
-            _studentService = studentService;
+            _service= studentService;
         }
-        // GET: api/Students
+        #region Get All Student
         [HttpGet]
-        public APIResponse GetAllUser()
-        {
+        public async Task<APIResponse> GetAllStudent()
+            {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _studentService.GetAllStudent();
+            aPIResponse=await _service.GetAllStudent();
             return aPIResponse;
-        }
-        // GET: api/Students
+            }
+        #endregion
+
+        #region Get Student By Id
         [HttpGet("{id}")]
-        public APIResponse GetStudentById(string id)
-        {
+        public async Task<APIResponse> GetStudentById(string id)
+            {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _studentService.GetStudentById(id);
+            aPIResponse=await _service.GetUserById(id);
             return aPIResponse;
-        }
-        // POST: api/Student
+            }
+        #endregion
+
+        #region Add New Student
         [HttpPost]
-        public APIResponse AddStudent(AddStudentDTO addstudentDTO)
-        {
+        public async Task<APIResponse> AddNewStudent(UserDTO userDTO)
+            {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _studentService.AddStudent(addstudentDTO);
+            aPIResponse=await _service.AddNewStudent(userDTO);
             return aPIResponse;
-        }
-        // PUT: api/Student/UpdateStudent/{id}
-        [HttpPut("{id}")]
-        public APIResponse UpdateStudent(string id, UpdateStudentDTO updateStudentDTO)
-        {
+            }
+        #endregion
+
+        #region Update Student
+        [HttpPut]
+        public async Task<APIResponse> UpdateStudent(UserDTO userDTO)
+            {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _studentService.UpdateStudent(id, updateStudentDTO);
+            aPIResponse=await _service.UpdateStudent(userDTO);
             return aPIResponse;
-        }
-        //PUT: api/User/{id}
-        [HttpPut("UpdateStudentStatus/{id}")]
-        public APIResponse UpdateStudentStatus(string id, int status)
-        {
+            }
+        #endregion
+
+        #region Import From Excel
+        [HttpPost("import")]
+        public async Task<APIResponse> ImportStudents(IFormFile file)
+            {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _studentService.UpdateStudentStatus(id, status);
+            aPIResponse=await _service.ImportStudentsFromExcel(file);
             return aPIResponse;
+            }
+        #endregion
         }
     }
-}
