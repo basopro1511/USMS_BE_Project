@@ -9,8 +9,9 @@ namespace UserService.Repository.UserRepository
 {
     public interface IUserRepository
     {
-        public  Task<List<UserDTO>> GetAllUser();
-        public  Task<UserDTO> GetUserById(string id);
+        public Task<List<UserDTO>> GetAllUser();
+        public Task<UserDTO> GetUserById(string id);
+        public Task<UserDTO> GetUserByEmail(string email);
 
         //#region Old
         //public bool AddNewUser(UserDTO userDTO);
@@ -20,4 +21,4 @@ namespace UserService.Repository.UserRepository
         //#endregion
 
         }
-}
+    }

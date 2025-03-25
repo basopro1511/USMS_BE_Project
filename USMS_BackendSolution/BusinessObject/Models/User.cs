@@ -33,8 +33,7 @@ namespace BusinessObject.Models
         [Required]
         public string PersonalEmail { get; set; }
         [Column(TypeName = "NVARCHAR(MAX)")]
-        [Required]
-        public string Address { get; set; }
+        public string? Address { get; set; }
 
         [Required]
         [Column(TypeName = "NVARCHAR(15)")]

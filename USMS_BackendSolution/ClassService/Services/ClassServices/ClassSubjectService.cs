@@ -85,7 +85,7 @@ namespace Services.ClassServices
                     {
                     PropertyNameCaseInsensitive=true
                     };
-                return dataResponse.Value.Deserialize<List<ClassSubjectDTO>>(options);
+                return  dataResponse.Value.Deserialize<List<ClassSubjectDTO>>(options);
                 }
             catch (Exception ex)
                 {

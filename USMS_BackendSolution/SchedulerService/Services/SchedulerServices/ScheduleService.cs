@@ -26,7 +26,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
         public async Task<APIResponse> GetAllSchedule()
             {
             APIResponse aPIResponse = new APIResponse();
-            var schedule = _scheduleRepository.getAllSchedule();
+            var schedule = await _scheduleRepository.getAllSchedule();
             if (schedule==null)
                 {
                 aPIResponse.IsSuccess=false;
@@ -314,7 +314,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                 // 8. Cập nhật thông tin mới cho lịch học
                 existingSchedule.CopyProperties(scheduleDto);
                 existingSchedule.Status=scheduleDto.Status;
-                _scheduleRepository.UpdateSchedule(existingSchedule);
+                await _scheduleRepository.UpdateSchedule(existingSchedule);
                 aPIResponse.IsSuccess=true;
                 aPIResponse.Message="Cập nhật thời khóa biểu thành công!";
                 }
@@ -680,7 +680,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
         public async Task<APIResponse> GetAllTeacherAvailableForAddSchedule(string majorId, DateOnly date, int slot)
             {
             APIResponse aPIResponse = new APIResponse();
-            List<TeacherDTO> teachers = GetAvailableTeachersByMajorId(majorId);
+            List<TeacherDTO> teachers =  GetAvailableTeachersByMajorId(majorId);
             #region validation 
             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
             {
@@ -699,7 +699,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                 }
             #endregion       
             // 2. Lấy các schedule có date & slotId
-            var schedules = _scheduleRepository.GetSchedulesByDateAndSlot(date, slot);
+            var schedules =  _scheduleRepository.GetSchedulesByDateAndSlot(date, slot);
             // 3. Lấy danh sách teacherId đã bị chiếm
             var usedTeacherIds = schedules.Select(sch => sch.TeacherId).Distinct().ToHashSet();
             // 4. Lọc ra các giáo viên còn trống

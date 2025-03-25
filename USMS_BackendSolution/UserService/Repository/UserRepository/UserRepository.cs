@@ -68,6 +68,33 @@ namespace UserService.Repository.UserRepository
             }
         }
 
+        #region Get User By Email (Login)
+        /// <summary>
+        /// Get User by Email
+        /// </summary>
+        /// <param name="GetUserByEmail"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<UserDTO> GetUserByEmail(string email)
+            {
+            try
+                {
+                using (var _db = new MyDbContext())
+                    {
+                    User? user = await _db.User.FirstOrDefaultAsync(x => x.Email==email);
+                    if (user==null) return null;
+                    UserDTO userDTO = new UserDTO();
+                    userDTO.CopyProperties(user); 
+                    return userDTO;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
         //#region Old
 
         ///// <summary>

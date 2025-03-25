@@ -50,7 +50,7 @@ namespace SchedulerService.Repository.SlotRepository
             {
                 using (var _db = new MyDbContext())
                     {
-                    var timeSlot = _db.TimeSlot.FirstOrDefault(x => x.SlotId==id); 
+                    var timeSlot =await _db.TimeSlot.FirstOrDefaultAsync(x => x.SlotId==id); 
                     TimeSlotDTO? timeSlotDTO = new TimeSlotDTO();
                     timeSlotDTO.CopyProperties(timeSlot);
                     return timeSlotDTO;

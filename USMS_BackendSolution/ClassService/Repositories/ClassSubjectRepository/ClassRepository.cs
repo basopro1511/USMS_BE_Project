@@ -162,7 +162,7 @@ namespace Repositories.ClassSubjectRepository
                 {
                 using (var dbContext = new MyDbContext())
                     {
-                    var existingClassSubject = dbContext.ClassSubject.FirstOrDefault(cs => cs.ClassSubjectId==id);
+                    var existingClassSubject =await dbContext.ClassSubject.FirstOrDefaultAsync(cs => cs.ClassSubjectId==id);
                     return existingClassSubject;
                     }
                 }
@@ -186,7 +186,7 @@ namespace Repositories.ClassSubjectRepository
                     {
                     ClassSubject classSubject = await GetClassSubjectToUpdate(id);
                     classSubject.Status=classSubject.Status;
-                    dbContext.SaveChangesAsync();
+                    await dbContext.SaveChangesAsync();
                     return true;
                     }
                 }
