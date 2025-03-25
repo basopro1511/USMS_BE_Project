@@ -18,10 +18,10 @@ namespace Services.SubjectServices
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		public APIResponse GetAllSubjects()
+		public async Task<APIResponse> GetAllSubjects()
 		{
 			APIResponse aPIResponse = new APIResponse();
-			List<SubjectDTO>? subjects = _subjectRepository.GetAllSubjects();
+			List<SubjectDTO>? subjects = await _subjectRepository.GetAllSubjects();
 			if (subjects == null || subjects.Count == 0)
 			{
 				aPIResponse.IsSuccess = false;
@@ -38,10 +38,10 @@ namespace Services.SubjectServices
         /// </summary>
         /// <param name="subjectDTO"></param>
         /// <returns></returns>
-        public APIResponse CreateSubject(SubjectDTO subjectDTO)
+        public async Task<APIResponse> CreateSubject(SubjectDTO subjectDTO)
         {
             APIResponse aPIResponse = new APIResponse();
-            SubjectDTO existingSubject = _subjectRepository.GetSubjectsById(subjectDTO.SubjectId);
+            SubjectDTO existingSubject =await _subjectRepository.GetSubjectsById(subjectDTO.SubjectId);
             #region validation cua Add
             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
             {
@@ -67,7 +67,7 @@ namespace Services.SubjectServices
             }
             #endregion
             // Thêm môn học vào cơ sở dữ liệu
-            bool isAdded = _subjectRepository.CreateSubject(subjectDTO);
+            bool isAdded = await _subjectRepository.CreateSubject(subjectDTO);
             if (isAdded)
             {
                 return new APIResponse
@@ -91,10 +91,10 @@ namespace Services.SubjectServices
         /// </summary>
         /// <param name="subjectDTO"></param>
         /// <returns></returns>
-        public APIResponse UpdateSubject(SubjectDTO subjectDTO)
+        public async Task<APIResponse> UpdateSubject(SubjectDTO subjectDTO)
         {
             APIResponse aPIResponse = new APIResponse();
-            SubjectDTO existingSubject = _subjectRepository.GetSubjectsById(subjectDTO.SubjectId);
+            SubjectDTO existingSubject = await _subjectRepository.GetSubjectsById(subjectDTO.SubjectId);
             #region validation cua Update
             var validations = new List<(bool condition, string errorMessage)>
             {
@@ -121,7 +121,7 @@ namespace Services.SubjectServices
             }
             #endregion
             // Cập nhật môn học trong cơ sở dữ liệu
-            bool isUpdated = _subjectRepository.UpdateSubject(subjectDTO);
+            bool isUpdated =await _subjectRepository.UpdateSubject(subjectDTO);
             if (isUpdated)
             {
                 return new APIResponse
@@ -145,10 +145,10 @@ namespace Services.SubjectServices
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public APIResponse GetSubjectById(string subjectID)
+        public async Task<APIResponse> GetSubjectById(string subjectID)
         {
             APIResponse aPIResponse = new APIResponse();
-			SubjectDTO subject = _subjectRepository.GetSubjectsById(subjectID);
+			SubjectDTO subject =await _subjectRepository.GetSubjectsById(subjectID);
             if (subject == null)
             {
                 aPIResponse.IsSuccess = false;
@@ -165,10 +165,10 @@ namespace Services.SubjectServices
         /// </summary>
         /// <param name="subjectId"></param>
         /// <returns></returns>
-        public APIResponse SwitchStateSubject(string subjectId, int status)
+        public async Task<APIResponse> SwitchStateSubject(string subjectId, int status)
 		{
 			APIResponse aPIResponse = new APIResponse();
-			SubjectDTO existingSubject = _subjectRepository.GetSubjectsById(subjectId);
+			SubjectDTO existingSubject = await _subjectRepository.GetSubjectsById(subjectId);
             if (existingSubject == null)
 			{
 				return new APIResponse
@@ -185,7 +185,7 @@ namespace Services.SubjectServices
 				return aPIResponse;
 			}
 			//Update 
-			bool isUpdated = _subjectRepository.SwitchStateSubject(subjectId, status);
+			bool isUpdated = await _subjectRepository.SwitchStateSubject(subjectId, status);
 			if (isUpdated)
 			{
 				aPIResponse.IsSuccess = true;
@@ -212,10 +212,10 @@ namespace Services.SubjectServices
         #endregion
 
         #region Get Subject by Major ID
-        public APIResponse GetSubjectByMajorId(string majorId)
+        public async Task<APIResponse> GetSubjectByMajorId(string majorId)
         {
             APIResponse aPIResponse = new APIResponse();
-            List<SubjectDTO>? subjects = _subjectRepository.GetAllSubjects();
+            List<SubjectDTO>? subjects = await _subjectRepository.GetAllSubjects();
             List<SubjectDTO>? subjectByMajor = subjects.Where(x => x.MajorId == majorId).ToList();
             if (subjects == null || subjects.Count == 0)
             {
@@ -227,12 +227,12 @@ namespace Services.SubjectServices
         }
         #endregion
   
-        #region Get Subject by Major ID and Term
-        public APIResponse GetSubjectByMajorIdAndTerm(string majorId, int term)
+        #region Get Subjects availables have status = 1 by Major ID and Term
+        public async Task<APIResponse> GetSubjectByMajorIdAndTerm(string majorId, int term)
         {
             APIResponse aPIResponse = new APIResponse();
-            List<SubjectDTO>? subjects = _subjectRepository.GetAllSubjects();
-            List<SubjectDTO>? subjectByMajor = subjects.Where(x => x.MajorId == majorId && x.Term == term).ToList();
+            List<SubjectDTO>? subjects =await _subjectRepository.GetAllSubjects();
+            List<SubjectDTO>? subjectByMajor = subjects.Where(x => x.MajorId == majorId && x.Term == term && x.Status == 1 ).ToList();
             if (subjects == null || subjects.Count == 0)
             {
                 aPIResponse.IsSuccess = false;
@@ -241,6 +241,26 @@ namespace Services.SubjectServices
             aPIResponse.Result = subjectByMajor;
             return aPIResponse;
         }
+        #endregion
+
+        #region Get All Subjects Available ( Status = 1 )
+        /// <summary>
+        /// Get All Subjects
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<APIResponse> GetAllSubjectsAvailable()
+            {
+            APIResponse aPIResponse = new APIResponse();
+            List<SubjectDTO>? subjects = await _subjectRepository.GetAllSubjectsAvailable();
+            if (subjects==null||subjects.Count==0)
+                {
+                aPIResponse.IsSuccess=false;
+                aPIResponse.Message="Không có môn học đang tìm kiếm.";
+                }
+            aPIResponse.Result=subjects;
+            return aPIResponse;
+            }
         #endregion
 
         }

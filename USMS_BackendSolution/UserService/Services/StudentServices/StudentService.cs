@@ -1,51 +1,52 @@
-﻿using Azure;
-using BusinessObject;
+﻿using BusinessObject;
+using BusinessObject.AppDBContext;
 using BusinessObject.ModelDTOs;
 using BusinessObject.Models;
 using Microsoft.EntityFrameworkCore;
-using NuGet.DependencyResolver;
 using OfficeOpenXml;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
-using UserService.Repository.TeacherRepository;
+using UserService.Repository.StudentRepository;
 using UserService.Repository.UserRepository;
 using UserService.Services.CloudService;
-using UserService.Services.UserServices;
-using static System.Reflection.Metadata.BlobBuilder;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace UserService.Services.TeacherService
+namespace UserService.Services.StudentServices
     {
-    public class TeacherService
+    public class StudentService
         {
-        private readonly ITeacherRepository _repository;
+        private readonly IStudentRepository _repository;
         private readonly IUserRepository _userRepository;
-
-        public TeacherService()
+        public StudentService()
             {
-            _repository=new TeacherRepository();
-            _userRepository =new UserRepository();
+            _repository=new StudentRepository();
+            _userRepository=new UserRepository();
             }
 
 
-        #region Get All Teacher
+        #region Get All Student
         /// <summary>
-        /// Get All Teacher from Database
+        /// Get All Student from Database
         /// </summary>
         /// <param name="teacherDto"></param>
         /// <returns></returns>
-        public async Task<APIResponse> GetAllTeacher()
+        public async Task<APIResponse> GetAllStudent()
             {
             APIResponse aPIResponse = new APIResponse();
-            List<UserDTO> teachers = await _repository.GetAllTeacher();
+            List<UserDTO> users = await _repository.GetAllStudent();
+            foreach (var userDTO in users)
+                {
+                using (var _db = new MyDbContext())
+                    {
+                    var student = _db.Student.FirstOrDefault(x => x.StudentId==userDTO.UserId);      
+                    if (student !=null) 
+                    userDTO.Term=student.Term;
+                    }
+                };
             #region validation 
             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
             {
-                  (teachers == null, "Không tìm thấy giáo viên!"),
+                  (users == null, "Không tìm thấy sinh viên!"),
             };
             foreach (var validation in validations)
                 {
@@ -59,40 +60,7 @@ namespace UserService.Services.TeacherService
                     }
                 }
             #endregion
-            aPIResponse.Result=teachers;
-            return aPIResponse;
-            }
-        #endregion
-
-        #region Get All Teachers Available
-        /// <summary>
-        /// Get All Teacher Available from Database
-        /// </summary>
-        /// <param name="teacherDto"></param>
-        /// <returns></returns>
-        public async Task<APIResponse> GetAllTeacherAvailableByMajorId(string majorId)
-            {
-            APIResponse aPIResponse = new APIResponse();
-            List<UserDTO> teachers = await _repository.GetAllTeacherAvailableByMajorId(majorId);
-            #region validation 
-            List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
-            {
-                  (teachers == null, "Không tìm thấy giáo viên!"),
-            };
-            foreach (var validation in validations)
-                {
-                if (validation.condition)
-                    {
-                    return new APIResponse
-                        {
-                        IsSuccess=false,
-                        Message=validation.errorMessage
-                        };
-                    }
-                }
-            #endregion       
-            aPIResponse.IsSuccess=true;
-            aPIResponse.Result=teachers;
+            aPIResponse.Result=users;
             return aPIResponse;
             }
         #endregion
@@ -160,22 +128,77 @@ namespace UserService.Services.TeacherService
             }
         #endregion
 
-        #region Add New Teacher
+        #region Generate Next Student Id
         /// <summary>
-        /// Add New Teacher Into Database
+        /// Generate next UserId for students (with majorId) 
+        /// </summary>
+        /// <param name="majorId"></param>
+        /// <returns></returns>
+        public async Task<string> GenerateNextStudentId(string majorId)
+            {
+            // Lấy 2 chữ số cuối của năm hiện tại, ví dụ: 2025 -> "25"
+            string yearSuffix = (DateTime.Now.Year%100).ToString("D2");
+            // Tạo prefix mới: majorId + yearSuffix, ví dụ: "SE25"
+            string prefix = majorId+yearSuffix;
+            // Lấy danh sách sinh viên từ repository
+            var allStudents = await _repository.GetAllStudent();
+            var filteredStudents = allStudents.Where(s => s.UserId.StartsWith(prefix)).ToList();
+            if (filteredStudents.Count==0)
+                {
+                return prefix+"0001";
+                }
+            // Lấy số thứ tự lớn nhất hiện có sau prefix
+            int maxNumber = filteredStudents
+                .Select(s => int.Parse(s.UserId.Substring(prefix.Length)))
+                .Max();
+            int nextNumber = maxNumber+1;
+            // Trả về UserId mới với định dạng: majorId + yearSuffix + 4 chữ số
+            return prefix+nextNumber.ToString("D4");
+            }
+        #endregion
+
+        #region Generate StudentId
+        private async Task<string> GeneratePreEmail(string firstName, string middleName, string lastName)
+            {
+            var teachers = await _repository.GetAllStudent();
+            // 1.  Viết hoa chữ cái đầu của họ, tên, và tên đệm ví dụ nguyen quoc hoang => Nguyen Quoc Hoang
+            string firstNameGenerate = RemoveDiacritics(
+                CultureInfo.CurrentCulture.TextInfo.ToTitleCase(firstName.ToLower())
+            );
+            string lastNameGenerate = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(lastName.ToLower()).Substring(0, 1).Replace("Đ", "D").Replace("đ", "d");
+            string middleNameGenerate = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(middleName.ToLower().Replace("Đ", "D").Replace("đ", "d"));
+            // 2. Lấy chữ cái đầu tiên của mỗi phần trong MiddleName
+            string secondMidName = "";
+            var middleNameParts = middleName.Split(' ');
+            foreach (var part in middleNameParts)
+                {
+                if (!string.IsNullOrEmpty(part))
+                    {
+                    secondMidName+=part.Substring(0, 1).ToUpper().Replace("Đ", "D").Replace("đ", "d"); // Lấy chữ cái đầu tiên của từng phần trong MiddleName
+                    }
+                }
+            // 3. Tạo UserId ví dụ Nguyen Quoc Hoang => HoangNQ
+            string userId = firstNameGenerate+lastNameGenerate+secondMidName;
+            return userId;
+            }
+        #endregion
+
+        #region Add New Student
+        /// <summary>
+        /// Add New Student Into Database
         /// </summary>
         /// <param name="userDTO"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<APIResponse> AddNewTeacher(UserDTO userDTO)
+        public async Task<APIResponse> AddNewStudent(UserDTO userDTO)
             {
             try
                 {
                 APIResponse aPIResponse = new APIResponse();
-                var teachers = await _userRepository.GetAllUser();
+                var users = await _userRepository.GetAllUser();
                 #region 1. Validation
-                var existEmail = teachers.FirstOrDefault(x => x.Email==userDTO.Email);
-                var existPhone = teachers.FirstOrDefault(x => x.PhoneNumber==userDTO.PhoneNumber);
+                var existEmail = users.FirstOrDefault(x => x.Email==userDTO.Email);
+                var existPhone = users.FirstOrDefault(x => x.PhoneNumber==userDTO.PhoneNumber);
                 List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
             {
                   (!userDTO.PhoneNumber.All(char.IsDigit) || userDTO.PhoneNumber.Length != 10 || !userDTO.PhoneNumber.StartsWith("0"),
@@ -198,61 +221,37 @@ namespace UserService.Services.TeacherService
                         }
                     }
                 #endregion
-
-                #region 2. Generate TeacherID
-                //// 1.  Viết hoa chữ cái đầu của họ, tên, và tên đệm ví dụ nguyen quoc hoang => Nguyen Quoc Hoang
-                //string firstName = RemoveDiacritics(
-                //    CultureInfo.CurrentCulture.TextInfo.ToTitleCase(userDTO.FirstName.ToLower())
-                //);
-                //string lastName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(userDTO.LastName.ToLower().Substring(0, 1).Replace("Đ", "D").Replace("đ", "d")); ;
-                //string middleName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(userDTO.MiddleName.ToLower().Replace("Đ", "D").Replace("đ", "d"));
-                //// 2. Lấy chữ cái đầu tiên của mỗi phần trong MiddleName
-                //string secondMidName = "";
-                //var middleNameParts = userDTO.MiddleName.Split(' ');
-                //foreach (var part in middleNameParts)
-                //    {
-                //    if (!string.IsNullOrEmpty(part))
-                //        {
-                //        secondMidName+=part.Substring(0, 1).ToUpper().Replace("Đ", "D").Replace("đ", "d"); // Lấy chữ cái đầu tiên của từng phần trong MiddleName
-                //        }
-                //    }
-                //// 3. Tạo UserId ví dụ Nguyen Quoc Hoang => HoangNQ
-                //userDTO.UserId=firstName+lastName+secondMidName;
-                //// 4. Kiểm tra xem TeacherId này đã tồn tại trong cơ sở dữ liệu chưa (Check viết hoa hay viết thường)
-                //string baseUserId = userDTO.UserId; // Giữ lại UserId gốc để append số
-                ////var count = teachers.Count(u => u.UserId.Equals(userDTO.UserId, StringComparison.OrdinalIgnoreCase));
-                //int count = 0;
-                //while (teachers.Any(x=> x.UserId.Equals(userDTO.UserId, StringComparison.OrdinalIgnoreCase)))
-                //    {
-                //    count++;
-                //    userDTO.UserId=$"{baseUserId}{count:D2}"; // Luôn nối vào UserId gốc
-                //    }
+                #region 2. Generate UserID và Email 
+                userDTO.UserId=await GenerateNextStudentId(userDTO.MajorId);
+                string preEmail = await GeneratePreEmail(userDTO.FirstName, userDTO.MiddleName, userDTO.LastName);
+                // tạo Email trường          
+                userDTO.Email=preEmail+userDTO.UserId+"@fpt.edu.vn";   //HoangNQ + SE0001 + FPT.EDU.VN
                 #endregion
-
-                userDTO.UserId=await GenerateUserId(userDTO.FirstName, userDTO.MiddleName, userDTO.LastName);
                 #region 3. Save Image vào Cloud
                 CloudinaryService _cloudService = new CloudinaryService();
-                userDTO.UserAvartar=await _cloudService.UploadImageFromBase64(userDTO.UserAvartar);
+                userDTO.UserAvartar = await _cloudService.UploadImageFromBase64(userDTO.UserAvartar);
                 #endregion
-                //4. tạo Email trường                                             
-                userDTO.Email=userDTO.UserId+"@fpt.edu.vn";
-                //5. Default Fields
-                userDTO.RoleId=4; //Id teacher là 4
+                userDTO.RoleId=5; //Id Student là 5
                 userDTO.PasswordHash=HashPassword(userDTO.PasswordHash);
                 userDTO.Status=1; // 1 là đang hoạt động
-                bool isSuccess = await _repository.AddNewTeacher(userDTO);
+                bool isSuccess = await _repository.AddNewStudent(userDTO);
                 if (isSuccess)
                     {
+                    StudentTableDTO studentDTO = new StudentTableDTO();
+                    studentDTO.StudentId=userDTO.UserId;
+                    studentDTO.MajorId=userDTO.MajorId;
+                    studentDTO.Term=1;
+                    bool isAdded = await _repository.AddNewStudentForStudentTable(studentDTO);
                     return new APIResponse
                         {
                         IsSuccess=true,
-                        Message="Thêm mới giáo viên thành công."
+                        Message="Thêm mới sinh viên thành công."
                         };
                     }
                 return new APIResponse
                     {
                     IsSuccess=false,
-                    Message="Thêm mới giáo viên thất bại."
+                    Message="Thêm mới sinh viên thất bại."
                     };
                 }
             catch (Exception ex)
@@ -266,27 +265,27 @@ namespace UserService.Services.TeacherService
             }
         #endregion
 
-        #region Update Teacher
+        #region Update Student
         /// <summary>
-        /// Update Teacher information
+        /// Update Student information
         /// </summary>
         /// <param name="userDTO"></param>
         /// <returns></returns>
-        public async Task<APIResponse> UpdateTeacher(UserDTO userDTO)
+        public async Task<APIResponse> UpdateStudent(UserDTO userDTO)
             {
             APIResponse aPIResponse = new APIResponse();
-            var teachers = await _userRepository.GetAllUser();
-            var teacher = teachers.FirstOrDefault(x => x.UserId==userDTO.UserId);
+            var users = await _userRepository.GetAllUser();
+            var user = await _userRepository.GetUserById(userDTO.UserId);
             #region 1. Validation
-            var existEmail = teachers.FirstOrDefault(x => x.Email==userDTO.Email);
-            var existPhone = teachers.FirstOrDefault(x => x.PhoneNumber==userDTO.PhoneNumber);
+            var existEmail = users.FirstOrDefault(x => x.Email==userDTO.Email);
+            var existPhone = users.FirstOrDefault(x => x.PhoneNumber==userDTO.PhoneNumber);
             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
             {
                   (!userDTO.PhoneNumber.All(char.IsDigit) || userDTO.PhoneNumber.Length != 10 || !userDTO.PhoneNumber.StartsWith("0"),
                   "Số điện thoại phải có 10 số và bắt đầu bằng một số từ 0 (ví dụ: 0901234567)."),
                   (!IsValidEmail(userDTO.PersonalEmail), "Vui lòng nhập địa chỉ email hợp lệ (ví dụ: example@example.com)."),
                   (userDTO.DateOfBirth > DateOnly.FromDateTime(DateTime.Now), "Ngày sinh không thể là ngày trong tương lai."),
-                  (teacher == null, "Không tìm thấy giáo viên cần cập nhật")
+                  (user == null, "Không tìm thấy sinh viên viên cần cập nhật")
             };
             foreach (var validation in validations)
                 {
@@ -309,75 +308,58 @@ namespace UserService.Services.TeacherService
                 }
             else
                 {
-                userDTO.UserAvartar=teacher.UserAvartar;
+                userDTO.UserAvartar=user.UserAvartar;
                 }
             #endregion
-            bool isSuccess = await _repository.UpdateTeacher(userDTO);
+            bool isSuccess = await _repository.UpdateStudent(userDTO);
             if (isSuccess)
                 {
+                await _repository.UpdateStudentTerm(userDTO.UserId, userDTO.Term); // Update Term trong bảng student
                 return new APIResponse
                     {
                     IsSuccess=true,
-                    Message="Cập nhật thông tin giáo viên thành công."
+                    Message="Cập nhật thông tin sinh viên thành công."
                     };
                 }
             return new APIResponse
                 {
                 IsSuccess=false,
-                Message="Cập nhật thông tin giáo viên thất bại."
+                Message="Cập nhật thông tin sinh viên thất bại."
                 };
             }
         #endregion
 
-        #region Generate Teacher Id
+        #region Generate Next Student Id for Excel
         /// <summary>
-        /// Use to generate Teacher Id
+        /// Generate next UserId for students (with majorId) 
         /// </summary>
-        /// <param name="firstName"></param>
-        /// <param name="middleName"></param>
-        /// <param name="lastName"></param>
+        /// <param name="majorId"></param>
         /// <returns></returns>
-        private async Task<string> GenerateUserId(string firstName, string middleName, string lastName)
+        public async Task<string> GenerateNextStudentIdForExcel(string majorId)
             {
-            var teachers = await _repository.GetAllTeacher();
-            // 1.  Viết hoa chữ cái đầu của họ, tên, và tên đệm ví dụ nguyen quoc hoang => Nguyen Quoc Hoang
-            string firstNameGenerate = RemoveDiacritics(
-                CultureInfo.CurrentCulture.TextInfo.ToTitleCase(firstName.ToLower())
-            );
-            string lastNameGenerate = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(lastName.ToLower()).Substring(0, 1).Replace("Đ", "D").Replace("đ", "d");
-            string middleNameGenerate = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(middleName.ToLower().Replace("Đ", "D").Replace("đ", "d"));
-            // 2. Lấy chữ cái đầu tiên của mỗi phần trong MiddleName
-            string secondMidName = "";
-            var middleNameParts = middleName.Split(' ');
-            foreach (var part in middleNameParts)
+            // Lấy 2 chữ số cuối của năm hiện tại, ví dụ: 2025 -> "25"
+            string yearSuffix = (DateTime.Now.Year%100).ToString("D2");
+            // Tạo prefix mới: majorId + yearSuffix, ví dụ: "SE25"
+            string prefix = majorId+yearSuffix;
+            // Lấy danh sách sinh viên từ repository
+            var allStudents = await _repository.GetAllStudent();
+            var filteredStudents = allStudents.Where(s => s.UserId.StartsWith(prefix)).ToList();
+            if (filteredStudents.Count==0)
                 {
-                if (!string.IsNullOrEmpty(part))
-                    {
-                    secondMidName+=part.Substring(0, 1).ToUpper().Replace("Đ", "D").Replace("đ", "d"); // Lấy chữ cái đầu tiên của từng phần trong MiddleName
-                    }
+                return prefix+"0001";
                 }
-            // 3. Tạo UserId ví dụ Nguyen Quoc Hoang => HoangNQ
-            string userId = firstNameGenerate+lastNameGenerate+secondMidName;
-            // 4. Kiểm tra xem TeacherId này đã tồn tại trong cơ sở dữ liệu chưa (Check viết hoa hay viết thường)
-            string baseUserId = userId; // Giữ lại UserId gốc để append số
-                                                //var count = teachers.Count(u => u.UserId.Equals(userDTO.UserId, StringComparison.OrdinalIgnoreCase));
-            int count = 0;
-            while (teachers.Any(x => x.UserId.Equals(userId, StringComparison.OrdinalIgnoreCase)))
-                {
-                count++;
-                userId=$"{baseUserId}{count:D2}"; // Luôn nối vào UserId gốc
-                }
-            return userId;
+            // Lấy số thứ tự lớn nhất hiện có sau prefix
+            int maxNumber = filteredStudents
+                .Select(s => int.Parse(s.UserId.Substring(prefix.Length)))
+                .Max();
+            int nextNumber = maxNumber+1;
+            // Trả về UserId mới với định dạng: majorId + yearSuffix + 4 chữ số
+            return prefix+nextNumber.ToString("D4");
             }
         #endregion
 
         #region Import from Excel
-        /// <summary>
-        /// Import Teacher Information by Excel
-        /// </summary>
-        /// <param name="file"></param>
-        /// <returns></returns>
-        public async Task<APIResponse> ImportTeachersFromExcel(IFormFile file)
+        public async Task<APIResponse> ImportStudentsFromExcel(IFormFile file)
             {
             try
                 {
@@ -387,6 +369,18 @@ namespace UserService.Services.TeacherService
                     }
                 var teachers = new List<User>();
                 ExcelPackage.LicenseContext=LicenseContext.NonCommercial;
+                // Lấy 2 chữ số cuối của năm hiện tại, ví dụ 2025 -> 25
+                string currentYearSuffix = (DateTime.Now.Year%100).ToString("D2");
+                // Lấy danh sách tất cả sinh viên từ DB trước khi thêm mới
+                var allStudents = await _repository.GetAllStudent();
+                var studentIdMap = allStudents
+        .Where(s => !string.IsNullOrEmpty(s.UserId))
+        .Where(s => s.UserId.StartsWith(s.MajorId+currentYearSuffix))
+        .GroupBy(s => s.MajorId+currentYearSuffix)
+        .ToDictionary(
+            g => g.Key,
+            g => g.Select(s => int.Parse(s.UserId.Substring(g.Key.Length))).DefaultIfEmpty(0).Max()
+        );
                 using (var stream = new MemoryStream())
                     {
                     await file.CopyToAsync(stream);
@@ -396,8 +390,18 @@ namespace UserService.Services.TeacherService
                         int rowCount = worksheet.Dimension.Rows;
                         for (int row = 2; row<=rowCount; row++)
                             {
+                            string majorId = worksheet.Cells[row, 9].Text;
+                            // Tạo prefix: majorId + currentYearSuffix, ví dụ: "SE25"
+                            string prefix = majorId+currentYearSuffix;
+                            if (!studentIdMap.ContainsKey(prefix))
+                                {
+                                studentIdMap[prefix]=0;
+                                }
+                            studentIdMap[prefix]++;
+                            string nextUserId = prefix+studentIdMap[prefix].ToString("D4");
                             var user = new User
                                 {
+
                                 FirstName=worksheet.Cells[row, 4].Text,
                                 MiddleName=worksheet.Cells[row, 3].Text,
                                 LastName=worksheet.Cells[row, 2].Text,
@@ -406,18 +410,19 @@ namespace UserService.Services.TeacherService
                                 PersonalEmail=worksheet.Cells[row, 6].Text,
                                 PhoneNumber=worksheet.Cells[row, 7].Text,
                                 DateOfBirth=DateOnly.ParseExact(worksheet.Cells[row, 8].Text, "dd/MM/yyyy", CultureInfo.InvariantCulture),
-                                RoleId=4,
+                                RoleId=5,
                                 MajorId=worksheet.Cells[row, 9].Text,
                                 Status=1,
                                 Address=worksheet.Cells[row, 10].Text,
                                 CreatedAt=DateTime.Now,
-                                UpdatedAt=DateTime.Now
+                                UpdatedAt=DateTime.Now,
+                                UserId=nextUserId
                                 };
-                                string stt = worksheet.Cells[row, 1].Text;
-                            #region 1. Validation                                      
-                            var teachersCheck = await _userRepository.GetAllUser();
-                            var existEmail = teachersCheck.FirstOrDefault(x => x.Email==user.Email);
-                            var existPhone = teachersCheck.FirstOrDefault(x => x.PhoneNumber==user.PhoneNumber);
+                            #region 1. Validation       
+                            string stt = worksheet.Cells[row, 1].Text;
+                            var usersCheck = await _userRepository.GetAllUser();
+                            var existEmail = usersCheck.FirstOrDefault(x => x.Email==user.Email);
+                            var existPhone = usersCheck.FirstOrDefault(x => x.PhoneNumber==user.PhoneNumber);
                             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
                               {
                              (!user.PhoneNumber.All(char.IsDigit) || user.PhoneNumber.Length != 10 || !user.PhoneNumber.StartsWith("0"),
@@ -439,18 +444,26 @@ namespace UserService.Services.TeacherService
                                     }
                                 }
                             #endregion
-                            user.UserId=await GenerateUserId(user.FirstName, user.MiddleName, user.LastName);
-                            user.Email=user.UserId+"@fpt.edu.vn";
+                            string preEmail = await GeneratePreEmail(user.FirstName, user.MiddleName, user.LastName);
+                            user.Email=preEmail+user.UserId+"@fpt.edu.vn";
                             teachers.Add(user);
                             }
                         }
                     }
-                bool isSuccess = await _repository.AddTeachersAsync(teachers);
+                bool isSuccess = await _repository.AddStudentAsync(teachers);
                 if (isSuccess)
                     {
-                    return new APIResponse { IsSuccess=true, Message="Import giáo viên thành công." };
+                    foreach (var item in teachers)
+                        {
+                        StudentTableDTO studentDTO = new StudentTableDTO();
+                        studentDTO.StudentId=item.UserId;
+                        studentDTO.MajorId=item.MajorId;
+                        studentDTO.Term=1;
+                        await _repository.AddNewStudentForStudentTable(studentDTO);
+                        }
+                    return new APIResponse { IsSuccess=true, Message="Import sinh viên thành công." };
                     }
-                return new APIResponse { IsSuccess=false, Message="Import giáo viên thất bại." };
+                return new APIResponse { IsSuccess=false, Message="Import sinh viên thất bại." };
                 }
             catch (Exception ex)
                 {
@@ -459,6 +472,43 @@ namespace UserService.Services.TeacherService
             }
         #endregion
 
+        #region Get Student By ID
+
+        #endregion
+        /// <summary>
+        /// Get All Student from Database
+        /// </summary>
+        /// <param name="teacherDto"></param>
+        /// <returns></returns>
+        public async Task<APIResponse> GetUserById(string userId)
+            {
+            APIResponse aPIResponse = new APIResponse();
+           UserDTO user = await _repository.GetStudentById(userId);
+            using (var _db= new MyDbContext())
+                {
+                var student = await _db.Student.FirstOrDefaultAsync(x => x.StudentId==userId);
+                user.Term=student.Term;
+                }
+            #region validation 
+            List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
+            {
+                  (user == null, "Không tìm thấy sinh viên!"),
+            };
+            foreach (var validation in validations)
+                {
+                if (validation.condition)
+                    {
+                    return new APIResponse
+                        {
+                        IsSuccess=false,
+                        Message=validation.errorMessage
+                        };
+                    }
+                }
+            #endregion
+            aPIResponse.Result=user;
+            return aPIResponse;
+            }
         }
     }
 

@@ -18,13 +18,13 @@ namespace Repositories.RoomRepository
         /// </summary>
         /// <returns>A list of all Class Subject</returns>
         /// <exception cref="Exception"></exception>
-        public List<RoomDTO> GetAllRooms()
+        public async Task<List<RoomDTO>> GetAllRooms()
         {
             try
             {
                 using (var dbContext = new MyDbContext())
                 {
-                    List<Room> rooms = dbContext.Room.ToList();
+                    List<Room> rooms =await dbContext.Room.ToListAsync();
                     List<RoomDTO> roomDTOs = new List<RoomDTO>();
                     foreach (var room in rooms)
                     {
@@ -46,13 +46,19 @@ namespace Repositories.RoomRepository
         /// <param name="id"></param>
         /// <returns>1 Room that had RoomId  matched</returns>
         /// <exception cref="Exception"></exception>
-        public RoomDTO GetRoomById(string id)
+        public async Task<RoomDTO> GetRoomById(string id)
         {
             try
             {
-                var rooms = GetAllRooms();
-                RoomDTO roomDTO = rooms.FirstOrDefault(x => x.RoomId == id);
-                return roomDTO;
+                using (var _db = new MyDbContext())
+                    {
+                    var room = await _db.Room.FirstOrDefaultAsync(x => x.RoomId==id);
+                    if (room==null) { return null; }
+                    RoomDTO roomDTO = new RoomDTO();
+                    roomDTO.CopyProperties(room);
+                    return roomDTO;
+                    }
+           
             }
             catch (Exception ex)
             {
@@ -64,7 +70,7 @@ namespace Repositories.RoomRepository
         /// </summary>
         /// <param name="roomDTO"></param>
         /// <returns>>true if success</returns>
-        public bool AddNewRoom(RoomDTO roomDTO)
+        public async Task<bool> AddNewRoom(RoomDTO roomDTO)
         {
             try
             {
@@ -74,7 +80,7 @@ namespace Repositories.RoomRepository
                     room.CopyProperties(roomDTO);
                     room.CreateAt = DateTime.Now;
                     dbContext.Room.Add(room);
-                    dbContext.SaveChanges();
+                   await dbContext.SaveChangesAsync();
                     return true;
                 }
             }
@@ -88,13 +94,13 @@ namespace Repositories.RoomRepository
         /// </summary>
         /// <param name="updateRoomDTO"></param>
         /// <returns>true if success</returns>
-        public bool UpdateRoom(RoomDTO updateRoomDTO)
+        public async Task<bool> UpdateRoom(RoomDTO updateRoomDTO)
         {
             try
             {
                 using (var dbContext = new MyDbContext())
                 {
-                    var existingRoom = GetRoomById(updateRoomDTO.RoomId);
+                    var existingRoom =await GetRoomById(updateRoomDTO.RoomId);
                     Room room = new Room();
                     room.CopyProperties(updateRoomDTO);
                     if (existingRoom == null)
@@ -103,7 +109,7 @@ namespace Repositories.RoomRepository
                     }
                     room.UpdateAt = DateTime.Now;                            
                     dbContext.Entry(room).State = EntityState.Modified;
-                    dbContext.SaveChanges();
+                  await  dbContext.SaveChangesAsync();
                     return true;
                 }
             }
@@ -117,7 +123,7 @@ namespace Repositories.RoomRepository
         /// </summary>
         /// <param name="id">Room ID</param>
         /// <returns>true if success</returns>
-        public bool DeleteRoom(string id)
+        public async Task<bool> DeleteRoom(string id)
         {
             try
             {
@@ -131,7 +137,7 @@ namespace Repositories.RoomRepository
                         return false;
                     }
                     dbContext.Room.Remove(rooms);
-                    dbContext.SaveChanges();
+                  await  dbContext.SaveChangesAsync();
                     return true;
                 }
             }
@@ -147,13 +153,13 @@ namespace Repositories.RoomRepository
         /// <param name="newStatus">New status to set ( 0 = Disable, 1 = Available, 2 = Maintenance)</param>
         /// <returns>true if success</returns>
         /// <exception cref="Exception"></exception>
-        public bool ChangeRoomStatus(string roomId, int newStatus)
+        public async Task<bool> ChangeRoomStatus(string roomId, int newStatus)
         {
             try
             {
                 using (var dbContext = new MyDbContext())
                 {
-                    var existingRoom = GetRoomById(roomId);
+                    var existingRoom =await GetRoomById(roomId);
                     Room rooms = new Room();
                     rooms.CopyProperties(existingRoom);
                     if (existingRoom == null)
@@ -162,7 +168,7 @@ namespace Repositories.RoomRepository
                     }
                     rooms.Status = newStatus;
                     dbContext.Entry(rooms).State = EntityState.Modified;
-                    dbContext.SaveChanges();
+                  await  dbContext.SaveChangesAsync();
                     return true;
                 }
             }

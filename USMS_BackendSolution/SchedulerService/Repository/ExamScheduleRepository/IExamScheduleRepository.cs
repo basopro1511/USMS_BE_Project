@@ -15,5 +15,8 @@ namespace SchedulerService.Repository.ExamScheduleRepository
         public Task<ExamScheduleDTO> GetExamScheduleById(int id);
         public Task<List<ExamScheduleDTO>> GetTeacherInExamSchedule(DateOnly date, TimeOnly startTime, TimeOnly endTime);
         public Task<bool> UpdateExamSchedule(ExamScheduleDTO examScheduleDTO);
-    }
+        public Task<List<ExamScheduleDTO>> GetExamScheduleForStudent(string studentId);
+        public Task<List<ExamScheduleDTO>> GetExamScheduleForTeacher(string teacherId);
+        public  Task<int> CountStudentInExamSchedule(int examScheduleId);
+        }
     }

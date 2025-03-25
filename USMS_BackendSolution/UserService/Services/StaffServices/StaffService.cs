@@ -1,51 +1,43 @@
-﻿using Azure;
-using BusinessObject;
+﻿using BusinessObject;
 using BusinessObject.ModelDTOs;
 using BusinessObject.Models;
-using Microsoft.EntityFrameworkCore;
-using NuGet.DependencyResolver;
+using NuGet.Protocol.Core.Types;
 using OfficeOpenXml;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
+using UserService.Repository.StaffRepository;
 using UserService.Repository.TeacherRepository;
 using UserService.Repository.UserRepository;
 using UserService.Services.CloudService;
-using UserService.Services.UserServices;
-using static System.Reflection.Metadata.BlobBuilder;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace UserService.Services.TeacherService
+namespace UserService.Services.StaffServices
     {
-    public class TeacherService
+    public class StaffService
         {
-        private readonly ITeacherRepository _repository;
+        private readonly IStaffRepository _repository;
         private readonly IUserRepository _userRepository;
 
-        public TeacherService()
+        public StaffService()
             {
-            _repository=new TeacherRepository();
-            _userRepository =new UserRepository();
+            _repository=new StaffRepository();
+            _userRepository=new UserRepository();
             }
 
-
-        #region Get All Teacher
+        #region Get All Staff
         /// <summary>
-        /// Get All Teacher from Database
+        /// Get All Staff from Database
         /// </summary>
         /// <param name="teacherDto"></param>
         /// <returns></returns>
-        public async Task<APIResponse> GetAllTeacher()
+        public async Task<APIResponse> GetAllStaff()
             {
             APIResponse aPIResponse = new APIResponse();
-            List<UserDTO> teachers = await _repository.GetAllTeacher();
+            List<UserDTO> staffs = await _repository.GetAllStaff();
             #region validation 
             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
             {
-                  (teachers == null, "Không tìm thấy giáo viên!"),
+                  (staffs == null, "Không tìm thấy nhân viên!"),
             };
             foreach (var validation in validations)
                 {
@@ -59,40 +51,7 @@ namespace UserService.Services.TeacherService
                     }
                 }
             #endregion
-            aPIResponse.Result=teachers;
-            return aPIResponse;
-            }
-        #endregion
-
-        #region Get All Teachers Available
-        /// <summary>
-        /// Get All Teacher Available from Database
-        /// </summary>
-        /// <param name="teacherDto"></param>
-        /// <returns></returns>
-        public async Task<APIResponse> GetAllTeacherAvailableByMajorId(string majorId)
-            {
-            APIResponse aPIResponse = new APIResponse();
-            List<UserDTO> teachers = await _repository.GetAllTeacherAvailableByMajorId(majorId);
-            #region validation 
-            List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
-            {
-                  (teachers == null, "Không tìm thấy giáo viên!"),
-            };
-            foreach (var validation in validations)
-                {
-                if (validation.condition)
-                    {
-                    return new APIResponse
-                        {
-                        IsSuccess=false,
-                        Message=validation.errorMessage
-                        };
-                    }
-                }
-            #endregion       
-            aPIResponse.IsSuccess=true;
-            aPIResponse.Result=teachers;
+            aPIResponse.Result=staffs;
             return aPIResponse;
             }
         #endregion
@@ -135,11 +94,6 @@ namespace UserService.Services.TeacherService
         #endregion
 
         #region Remove Diacritics 
-        /// <summary>
-        /// Xóa dấu và xóa ký tự Đ.
-        /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
         public string RemoveDiacritics(string text)
             {
             if (string.IsNullOrWhiteSpace(text))
@@ -154,28 +108,26 @@ namespace UserService.Services.TeacherService
                     sb.Append(c);
                     }
                 }
-            string result = sb.ToString().Normalize(NormalizationForm.FormC);
-            result=result.Replace("Đ", "D").Replace("đ", "d");
-            return result;
+            return sb.ToString().Normalize(NormalizationForm.FormC); // Trả về chuỗi không dấu
             }
         #endregion
 
-        #region Add New Teacher
+        #region Add New Staff
         /// <summary>
-        /// Add New Teacher Into Database
+        /// Add New Staff Into Database
         /// </summary>
         /// <param name="userDTO"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<APIResponse> AddNewTeacher(UserDTO userDTO)
+        public async Task<APIResponse> AddNewStaff(UserDTO userDTO)
             {
             try
                 {
                 APIResponse aPIResponse = new APIResponse();
-                var teachers = await _userRepository.GetAllUser();
+                var staffs = await _userRepository.GetAllUser();
                 #region 1. Validation
-                var existEmail = teachers.FirstOrDefault(x => x.Email==userDTO.Email);
-                var existPhone = teachers.FirstOrDefault(x => x.PhoneNumber==userDTO.PhoneNumber);
+                var existEmail = staffs.FirstOrDefault(x => x.Email==userDTO.Email);
+                var existPhone = staffs.FirstOrDefault(x => x.PhoneNumber==userDTO.PhoneNumber);
                 List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
             {
                   (!userDTO.PhoneNumber.All(char.IsDigit) || userDTO.PhoneNumber.Length != 10 || !userDTO.PhoneNumber.StartsWith("0"),
@@ -198,38 +150,34 @@ namespace UserService.Services.TeacherService
                         }
                     }
                 #endregion
-
-                #region 2. Generate TeacherID
-                //// 1.  Viết hoa chữ cái đầu của họ, tên, và tên đệm ví dụ nguyen quoc hoang => Nguyen Quoc Hoang
-                //string firstName = RemoveDiacritics(
-                //    CultureInfo.CurrentCulture.TextInfo.ToTitleCase(userDTO.FirstName.ToLower())
-                //);
-                //string lastName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(userDTO.LastName.ToLower().Substring(0, 1).Replace("Đ", "D").Replace("đ", "d")); ;
-                //string middleName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(userDTO.MiddleName.ToLower().Replace("Đ", "D").Replace("đ", "d"));
-                //// 2. Lấy chữ cái đầu tiên của mỗi phần trong MiddleName
-                //string secondMidName = "";
-                //var middleNameParts = userDTO.MiddleName.Split(' ');
-                //foreach (var part in middleNameParts)
-                //    {
-                //    if (!string.IsNullOrEmpty(part))
-                //        {
-                //        secondMidName+=part.Substring(0, 1).ToUpper().Replace("Đ", "D").Replace("đ", "d"); // Lấy chữ cái đầu tiên của từng phần trong MiddleName
-                //        }
-                //    }
-                //// 3. Tạo UserId ví dụ Nguyen Quoc Hoang => HoangNQ
-                //userDTO.UserId=firstName+lastName+secondMidName;
-                //// 4. Kiểm tra xem TeacherId này đã tồn tại trong cơ sở dữ liệu chưa (Check viết hoa hay viết thường)
-                //string baseUserId = userDTO.UserId; // Giữ lại UserId gốc để append số
-                ////var count = teachers.Count(u => u.UserId.Equals(userDTO.UserId, StringComparison.OrdinalIgnoreCase));
-                //int count = 0;
-                //while (teachers.Any(x=> x.UserId.Equals(userDTO.UserId, StringComparison.OrdinalIgnoreCase)))
-                //    {
-                //    count++;
-                //    userDTO.UserId=$"{baseUserId}{count:D2}"; // Luôn nối vào UserId gốc
-                //    }
+                #region 2. Generate StaffId
+                // 1.  Viết hoa chữ cái đầu của họ, tên, và tên đệm ví dụ nguyen quoc hoang => Nguyen Quoc Hoang
+                string firstName = RemoveDiacritics(
+                    CultureInfo.CurrentCulture.TextInfo.ToTitleCase(userDTO.FirstName.ToLower())
+                );
+                string lastName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(userDTO.LastName.ToLower().Substring(0, 1).Replace("Đ", "D").Replace("đ", "d")); ;
+                string middleName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(userDTO.MiddleName.ToLower().Replace("Đ", "D").Replace("đ", "d"));
+                // 2. Lấy chữ cái đầu tiên của mỗi phần trong MiddleName
+                string secondMidName = "";
+                var middleNameParts = userDTO.MiddleName.Split(' ');
+                foreach (var part in middleNameParts)
+                    {
+                    if (!string.IsNullOrEmpty(part))
+                        {
+                        secondMidName+=part.Substring(0, 1).ToUpper().Replace("Đ", "D").Replace("đ", "d"); // Lấy chữ cái đầu tiên của từng phần trong MiddleName
+                        }
+                    }
+                // 3. Tạo UserId ví dụ Nguyen Quoc Hoang => HoangNQ
+                userDTO.UserId=firstName+lastName+secondMidName;
+                // 4. Kiểm tra xem Stafff này đã tồn tại trong cơ sở dữ liệu chưa (Check viết hoa hay viết thường)
+                string baseUserId = userDTO.UserId; // Giữ lại UserId gốc để append số
+                int count = 0;
+                while (staffs.Any(x => x.UserId.Equals(userDTO.UserId, StringComparison.OrdinalIgnoreCase)))
+                    {
+                    count++;
+                    userDTO.UserId=$"{baseUserId}{count:D2}"; // Luôn nối vào UserId gốc
+                    }
                 #endregion
-
-                userDTO.UserId=await GenerateUserId(userDTO.FirstName, userDTO.MiddleName, userDTO.LastName);
                 #region 3. Save Image vào Cloud
                 CloudinaryService _cloudService = new CloudinaryService();
                 userDTO.UserAvartar=await _cloudService.UploadImageFromBase64(userDTO.UserAvartar);
@@ -237,22 +185,23 @@ namespace UserService.Services.TeacherService
                 //4. tạo Email trường                                             
                 userDTO.Email=userDTO.UserId+"@fpt.edu.vn";
                 //5. Default Fields
-                userDTO.RoleId=4; //Id teacher là 4
+                userDTO.RoleId=2; //Id staff là 2
                 userDTO.PasswordHash=HashPassword(userDTO.PasswordHash);
                 userDTO.Status=1; // 1 là đang hoạt động
-                bool isSuccess = await _repository.AddNewTeacher(userDTO);
+                userDTO.MajorId=null;
+                bool isSuccess = await _repository.AddNewStaff(userDTO);
                 if (isSuccess)
                     {
                     return new APIResponse
                         {
                         IsSuccess=true,
-                        Message="Thêm mới giáo viên thành công."
+                        Message="Thêm mới nhân viên thành công."
                         };
                     }
                 return new APIResponse
                     {
                     IsSuccess=false,
-                    Message="Thêm mới giáo viên thất bại."
+                    Message="Thêm mới nhân viên thất bại."
                     };
                 }
             catch (Exception ex)
@@ -266,27 +215,27 @@ namespace UserService.Services.TeacherService
             }
         #endregion
 
-        #region Update Teacher
+        #region Update Staff
         /// <summary>
-        /// Update Teacher information
+        /// Update Staff information
         /// </summary>
         /// <param name="userDTO"></param>
         /// <returns></returns>
-        public async Task<APIResponse> UpdateTeacher(UserDTO userDTO)
+        public async Task<APIResponse> UpdateStaff(UserDTO userDTO)
             {
             APIResponse aPIResponse = new APIResponse();
-            var teachers = await _userRepository.GetAllUser();
-            var teacher = teachers.FirstOrDefault(x => x.UserId==userDTO.UserId);
+            var staffs = await _userRepository.GetAllUser();
+            var staff = await _userRepository.GetUserById(userDTO.UserId);
             #region 1. Validation
-            var existEmail = teachers.FirstOrDefault(x => x.Email==userDTO.Email);
-            var existPhone = teachers.FirstOrDefault(x => x.PhoneNumber==userDTO.PhoneNumber);
+            var existEmail = staffs.FirstOrDefault(x => x.Email==userDTO.Email);
+            var existPhone = staffs.FirstOrDefault(x => x.PhoneNumber==userDTO.PhoneNumber);
             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
             {
                   (!userDTO.PhoneNumber.All(char.IsDigit) || userDTO.PhoneNumber.Length != 10 || !userDTO.PhoneNumber.StartsWith("0"),
                   "Số điện thoại phải có 10 số và bắt đầu bằng một số từ 0 (ví dụ: 0901234567)."),
                   (!IsValidEmail(userDTO.PersonalEmail), "Vui lòng nhập địa chỉ email hợp lệ (ví dụ: example@example.com)."),
                   (userDTO.DateOfBirth > DateOnly.FromDateTime(DateTime.Now), "Ngày sinh không thể là ngày trong tương lai."),
-                  (teacher == null, "Không tìm thấy giáo viên cần cập nhật")
+                  (staff == null, "Không tìm thấy nhân viên cần cập nhật")
             };
             foreach (var validation in validations)
                 {
@@ -300,7 +249,6 @@ namespace UserService.Services.TeacherService
                     }
                 }
             #endregion
-            #region 3. Save Image vào Cloud
             // Nếu UserAvartar không null và bắt đầu bằng "data:" thì upload ảnh mới
             if (!string.IsNullOrEmpty(userDTO.UserAvartar)&&userDTO.UserAvartar.StartsWith("data:"))
                 {
@@ -309,29 +257,29 @@ namespace UserService.Services.TeacherService
                 }
             else
                 {
-                userDTO.UserAvartar=teacher.UserAvartar;
+                userDTO.UserAvartar=staff.UserAvartar;
                 }
-            #endregion
-            bool isSuccess = await _repository.UpdateTeacher(userDTO);
+            userDTO.MajorId=null;
+            bool isSuccess = await _repository.UpdateStaff(userDTO);
             if (isSuccess)
                 {
                 return new APIResponse
                     {
                     IsSuccess=true,
-                    Message="Cập nhật thông tin giáo viên thành công."
+                    Message="Cập nhật thông tin nhân viên thành công."
                     };
                 }
             return new APIResponse
                 {
                 IsSuccess=false,
-                Message="Cập nhật thông tin giáo viên thất bại."
+                Message="Cập nhật thông tin nhân viên thất bại."
                 };
             }
         #endregion
 
-        #region Generate Teacher Id
+        #region Generate StaffId
         /// <summary>
-        /// Use to generate Teacher Id
+        /// Use to generate Staff Id
         /// </summary>
         /// <param name="firstName"></param>
         /// <param name="middleName"></param>
@@ -339,7 +287,7 @@ namespace UserService.Services.TeacherService
         /// <returns></returns>
         private async Task<string> GenerateUserId(string firstName, string middleName, string lastName)
             {
-            var teachers = await _repository.GetAllTeacher();
+            var staffs = await _userRepository.GetAllUser();
             // 1.  Viết hoa chữ cái đầu của họ, tên, và tên đệm ví dụ nguyen quoc hoang => Nguyen Quoc Hoang
             string firstNameGenerate = RemoveDiacritics(
                 CultureInfo.CurrentCulture.TextInfo.ToTitleCase(firstName.ToLower())
@@ -360,9 +308,9 @@ namespace UserService.Services.TeacherService
             string userId = firstNameGenerate+lastNameGenerate+secondMidName;
             // 4. Kiểm tra xem TeacherId này đã tồn tại trong cơ sở dữ liệu chưa (Check viết hoa hay viết thường)
             string baseUserId = userId; // Giữ lại UserId gốc để append số
-                                                //var count = teachers.Count(u => u.UserId.Equals(userDTO.UserId, StringComparison.OrdinalIgnoreCase));
+                                        //var count = teachers.Count(u => u.UserId.Equals(userDTO.UserId, StringComparison.OrdinalIgnoreCase));
             int count = 0;
-            while (teachers.Any(x => x.UserId.Equals(userId, StringComparison.OrdinalIgnoreCase)))
+            while (staffs.Any(x => x.UserId.Equals(userId, StringComparison.OrdinalIgnoreCase)))
                 {
                 count++;
                 userId=$"{baseUserId}{count:D2}"; // Luôn nối vào UserId gốc
@@ -373,11 +321,11 @@ namespace UserService.Services.TeacherService
 
         #region Import from Excel
         /// <summary>
-        /// Import Teacher Information by Excel
+        /// Import Staff Information by Excel
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        public async Task<APIResponse> ImportTeachersFromExcel(IFormFile file)
+        public async Task<APIResponse> ImportStaffsFromExcel(IFormFile file)
             {
             try
                 {
@@ -385,7 +333,7 @@ namespace UserService.Services.TeacherService
                     {
                     return new APIResponse { IsSuccess=false, Message="File không hợp lệ." };
                     }
-                var teachers = new List<User>();
+                var staffs = new List<User>();
                 ExcelPackage.LicenseContext=LicenseContext.NonCommercial;
                 using (var stream = new MemoryStream())
                     {
@@ -406,14 +354,14 @@ namespace UserService.Services.TeacherService
                                 PersonalEmail=worksheet.Cells[row, 6].Text,
                                 PhoneNumber=worksheet.Cells[row, 7].Text,
                                 DateOfBirth=DateOnly.ParseExact(worksheet.Cells[row, 8].Text, "dd/MM/yyyy", CultureInfo.InvariantCulture),
-                                RoleId=4,
-                                MajorId=worksheet.Cells[row, 9].Text,
+                                RoleId=2,
+                                MajorId=null,
                                 Status=1,
-                                Address=worksheet.Cells[row, 10].Text,
+                                Address=worksheet.Cells[row, 9].Text,
                                 CreatedAt=DateTime.Now,
                                 UpdatedAt=DateTime.Now
                                 };
-                                string stt = worksheet.Cells[row, 1].Text;
+                            string stt = worksheet.Cells[row, 1].Text;
                             #region 1. Validation                                      
                             var teachersCheck = await _userRepository.GetAllUser();
                             var existEmail = teachersCheck.FirstOrDefault(x => x.Email==user.Email);
@@ -441,16 +389,16 @@ namespace UserService.Services.TeacherService
                             #endregion
                             user.UserId=await GenerateUserId(user.FirstName, user.MiddleName, user.LastName);
                             user.Email=user.UserId+"@fpt.edu.vn";
-                            teachers.Add(user);
+                            staffs.Add(user);
                             }
                         }
                     }
-                bool isSuccess = await _repository.AddTeachersAsync(teachers);
+                bool isSuccess = await _repository.AddStaffsAsync(staffs);
                 if (isSuccess)
                     {
-                    return new APIResponse { IsSuccess=true, Message="Import giáo viên thành công." };
+                    return new APIResponse { IsSuccess=true, Message="Import nhân viên thành công." };
                     }
-                return new APIResponse { IsSuccess=false, Message="Import giáo viên thất bại." };
+                return new APIResponse { IsSuccess=false, Message="Import nhân viên thất bại." };
                 }
             catch (Exception ex)
                 {
@@ -458,7 +406,6 @@ namespace UserService.Services.TeacherService
                 }
             }
         #endregion
-
         }
     }
 

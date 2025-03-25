@@ -420,5 +420,95 @@ namespace SchedulerService.Repository.ExamScheduleRepository
             }
         #endregion
 
+        #region Get Exam Schedule for Student by StudentId
+        /// <summary>
+        /// Get Exam Schedule Data for Student Id
+        /// </summary>
+        /// <param name="studentId"></param>
+        /// <returns></returns>
+        public async Task<List<ExamScheduleDTO>> GetExamScheduleForStudent(string studentId)
+            {
+            try
+                {
+                using (var dbContext = new MyDbContext())
+                    {
+                    var examSchedule = await dbContext.StudentInExamSchedule.Where(s => s.StudentId==studentId).ToListAsync();  // lay danh sach phong thi cua sinh vien
+                    List<ExamScheduleDTO> examSchedules = new List<ExamScheduleDTO>();
+                    foreach (var item in examSchedule)
+                        {
+                        var studentExam = await dbContext.ExamSchedule.FirstOrDefaultAsync(x => x.ExamScheduleId==item.ExamScheduleId && x.Status == 1);
+                        if (studentExam!=null)
+                            {
+                            ExamScheduleDTO examScheduleDTO = new ExamScheduleDTO();
+                            examScheduleDTO.CopyProperties(studentExam);
+                            examSchedules.Add(examScheduleDTO);
+                            await dbContext.SaveChangesAsync();
+                            }
+                        }
+                    return examSchedules;
+                    }
+                }
+            catch (Exception)
+                {
+                throw;
+                }
+            }
+        #endregion
+
+        #region Get Exam Schedule for Teacher by Teacher
+        /// <summary>
+        /// Get Exam Schedule Data for Teacher 
+        /// </summary>
+        /// <param name="studentId"></param>
+        /// <returns></returns>
+        public async Task<List<ExamScheduleDTO>> GetExamScheduleForTeacher(string teacherId)
+            {
+            try
+                {
+                using (var dbContext = new MyDbContext())
+                    {
+                    var examSchedule = await dbContext.ExamSchedule.Where(t => t.TeacherId==teacherId&&t.Status==1).ToListAsync();
+                    List<ExamScheduleDTO> examScheduleDTOs = new List<ExamScheduleDTO>();
+                    foreach (var item in examSchedule)
+                        {
+                        ExamScheduleDTO examScheduleDTO = new ExamScheduleDTO();
+                        examScheduleDTO.CopyProperties(item);
+                        examScheduleDTOs.Add(examScheduleDTO);
+                        await dbContext.SaveChangesAsync();
+                        }
+                    return examScheduleDTOs;
+                    }
+                }
+            catch (Exception)
+                {
+                throw;
+                }
+            }
+        #endregion
+
+        #region Count number of Student in Exam Schedule Class
+        /// <summary>
+        /// Count number of Student In Exam Schedule to get range of Class Exam
+        /// </summary>
+        /// <param name="examScheduleId"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<int> CountStudentInExamSchedule(int examScheduleId)
+            {
+            try
+                {
+                int count = 0;
+                using (var dbContext = new MyDbContext())
+                    {
+                    count=await dbContext.StudentInExamSchedule.CountAsync(s => s.ExamScheduleId==examScheduleId);
+                    }
+                return count;
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
         }
     }

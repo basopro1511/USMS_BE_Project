@@ -22,6 +22,7 @@ namespace BusinessObject.Models
         public int Term { get; set; }
         [JsonIgnore]
         public Major? Major { get; set; }
+        [JsonIgnore]
         public virtual User? User { get; set; }
         }
     }

@@ -3,8 +3,10 @@ using Repositories.ScheduleRepository;
 using SchedulerDataAccess.Services.SchedulerServices;
 using SchedulerService.Repository.ExamScheduleRepository;
 using SchedulerService.Repository.SlotRepository;
+using SchedulerService.Repository.StudentInExamScheduleRepository;
 using SchedulerService.Services.ExamScheduleServices;
 using SchedulerService.Services.SlotServices;
+using SchedulerService.Services.StudentInExamScheduleServices;
 using Services.RoomServices;
 
 namespace SchedulerDataAccess.Core
@@ -18,6 +20,7 @@ namespace SchedulerDataAccess.Core
             services.AddScoped<IRoomRepository, RoomRepository>();
             services.AddScoped<IExamScheduleRepository, ExamScheduleRepository>();
             services.AddScoped<ISlotRepository, SlotRepository>();
+            services.AddScoped<IStudentInExamScheduleRepository, StudentInExamScheduleRepository>();
             #endregion
 
             #region Register Service
@@ -26,6 +29,7 @@ namespace SchedulerDataAccess.Core
             services.AddScoped<RoomService>();
             services.AddScoped<ExamScheduleService>();
             services.AddScoped<SlotService>();
+            services.AddScoped<StudentInExamScheduleService>();
             #endregion
         }
     }

@@ -17,10 +17,10 @@ namespace UserService.Controllers.MajorController
 
         // GET: api/Rooms
         [HttpGet]
-        public APIResponse GetAllRoom()
+        public async Task<APIResponse> GetAllRoom()
         {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _service.GetAllMajor();
+            aPIResponse = await _service.GetAllMajor();
             return aPIResponse;
         }
     }

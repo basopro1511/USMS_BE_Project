@@ -4,6 +4,6 @@ namespace UserService.Repository.MajorRepository
 {
     public interface IMajorRepository
     {
-        public List<MajorDTO> GetAllMajor();
+        public Task<List<MajorDTO>> GetAllMajor();
     }
 }

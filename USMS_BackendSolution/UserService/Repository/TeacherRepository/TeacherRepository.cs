@@ -3,6 +3,9 @@ using BusinessObject.ModelDTOs;
 using BusinessObject.Models;
 using ISUZU_NEXT.Server.Core.Extentions;
 using Microsoft.EntityFrameworkCore;
+using NuGet.DependencyResolver;
+using OfficeOpenXml;
+using System.Globalization;
 
 namespace UserService.Repository.TeacherRepository
     {
@@ -27,7 +30,7 @@ namespace UserService.Repository.TeacherRepository
                         UserDTO userDTO = new UserDTO();
                         userDTO.CopyProperties(item);
                         userDTOs.Add(userDTO);
-                        dbcontext.SaveChanges();
+                        await dbcontext.SaveChangesAsync();
                         }
                     return userDTOs;
                     }
@@ -118,5 +121,28 @@ namespace UserService.Repository.TeacherRepository
             }
         #endregion
 
+        #region Add List User ( use for Import Excel )
+        /// <summary>
+        /// Add Range from excel
+        /// </summary>
+        /// <param name="teachers"></param>
+        /// <returns></returns>
+        public async Task<bool> AddTeachersAsync(List<User> teachers)
+            {
+            try
+                {
+                using (var _db = new MyDbContext())
+                    {
+                    await _db.User.AddRangeAsync(teachers);
+                    await _db.SaveChangesAsync();
+                    return true;
+                    }
+                }
+            catch (Exception)
+                {
+                throw;
+                }
+            }
+        #endregion
         }
     }

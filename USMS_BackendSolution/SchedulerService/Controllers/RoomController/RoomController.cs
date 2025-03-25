@@ -19,61 +19,61 @@ namespace SchedulerService.Controllers.RoomController
 
         // GET: api/Rooms
         [HttpGet]
-        public APIResponse GetAllRoom()
+        public async Task<APIResponse> GetAllRoom()
         {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _roomService.GetAllRooms();
+            aPIResponse =await _roomService.GetAllRooms();
             return aPIResponse;
         }
 
         //GET: api/Rooms/{Id}
         [HttpGet("{id}")]
-        public APIResponse GetRoomById(string id)
+        public async Task<APIResponse> GetRoomById(string id)
         {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _roomService.GetRoomById(id);
+            aPIResponse =await _roomService.GetRoomById(id);
             return aPIResponse;
         }
 
         //POST: api/Rooms
         [HttpPost]
-        public APIResponse AddNewRoom(RoomDTO roomDTO)
+        public async Task<APIResponse> AddNewRoom(RoomDTO roomDTO)
         {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _roomService.AddNewRoom(roomDTO);
+            aPIResponse =await _roomService.AddNewRoom(roomDTO);
             return aPIResponse;
         }
 
         //PUT: api/Rooms
         [HttpPut]
-        public APIResponse UpdateRoom(RoomDTO room)
+        public async Task<APIResponse> UpdateRoom(RoomDTO room)
         {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _roomService.UpdateRoom(room);
+            aPIResponse =await _roomService.UpdateRoom(room);
             return aPIResponse;
         }
         //PUT: api/Rooms
         [HttpDelete("{id}")]
-        public APIResponse DeleteRoom(string id)
+        public async Task<APIResponse> DeleteRoom(string id)
         {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _roomService.DeleteRoom(id);
+            aPIResponse =await _roomService.DeleteRoom(id);
             return aPIResponse;
         }
 
         [HttpGet("ChangeStatus/{id}/{status}")]
-        public APIResponse ChangeStatusRoomDisable(string id, int status)
+        public async Task<APIResponse> ChangeStatusRoomDisable(string id, int status)
         {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _roomService.ChangeRoomStatus(id,status);
+            aPIResponse =await _roomService.ChangeRoomStatus(id,status);
             return aPIResponse;
         }
 
         [HttpGet("AvailableRooms/{date}/{slotId}")]
-        public APIResponse GetAvailableRooms(DateOnly date,int slotId)
+        public async Task<APIResponse> GetAvailableRooms(DateOnly date,int slotId)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = _roomService.GetAvailableRooms(date, slotId);
+            aPIResponse =await _roomService.GetAvailableRooms(date, slotId);
             return aPIResponse;
             }
 

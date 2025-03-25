@@ -26,10 +26,10 @@ namespace Services.RoomServices
         /// Retrive all Rooms in Database
         /// </summary>
         /// <returns>a list of all Rooms in DB</returns>
-        public APIResponse GetAllRooms()
+        public async Task<APIResponse> GetAllRooms()
         {
             APIResponse aPIResponse = new APIResponse();
-            List<RoomDTO> rooms = _roomRepository.GetAllRooms();
+            List<RoomDTO> rooms =await _roomRepository.GetAllRooms();
             if (rooms == null)
             {
                 aPIResponse.IsSuccess = false;
@@ -46,10 +46,10 @@ namespace Services.RoomServices
         /// </summary>
         /// <param name="id"></param>
         /// <returns>a Room by Id</returns>
-        public APIResponse GetRoomById(string id)
+        public async Task<APIResponse> GetRoomById(string id)
         {
             APIResponse aPIResponse = new APIResponse();
-            RoomDTO room = _roomRepository.GetRoomById(id);
+            RoomDTO room = await _roomRepository.GetRoomById(id);
             if (room == null)
             {
                 aPIResponse.IsSuccess = false;
@@ -65,10 +65,10 @@ namespace Services.RoomServices
         /// Add New Room to databse
         /// </summary>
         /// <param name="room"></param>
-        public APIResponse AddNewRoom(RoomDTO room)
+        public async Task<APIResponse> AddNewRoom(RoomDTO room)
         {
             APIResponse aPIResponse = new APIResponse();
-            RoomDTO existingRoom = _roomRepository.GetRoomById(room.RoomId);
+            RoomDTO existingRoom =await _roomRepository.GetRoomById(room.RoomId);
             if (existingRoom != null)
             {
                 return new APIResponse
@@ -88,7 +88,7 @@ namespace Services.RoomServices
                     Message = "Mã phòng học không thể dài hơn 6 ký tự"
                 };
             }
-            bool isAdded = _roomRepository.AddNewRoom(room);
+            bool isAdded =await _roomRepository.AddNewRoom(room);
             if (isAdded)
             {
                 return new APIResponse
@@ -110,10 +110,10 @@ namespace Services.RoomServices
         /// Udate Room in databse
         /// </summary>
         /// <param name="room"></param>
-        public APIResponse UpdateRoom(RoomDTO room)
+        public async Task<APIResponse> UpdateRoom(RoomDTO room)
         {
             APIResponse aPIResponse = new APIResponse();
-            RoomDTO existingRoom = _roomRepository.GetRoomById(room.RoomId);
+            RoomDTO existingRoom =await _roomRepository.GetRoomById(room.RoomId);
             if (existingRoom == null)
             {
                 return new APIResponse
@@ -126,7 +126,7 @@ namespace Services.RoomServices
             { // Check If isOnlnie is false the Online URL will be null 
                 room.OnlineURL = null;
             }
-            bool isUpdate = _roomRepository.UpdateRoom(room);
+            bool isUpdate =await _roomRepository.UpdateRoom(room);
             if (isUpdate)
             {
                 return new APIResponse
@@ -149,10 +149,10 @@ namespace Services.RoomServices
         /// </summary>
         /// <param name="roomId"></param>
         /// <returns>APIResponse</returns>
-        public APIResponse DeleteRoom(string roomId)
+        public async Task<APIResponse> DeleteRoom(string roomId)
         {
             APIResponse aPIResponse = new APIResponse();
-            RoomDTO existingRoom = _roomRepository.GetRoomById(roomId);
+            RoomDTO existingRoom =await _roomRepository.GetRoomById(roomId);
             if (existingRoom == null)
             {
                 return new APIResponse
@@ -161,7 +161,7 @@ namespace Services.RoomServices
                     Message = "Mã phòng học được cung cấp đã tồn tại!"
                 };
             }
-            bool isDeleted = _roomRepository.DeleteRoom(roomId);
+            bool isDeleted =await _roomRepository.DeleteRoom(roomId);
             if (isDeleted)
             {
                 return new APIResponse
@@ -185,10 +185,10 @@ namespace Services.RoomServices
         /// <param name="id">Room ID</param>
         /// <param name="newStatus">New status to set ( 0 = Disable, 1 = Available, 2 = Maintenance)</param>
         /// <returns>APIResponse</returns>
-        public APIResponse ChangeRoomStatus(string id, int newStatus)
+        public async Task<APIResponse> ChangeRoomStatus(string id, int newStatus)
         {
             APIResponse aPIResponse = new APIResponse();
-            RoomDTO existingRoom = _roomRepository.GetRoomById(id);
+            RoomDTO existingRoom =await _roomRepository.GetRoomById(id);
             if (existingRoom == null)
             {
                 return new APIResponse
@@ -197,7 +197,7 @@ namespace Services.RoomServices
                     Message = "Mã phòng học được cung cấp không tồn tại."
                 };
             }
-            bool isSuccess = _roomRepository.ChangeRoomStatus(id, newStatus);
+            bool isSuccess = await _roomRepository.ChangeRoomStatus(id, newStatus);
             if (isSuccess)
             {
                 if (newStatus == 0)
@@ -241,12 +241,12 @@ namespace Services.RoomServices
         /// <param name="date">Ngày</param>
         /// <param name="slotId">Slot (tiết)</param>
         /// <returns>APIResponse với Result = danh sách phòng (List<Room>)</returns>
-        public APIResponse GetAvailableRooms(DateOnly date, int slotId)
+        public async Task<APIResponse> GetAvailableRooms(DateOnly date, int slotId)
             {
             APIResponse response = new APIResponse();
             try
                 {
-                var allRooms = _roomRepository.GetAllRooms();
+                var allRooms =await _roomRepository.GetAllRooms();
                 if(allRooms == null || allRooms.Count == 0)
                     {
                     response.IsSuccess = false;

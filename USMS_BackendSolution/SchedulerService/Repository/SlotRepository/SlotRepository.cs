@@ -14,19 +14,18 @@ namespace SchedulerService.Repository.SlotRepository
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public List<TimeSlotDTO> getAllTimeSlot()
+        public async Task<List<TimeSlotDTO>> getAllTimeSlot()
         {
 			try
 			{
 				using (var dbcontext = new MyDbContext())
 				{
-                    List<TimeSlot> timeSlots = dbcontext.TimeSlot.ToList();
+                    List<TimeSlot> timeSlots =await dbcontext.TimeSlot.ToListAsync();
                     List<TimeSlotDTO> timeSlotDTOs = new List<TimeSlotDTO>(); 
                     foreach (var timeSlot in timeSlots) { 
                     TimeSlotDTO timeSlotDTO = new TimeSlotDTO();
                         timeSlotDTO.CopyProperties(timeSlot);
                         timeSlotDTOs.Add(timeSlotDTO);
-                        dbcontext.SaveChanges();
                     }
                     return timeSlotDTOs;
 				}
@@ -45,13 +44,17 @@ namespace SchedulerService.Repository.SlotRepository
         /// <param name="id"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public TimeSlotDTO GetTimeSlotById(int id)
+        public async Task<TimeSlotDTO> GetTimeSlotById(int id)
         {
             try
             {
-                var timeSlots = getAllTimeSlot();
-                TimeSlotDTO timeSlot = timeSlots.FirstOrDefault(x => x.SlotId == id);
-                return timeSlot;
+                using (var _db = new MyDbContext())
+                    {
+                    var timeSlot = _db.TimeSlot.FirstOrDefault(x => x.SlotId==id); 
+                    TimeSlotDTO? timeSlotDTO = new TimeSlotDTO();
+                    timeSlotDTO.CopyProperties(timeSlot);
+                    return timeSlotDTO;
+                    }
             }
             catch (Exception ex)
             {
@@ -66,7 +69,7 @@ namespace SchedulerService.Repository.SlotRepository
         /// </summary>
         /// <param name="timeSlotDTO"></param>
         /// <returns>>true if success</returns>
-        public bool AddNewTimeSlot(TimeSlotDTO timeSlotDTO)
+        public async Task<bool> AddNewTimeSlot(TimeSlotDTO timeSlotDTO)
         {
             try
             {
@@ -75,8 +78,8 @@ namespace SchedulerService.Repository.SlotRepository
                     var timeSlot = new TimeSlot();
                     timeSlot.CopyProperties(timeSlotDTO);
                     timeSlot.Status = 0; // Khi vừa tạo sẽ mặc định trạng thái là vô hiệu hóa
-                    dbContext.TimeSlot.Add(timeSlot);
-                    dbContext.SaveChanges();
+                    await dbContext.TimeSlot.AddAsync(timeSlot);
+                    await dbContext.SaveChangesAsync();
                     return true;
                 }
             }
@@ -93,7 +96,7 @@ namespace SchedulerService.Repository.SlotRepository
         /// </summary>
         /// <param name="timeSlotDTO"></param>
         /// <returns>>true if success</returns>
-        public bool UpdateTimeSlot (TimeSlotDTO timeSlotDTO)
+        public async Task<bool> UpdateTimeSlot (TimeSlotDTO timeSlotDTO)
         {
             try
             {
@@ -107,7 +110,7 @@ namespace SchedulerService.Repository.SlotRepository
                         return false;
                     }
                     dbContext.Entry(timeSlot).State = EntityState.Modified;
-                    dbContext.SaveChanges();
+                await dbContext.SaveChangesAsync();
                     return true;
                 }
             }
@@ -126,13 +129,13 @@ namespace SchedulerService.Repository.SlotRepository
         /// <param name="newStatus"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public bool ChangeTimeSlotStatus(int slotId, int newStatus)
+        public async Task<bool> ChangeTimeSlotStatus(int slotId, int newStatus)
         {
             try
             {
                 using (var dbContext = new MyDbContext())
                 {
-                    var existingTimeSlot = GetTimeSlotById(slotId);
+                    var existingTimeSlot =await GetTimeSlotById(slotId);
                     TimeSlot timeSlot = new TimeSlot();
                     timeSlot.CopyProperties(existingTimeSlot);
                     if (existingTimeSlot == null)
@@ -141,7 +144,7 @@ namespace SchedulerService.Repository.SlotRepository
                     }
                     timeSlot.Status = newStatus;
                     dbContext.Entry(timeSlot).State = EntityState.Modified;
-                    dbContext.SaveChanges();
+                 await   dbContext.SaveChangesAsync();
                     return true;
                 }
             }

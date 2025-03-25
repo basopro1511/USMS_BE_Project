@@ -17,10 +17,10 @@ namespace SchedulerService.Services.SlotServices
         /// Retrive all Rooms in Database
         /// </summary>
         /// <returns>a list of all Rooms in DB</returns>
-        public APIResponse GetAllSlots()
+        public async Task<APIResponse> GetAllSlots()
         {
             APIResponse aPIResponse = new APIResponse();
-            List<TimeSlotDTO> slots = _slotRepository.getAllTimeSlot();
+            List<TimeSlotDTO> slots =await _slotRepository.getAllTimeSlot();
             if (slots == null)
             {
                 aPIResponse.IsSuccess = false;
@@ -37,10 +37,10 @@ namespace SchedulerService.Services.SlotServices
         /// </summary>
         /// <param name="id"></param>
         /// <returns>a TimeSlot by Id</returns>
-        public APIResponse GetSlotById(int id)
+        public async Task<APIResponse> GetSlotById(int id)
         {
             APIResponse aPIResponse = new APIResponse();
-            TimeSlotDTO slot = _slotRepository.GetTimeSlotById(id);
+            TimeSlotDTO slot = await _slotRepository.GetTimeSlotById(id);
             if (slot == null)
             {
                 aPIResponse.IsSuccess = false;
@@ -56,10 +56,10 @@ namespace SchedulerService.Services.SlotServices
         /// Add New TimeSlot to databse
         /// </summary>
         /// <param name="room"></param>
-        public APIResponse AddNewSlot(TimeSlotDTO slot)
+        public async Task<APIResponse> AddNewSlot(TimeSlotDTO slot)
         {
             APIResponse aPIResponse = new APIResponse();
-            TimeSlotDTO existingSlot = _slotRepository.GetTimeSlotById(slot.SlotId);
+            TimeSlotDTO existingSlot = await _slotRepository.GetTimeSlotById(slot.SlotId);
             if (existingSlot != null)
             {
                 return new APIResponse
@@ -69,7 +69,7 @@ namespace SchedulerService.Services.SlotServices
                 };
             }
           
-            bool isAdded = _slotRepository.AddNewTimeSlot(slot);
+            bool isAdded = await _slotRepository.AddNewTimeSlot(slot);
             if (isAdded)
             {
                 return new APIResponse
@@ -91,10 +91,10 @@ namespace SchedulerService.Services.SlotServices
         /// Udate TimeSlot in databse
         /// </summary>
         /// <param name="slot"></param>
-        public APIResponse UpdateTimeSlot(TimeSlotDTO slot)
+        public async Task<APIResponse> UpdateTimeSlot(TimeSlotDTO slot)
         {
             APIResponse aPIResponse = new APIResponse();
-            TimeSlotDTO existingSlot = _slotRepository.GetTimeSlotById(slot.SlotId);
+            TimeSlotDTO existingSlot = await _slotRepository.GetTimeSlotById(slot.SlotId);
             if (existingSlot == null)
             {
                 return new APIResponse
@@ -103,7 +103,7 @@ namespace SchedulerService.Services.SlotServices
                     Message = "Mã buổi học được cung cấp không tồn tại!"
                 };
             }
-            bool isUpdate = _slotRepository.UpdateTimeSlot(slot);
+            bool isUpdate =await _slotRepository.UpdateTimeSlot(slot);
             if (isUpdate)
             {
                 return new APIResponse
@@ -128,10 +128,10 @@ namespace SchedulerService.Services.SlotServices
         /// <param name="id">TimeSlot ID</param>
         /// <param name="newStatus">New status to set ( 0 = Disable, 1 = Available)</param>
         /// <returns>APIResponse</returns>
-        public APIResponse ChangeSlotStatus(int id, int newStatus)
+        public async Task<APIResponse> ChangeSlotStatus(int id, int newStatus)
         {
             APIResponse aPIResponse = new APIResponse();
-            TimeSlotDTO existingSlot = _slotRepository.GetTimeSlotById(id);
+            TimeSlotDTO existingSlot = await _slotRepository.GetTimeSlotById(id);
             if (existingSlot == null)
             {
                 return new APIResponse
@@ -140,7 +140,7 @@ namespace SchedulerService.Services.SlotServices
                     Message = "Mã buổi học được cung cấp không tồn tại!"
                 };
             }
-            bool isSuccess = _slotRepository.ChangeTimeSlotStatus(id, newStatus);
+            bool isSuccess = await _slotRepository.ChangeTimeSlotStatus(id, newStatus);
             if (isSuccess)
             {
                 if (newStatus == 0)
