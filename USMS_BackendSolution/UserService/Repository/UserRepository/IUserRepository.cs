@@ -1,5 +1,6 @@
 ﻿using BusinessObject.ModelDTOs;
 using BusinessObject.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,5 +21,14 @@ namespace UserService.Repository.UserRepository
         //public bool UpdateStudentStatus(string id, int status);
         //#endregion
 
+        #region Reset password 
+        /// <summary>
+        /// Reset password for user
+        /// </summary>
+        /// <param name="resetPasswordDTO"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public Task<bool> ResetPassword(ResetPasswordDTO resetPasswordDTO);
+        #endregion
         }
     }

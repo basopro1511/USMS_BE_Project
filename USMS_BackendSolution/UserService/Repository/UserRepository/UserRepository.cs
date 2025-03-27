@@ -229,5 +229,33 @@ namespace UserService.Repository.UserRepository
         //    }
         //#endregion 
 
+        #region Reset password 
+        /// <summary>
+        /// Reset password for user
+        /// </summary>
+        /// <param name="resetPasswordDTO"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<bool> ResetPassword(ResetPasswordDTO resetPasswordDTO)
+            {
+            try
+                {
+                using (var _db = new MyDbContext())
+                    {
+                    var user = await _db.User.FirstOrDefaultAsync(x => x.UserId==resetPasswordDTO.UserId);
+                    if (user==null) return false;
+                    user.PasswordHash=resetPasswordDTO.newPassword;
+                    _db.Entry(user).State = EntityState.Modified;
+                     await _db.SaveChangesAsync();
+                    return true;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
         }
     }

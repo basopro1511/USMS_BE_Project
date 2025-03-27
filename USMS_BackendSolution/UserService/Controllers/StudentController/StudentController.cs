@@ -7,7 +7,7 @@ namespace UserService.Controllers.StudentController
 {
     [Microsoft.AspNetCore.Mvc.Route("api/[controller]")]
     [ApiController]
-    public class StudentController : Controller
+    public class StudentController : ControllerBase
     {
         private readonly StudentService _service;
         public StudentController(StudentService studentService)

@@ -24,7 +24,7 @@ namespace UserService.Controllers.AuthController
             _loginService=loginService;
             }
 
-        [HttpPost("login")]
+        [HttpPost]
         public async Task<APIResponse> Login([FromBody] LoginDTO model)
             {
             APIResponse aPIResponse = new APIResponse();

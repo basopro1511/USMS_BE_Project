@@ -18,7 +18,7 @@ namespace UserService.Services.StaffServices
         private readonly IStaffRepository _repository;
         private readonly IUserRepository _userRepository;
 
-        public StaffService()
+        public StaffService()                                                               
             {
             _repository=new StaffRepository();
             _userRepository=new UserRepository();
@@ -406,6 +406,7 @@ namespace UserService.Services.StaffServices
                 }
             }
         #endregion
+
         }
     }
 

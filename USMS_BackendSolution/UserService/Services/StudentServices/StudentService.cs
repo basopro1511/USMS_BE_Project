@@ -10,6 +10,7 @@ using System.Text;
 using UserService.Repository.StudentRepository;
 using UserService.Repository.UserRepository;
 using UserService.Services.CloudService;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 namespace UserService.Services.StudentServices
     {
@@ -487,6 +488,14 @@ namespace UserService.Services.StudentServices
             using (var _db= new MyDbContext())
                 {
                 var student = await _db.Student.FirstOrDefaultAsync(x => x.StudentId==userId);
+                if (student==null)
+                    {
+                    return new APIResponse
+                        {
+                        IsSuccess=false,
+                        Message="Không tìm thấy sinh viên"
+                        };
+                    }
                 user.Term=student.Term;
                 }
             #region validation 

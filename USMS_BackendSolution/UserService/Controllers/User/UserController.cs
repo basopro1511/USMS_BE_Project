@@ -25,6 +25,7 @@ namespace UserService.Controllers.User
             aPIResponse =await _userService.GetAllUser();
             return aPIResponse;
         }
+
         // GET: api/User/{id}
         [HttpGet("{id}")]
         public async Task<APIResponse> GetUserById(string id)
@@ -33,6 +34,14 @@ namespace UserService.Controllers.User
             aPIResponse = await _userService.GetUserById(id);
             return aPIResponse;
         }
+
+        [HttpPut("ResetPassword")]
+        public async Task<APIResponse> ResetPassword(ResetPasswordDTO resetPasswordDTO)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse = await _userService.ResetPassword(resetPasswordDTO);
+            return aPIResponse;
+            }
 
         //#region  old
         //// POST: api/User

@@ -3,6 +3,7 @@ using BusinessObject.ModelDTOs;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using UserService.Repository.UserRepository;
 
@@ -18,6 +19,23 @@ namespace UserService.Services.LoginServices
             _userRepository=new UserRepository(); // Direct instantiation
             _config=config;
             }
+
+        #region HashPassword
+        /// <summary>
+        /// Hashing password
+        /// </summary>
+        /// <param name="plainPassword"></param>
+        /// <returns></returns>
+        public string HashPassword(string plainPassword)
+            {
+            using (SHA256 sha256 = SHA256.Create())
+                {
+                byte[] bytes = Encoding.UTF8.GetBytes(plainPassword);
+                byte[] hashBytes = sha256.ComputeHash(bytes);
+                return Convert.ToBase64String(hashBytes);
+                }
+            }
+        #endregion
 
         #region Login By JWT
         /// <summary>
@@ -38,12 +56,13 @@ namespace UserService.Services.LoginServices
                     };
                 }
             // Verify password
+            loginDTO.Password=HashPassword(loginDTO.Password);
             if (loginDTO.Password!=user.PasswordHash)
                 {
                 return new APIResponse
                     {
                     IsSuccess=false,
-                    Message="Mật khẩu bạn nhập không đúng."
+                    Message="Mật khẩu đăng nhập không hợp lệ ! Vui lòng thử lại."
                     };
                 }
             // Generate JWT Token

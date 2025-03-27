@@ -475,6 +475,18 @@
             "UpstreamPathTemplate": "/api/User/{id}",
             "UpstreamHttpMethod": [ "GET" ]
         },
+        {
+            "DownstreamPathTemplate": "/api/User/ResetPassword",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7179
+                }
+            ],
+            "UpstreamPathTemplate": "/api/User/ResetPassword",
+            "UpstreamHttpMethod": [ "PUT" ]
+        },
         /* User API End */
 
         /* Teacher API Start */
@@ -666,8 +678,22 @@
             ],
             "UpstreamPathTemplate": "/api/Staff/import",
             "UpstreamHttpMethod": [ "POST" ]
-        }
+        },
         /* Staff API End */
 
+        /* Login API Start */
+        {
+            "DownstreamPathTemplate": "/api/Auth",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7179
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Auth",
+            "UpstreamHttpMethod": [ "POST" ]
+        }
+        /* Login API End */
     ]
 }

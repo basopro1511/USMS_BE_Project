@@ -47,7 +47,7 @@ namespace Services.ClassServices
             if (classSubjects==null)
                 {
                 aPIResponse.IsSuccess=false;
-                aPIResponse.Message="Don't have any Class Subject available!";
+                aPIResponse.Message="Không tìm thấy lớp học khả dụng";
                 }
             foreach (var item in classSubjects)
                 {
@@ -213,7 +213,6 @@ namespace Services.ClassServices
             }
         #endregion
 
-
         #region Update ClassSubject
         /// <summary>
         /// Udate ClassSubject in databse
@@ -222,15 +221,15 @@ namespace Services.ClassServices
         public async Task<APIResponse> UpdateClassSubject(AddUpdateClassSubjectDTO classSubject)
             {
             APIResponse aPIResponse = new APIResponse();
-            var existClass =await _classRepository.GetExistingClassSubject(classSubject.ClassId, classSubject.SubjectId, classSubject.SemesterId);
-            if (existClass != null)
-                {
-                return new APIResponse
-                    {
-                    IsSuccess=false,
-                    Message=$"Lớp học có mã {classSubject.ClassId} cho học kỳ {classSubject.SemesterId} và môn {classSubject.SubjectId} đã tồn tại. Vui lòng chọn mã khác hoặc kiểm tra lại thông tin."
-                    };
-                }
+            //var existClass =await _classRepository.GetExistingClassSubject(classSubject.ClassId, classSubject.SubjectId, classSubject.SemesterId);
+            //if (existClass != null)
+            //    {
+            //    return new APIResponse
+            //        {
+            //        IsSuccess=false,
+            //        Message=$"Lớp học có mã {classSubject.ClassId} cho học kỳ {classSubject.SemesterId} và môn {classSubject.SubjectId} đã tồn tại. Vui lòng chọn mã khác hoặc kiểm tra lại thông tin."
+            //        };
+            //    }
             bool isAdded =await _classRepository.UpdateClassSubject(classSubject);
             if (isAdded)
                 {
