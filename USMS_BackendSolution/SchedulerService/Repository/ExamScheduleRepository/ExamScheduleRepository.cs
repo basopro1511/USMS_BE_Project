@@ -16,21 +16,14 @@ namespace SchedulerService.Repository.ExamScheduleRepository
         /// </summary>
         /// <returns>A list of all Class Subject</returns>
         /// <exception cref="Exception"></exception>
-        public async Task<List<ExamScheduleDTO>> GetAllExamSchedule()
+        public async Task<List<ExamSchedule>> GetAllExamSchedule()
             {
             try
                 {
                 using (var dbContext = new MyDbContext())
                     {
                     List<ExamSchedule> examSchedules = await dbContext.ExamSchedule.ToListAsync();
-                    List<ExamScheduleDTO> examScheduleDTOs = new List<ExamScheduleDTO>();
-                    foreach (var examSchedule in examSchedules)
-                        {
-                        ExamScheduleDTO examScheduleDTO = new ExamScheduleDTO();
-                        examScheduleDTO.CopyProperties(examSchedule);
-                        examScheduleDTOs.Add(examScheduleDTO);
-                        }
-                    return examScheduleDTOs;
+                    return examSchedules;
                     }
                 }
             catch (Exception ex)
@@ -47,13 +40,14 @@ namespace SchedulerService.Repository.ExamScheduleRepository
         /// <param name="id"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<ExamScheduleDTO> GetExamScheduleById(int id)
+        public async Task<ExamSchedule> GetExamScheduleById(int id)
             {
             try
                 {
-                var examSchedules = await GetAllExamSchedule();
-                ExamScheduleDTO? examScheduleDTO = examSchedules.FirstOrDefault(x => x.ExamScheduleId==id) ?? new ExamScheduleDTO();
-                return examScheduleDTO;
+                using (var dbContext = new MyDbContext())
+                    {
+                    return await dbContext.ExamSchedule.FirstOrDefaultAsync(x => x.ExamScheduleId==id);
+                    }
                 }
             catch (Exception ex)
                 {
@@ -80,13 +74,8 @@ namespace SchedulerService.Repository.ExamScheduleRepository
                         {
                         return false;
                         }
-
-                    // Chuyển DTO -> Entity
-                    ExamSchedule examSchedule = new ExamSchedule();
-                    examSchedule.CopyProperties(existingExamSchedule);
-                    examSchedule.TeacherId=teacherId;
-
-                    dbContext.Entry(examSchedule).State=EntityState.Modified;
+                    existingExamSchedule.TeacherId=teacherId;
+                    dbContext.Entry(existingExamSchedule).State=EntityState.Modified;
                     await dbContext.SaveChangesAsync();
                     return true;
                     }
@@ -116,13 +105,8 @@ namespace SchedulerService.Repository.ExamScheduleRepository
                         {
                         return false;
                         }
-
-                    // Chuyển DTO -> Entity
-                    ExamSchedule examSchedule = new ExamSchedule();
-                    examSchedule.CopyProperties(existingExamSchedule);
-                    examSchedule.RoomId=roomId;
-
-                    dbContext.Entry(examSchedule).State=EntityState.Modified;
+                    existingExamSchedule.RoomId=roomId;
+                    dbContext.Entry(existingExamSchedule).State=EntityState.Modified;
                     await dbContext.SaveChangesAsync();
                     return true;
                     }
@@ -140,23 +124,17 @@ namespace SchedulerService.Repository.ExamScheduleRepository
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<List<ExamScheduleDTO>> GetUnassignedTeacherExamSchedules()
+        public async Task<List<ExamSchedule>> GetUnassignedTeacherExamSchedules()
             {
             try
                 {
                 using (var dbContext = new MyDbContext())
                     {
-                    var allExamSchedules = await GetAllExamSchedule();
-                    var examSchedules = allExamSchedules.Where(x => x.TeacherId==null).ToList();
-
-                    List<ExamScheduleDTO> examScheduleDTOs = new List<ExamScheduleDTO>();
-                    foreach (var examSchedule in examSchedules)
+                    using (var _db = new MyDbContext())
                         {
-                        ExamScheduleDTO examScheduleDTO = new ExamScheduleDTO();
-                        examScheduleDTO.CopyProperties(examSchedule);
-                        examScheduleDTOs.Add(examScheduleDTO);
+                        var examSchedules = await _db.ExamSchedule.Where(x => x.TeacherId==null).ToListAsync();
+                        return examSchedules;
                         }
-                    return examScheduleDTOs;
                     }
                 }
             catch (Exception ex)
@@ -172,22 +150,14 @@ namespace SchedulerService.Repository.ExamScheduleRepository
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<List<ExamScheduleDTO>> GetUnassignedRoomExamSchedules()
+        public async Task<List<ExamSchedule>> GetUnassignedRoomExamSchedules()
             {
             try
                 {
                 using (var dbContext = new MyDbContext())
                     {
                     var allExamSchedules = await GetAllExamSchedule();
-                    var examSchedules = allExamSchedules.Where(x => x.RoomId==null).ToList();
-                    List<ExamScheduleDTO> examScheduleDTOs = new List<ExamScheduleDTO>();
-                    foreach (var examSchedule in examSchedules)
-                        {
-                        ExamScheduleDTO examScheduleDTO = new ExamScheduleDTO();
-                        examScheduleDTO.CopyProperties(examSchedule);
-                        examScheduleDTOs.Add(examScheduleDTO);
-                        }
-                    return examScheduleDTOs;
+                    return allExamSchedules.Where(x => x.RoomId==null).ToList();
                     }
                 }
             catch (Exception ex)
@@ -203,14 +173,12 @@ namespace SchedulerService.Repository.ExamScheduleRepository
         /// </summary>
         /// <param name="examScheduleDTO"></param>
         /// <returns></returns>
-        public async Task<bool> AddNewExamSchedule(ExamScheduleDTO examScheduleDTO)
+        public async Task<bool> AddNewExamSchedule(ExamSchedule examSchedule)
             {
             try
                 {
                 using (var dbContext = new MyDbContext())
                     {
-                    var examSchedule = new ExamSchedule();
-                    examSchedule.CopyProperties(examScheduleDTO);
                     examSchedule.CreatedAt=DateTime.Now;
                     await dbContext.ExamSchedule.AddAsync(examSchedule);
                     await dbContext.SaveChangesAsync();
@@ -230,17 +198,17 @@ namespace SchedulerService.Repository.ExamScheduleRepository
         /// </summary>
         /// <param name="examScheduleDTO"></param>
         /// <returns></returns>
-        public async Task<bool> UpdateExamSchedule(ExamScheduleDTO examScheduleDTO)
+        public async Task<bool> UpdateExamSchedule(ExamSchedule examSchedule)
             {
             try
                 {
                 using (var dbContext = new MyDbContext())
                     {
-                    var examschedule = dbContext.ExamSchedule.FirstOrDefault(x => x.ExamScheduleId==examScheduleDTO.ExamScheduleId);
-                    if (examschedule==null)
+                    var existingExamSchedule = await dbContext.ExamSchedule.FirstOrDefaultAsync(x => x.ExamScheduleId==examSchedule.ExamScheduleId);
+                    if (existingExamSchedule==null)
                         return false;
-                    examschedule.CopyProperties(examScheduleDTO);
-                    dbContext.Entry(examschedule).State=EntityState.Modified;
+                    existingExamSchedule.CopyProperties(examSchedule);
+                    dbContext.Entry(existingExamSchedule).State=EntityState.Modified;
                     await dbContext.SaveChangesAsync();
                     return true;
                     }
@@ -271,13 +239,8 @@ namespace SchedulerService.Repository.ExamScheduleRepository
                         {
                         return false;
                         }
-
-                    // Chuyển DTO -> Entity
-                    ExamSchedule examSchedule = new ExamSchedule();
-                    examSchedule.CopyProperties(existingExamSchedule);
-                    examSchedule.Status=newStatus;
-
-                    dbContext.Entry(examSchedule).State=EntityState.Modified;
+                    existingExamSchedule.Status=newStatus;
+                    dbContext.Entry(existingExamSchedule).State=EntityState.Modified;
                     await dbContext.SaveChangesAsync();
                     return true;
                     }
@@ -396,21 +359,15 @@ namespace SchedulerService.Repository.ExamScheduleRepository
         /// <param name="endTime"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<List<ExamScheduleDTO>> GetTeacherInExamSchedule(DateOnly date, TimeOnly startTime, TimeOnly endTime)
+        public async Task<List<ExamSchedule>> GetTeacherInExamSchedule(DateOnly date, TimeOnly startTime, TimeOnly endTime)
             {
             try
                 {
                 using (var dbContext = new MyDbContext())
                     {
-                    List<ExamSchedule>? exams = await dbContext.ExamSchedule.Where(r => r.Date==date && r.StartTime==startTime && r.EndTime==endTime).ToListAsync();
-                    List<ExamScheduleDTO> examScheduleDTOs = new List<ExamScheduleDTO>();
-                    foreach (var item in exams)
-                        {
-                        ExamScheduleDTO examScheduleDTO = new ExamScheduleDTO();
-                        examScheduleDTO.CopyProperties(item);
-                        examScheduleDTOs.Add(examScheduleDTO);
-                        }
-                    return examScheduleDTOs;
+                    return await dbContext.ExamSchedule
+                        .Where(r => r.Date==date&&r.StartTime==startTime&&r.EndTime==endTime)
+                        .ToListAsync();
                     }
                 }
             catch (Exception ex)
@@ -426,22 +383,22 @@ namespace SchedulerService.Repository.ExamScheduleRepository
         /// </summary>
         /// <param name="studentId"></param>
         /// <returns></returns>
-        public async Task<List<ExamScheduleDTO>> GetExamScheduleForStudent(string studentId)
+        public async Task<List<ExamSchedule>> GetExamScheduleForStudent(string studentId)
             {
             try
                 {
                 using (var dbContext = new MyDbContext())
                     {
-                    var examSchedule = await dbContext.StudentInExamSchedule.Where(s => s.StudentId==studentId).ToListAsync();  // lay danh sach phong thi cua sinh vien
-                    List<ExamScheduleDTO> examSchedules = new List<ExamScheduleDTO>();
-                    foreach (var item in examSchedule)
+                    var examScheduleList = await dbContext.StudentInExamSchedule
+                        .Where(s => s.StudentId==studentId)
+                        .ToListAsync();
+                    List<ExamSchedule> examSchedules = new List<ExamSchedule>();
+                    foreach (var item in examScheduleList)
                         {
-                        var studentExam = await dbContext.ExamSchedule.FirstOrDefaultAsync(x => x.ExamScheduleId==item.ExamScheduleId && x.Status == 1);
+                        var studentExam = await dbContext.ExamSchedule.FirstOrDefaultAsync(x => x.ExamScheduleId==item.ExamScheduleId&&x.Status==1);
                         if (studentExam!=null)
                             {
-                            ExamScheduleDTO examScheduleDTO = new ExamScheduleDTO();
-                            examScheduleDTO.CopyProperties(studentExam);
-                            examSchedules.Add(examScheduleDTO);
+                            examSchedules.Add(studentExam);
                             await dbContext.SaveChangesAsync();
                             }
                         }
@@ -461,22 +418,16 @@ namespace SchedulerService.Repository.ExamScheduleRepository
         /// </summary>
         /// <param name="studentId"></param>
         /// <returns></returns>
-        public async Task<List<ExamScheduleDTO>> GetExamScheduleForTeacher(string teacherId)
+        public async Task<List<ExamSchedule>> GetExamScheduleForTeacher(string teacherId)
             {
             try
                 {
                 using (var dbContext = new MyDbContext())
                     {
-                    var examSchedule = await dbContext.ExamSchedule.Where(t => t.TeacherId==teacherId&&t.Status==1).ToListAsync();
-                    List<ExamScheduleDTO> examScheduleDTOs = new List<ExamScheduleDTO>();
-                    foreach (var item in examSchedule)
-                        {
-                        ExamScheduleDTO examScheduleDTO = new ExamScheduleDTO();
-                        examScheduleDTO.CopyProperties(item);
-                        examScheduleDTOs.Add(examScheduleDTO);
-                        await dbContext.SaveChangesAsync();
-                        }
-                    return examScheduleDTOs;
+                    List<ExamSchedule>? examScheduleList = await dbContext.ExamSchedule
+                     .Where(t => t.TeacherId==teacherId&&t.Status==1)
+                     .ToListAsync();
+                    return examScheduleList;
                     }
                 }
             catch (Exception)
@@ -503,6 +454,37 @@ namespace SchedulerService.Repository.ExamScheduleRepository
                     count=await dbContext.StudentInExamSchedule.CountAsync(s => s.ExamScheduleId==examScheduleId);
                     }
                 return count;
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+        #region
+        /// <summary>
+        /// Change Exam Schedule selected Status 
+        /// </summary>
+        /// <param name="userIds"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<bool> ChangeExamScheduleStatusSelected(List<int> examIds, int status)
+            {
+            try
+                {
+                using (var _db = new MyDbContext())
+                    {
+                    var Ids = await _db.ExamSchedule.Where(x => examIds.Contains(x.ExamScheduleId)).ToListAsync();
+                    if (!Ids.Any())
+                        return false;
+                    foreach (var item in Ids)
+                        {
+                        item.Status=status;
+                        }
+                    await _db.SaveChangesAsync();
+                    return true;
+                    }
                 }
             catch (Exception ex)
                 {

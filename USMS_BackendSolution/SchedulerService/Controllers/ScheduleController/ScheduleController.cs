@@ -18,67 +18,67 @@ namespace SchedulerService.Controllers.Schedule
 
 		// GET: api/Customers
 		[HttpGet]
-		public async Task<APIResponse> GetSchedules()
+		public async Task<IActionResult> GetSchedules()
 		{
 			APIResponse aPIResponse = new APIResponse();
 			aPIResponse =await _scheduleService.GetAllSchedule();
-			return aPIResponse;
+			return Ok(aPIResponse);
 		}
 
 		[HttpPost]
-		public async Task<APIResponse> PostSchedule(ClassScheduleDTO schedule)
+		public async Task<IActionResult> PostSchedule(ClassScheduleDTO schedule)
 		{
 			APIResponse aPIResponse = new APIResponse();
 			aPIResponse = await _scheduleService.AddNewSchedule(schedule);
-			return aPIResponse;
+			return Ok(aPIResponse);
 		}
 
         [HttpPut]
-        public async Task<APIResponse> UpdateSchedule(ScheduleDTO schedule)
+        public async Task<IActionResult> UpdateSchedule(ScheduleDTO schedule)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse = await _scheduleService.UpdateSchedule(schedule);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         [HttpGet("Student/{id}/{startDay}/{endDay}")]
-        public async Task<APIResponse> GetStudentSchedule(string id, DateTime startDay, DateTime endDay)
+        public async Task<IActionResult> GetStudentSchedule(string id, DateTime startDay, DateTime endDay)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _scheduleService.GetClassScheduleForStudent(id, startDay, endDay);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         [HttpGet("Teacher/{id}/{startDay}/{endDay}")]
-        public async Task<APIResponse> GetTeacherSchedule(string id, DateTime startDay, DateTime endDay)
+        public async Task<IActionResult> GetTeacherSchedule(string id, DateTime startDay, DateTime endDay)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _scheduleService.GetClassSchedulesForTeacher(id, startDay, endDay);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         [HttpGet("{majorId}/{classId}/{term}/{startDay}/{endDay}")]
-        public async Task<APIResponse> GetClassSchedule(string majorId, string classId, int term, DateTime startDay, DateTime endDay)
+        public async Task<IActionResult> GetClassSchedule(string majorId, string classId, int term, DateTime startDay, DateTime endDay)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse =await _scheduleService.GetClassSchedulesForStaff(majorId,classId, term, startDay,endDay);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         [HttpDelete("{id}")]
-        public async Task<APIResponse> DeleteSchedule(int id)
+        public async Task<IActionResult> DeleteSchedule(int id)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse =await _scheduleService.DeleteSchedule(id);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         [HttpGet("AvailableTeachers/{majorId}/{date}/{slot}")]
-        public async Task<APIResponse> GetAvailableTeachersToAddSchedule(string majorId, DateOnly date, int slot)
+        public async Task<IActionResult> GetAvailableTeachersToAddSchedule(string majorId, DateOnly date, int slot)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _scheduleService.GetAllTeacherAvailableForAddSchedule(majorId,date,slot);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
         }
     }

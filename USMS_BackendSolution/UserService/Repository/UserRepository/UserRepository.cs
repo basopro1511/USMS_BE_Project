@@ -257,5 +257,64 @@ namespace UserService.Repository.UserRepository
             }
         #endregion
 
+        #region Reset password by Email
+        /// <summary>
+        /// Reset password for user
+        /// </summary>
+        /// <param name="resetPasswordDTO"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<bool> ResetPasswordByEmail(ResetPasswordByEmailDTO resetPasswordByEmailDTO)
+            {                               
+            try
+                {
+                using (var _db = new MyDbContext())
+                    {
+                    var user = await _db.User.FirstOrDefaultAsync(x => x.Email==resetPasswordByEmailDTO.Email);
+                    if (user==null) return false;
+                    user.PasswordHash=resetPasswordByEmailDTO.newPassword;
+                    _db.Entry(user).State=EntityState.Modified;
+                    await _db.SaveChangesAsync();
+                    return true;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
+        #region
+        /// <summary>
+        /// Change Users Status 
+        /// </summary>
+        /// <param name="userIds"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<bool> ChangeUserStatusSelected(List<string> userIds, int status)
+            {
+            try
+                {
+                using (var _db = new MyDbContext())
+                    {
+                    var users = await _db.User.Where(x => userIds.Contains(x.UserId)).ToListAsync();
+                    if (!users.Any())
+                        return false;
+                    foreach (var user in users)
+                        {
+                        user.Status=status;
+                        }
+                    await _db.SaveChangesAsync();
+                    return true;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
         }
     }

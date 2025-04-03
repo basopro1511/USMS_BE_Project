@@ -7,6 +7,7 @@ namespace SchedulerBusinessObject.SchedulerModels
 	public class TimeSlot
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column(TypeName = "INT")]
         public int SlotId { get; set; }
         [Required]

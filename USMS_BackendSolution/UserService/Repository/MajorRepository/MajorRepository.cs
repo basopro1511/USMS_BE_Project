@@ -13,22 +13,14 @@ namespace UserService.Repository.MajorRepository
 		/// Get All Major In DB
 		/// </summary>
 		/// <returns></returns>
-        public async Task <List<MajorDTO>> GetAllMajor()
+        public async Task <List<Major>> GetAllMajor()
 		{
 			try
 			{
 				using (var dbContext = new MyDbContext())
 				{
 					List<Major> majors =await dbContext.Major.ToListAsync();
-					List<MajorDTO> majorDTOs = new List<MajorDTO>();
-					foreach (var item in majors)
-					{
-						MajorDTO majorDTO = new MajorDTO();
-					majorDTO.CopyProperties(item);
-					majorDTOs.Add(majorDTO);
-					 await dbContext.SaveChangesAsync();
-					}
-					return majorDTOs;
+					return majors;
 				}
 			}
 			catch (Exception)

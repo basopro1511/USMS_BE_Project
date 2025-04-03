@@ -20,51 +20,61 @@ namespace UserService.Controllers.TeacherController
 
         #region Get All Teacher
         [HttpGet]
-        public async Task<APIResponse> GetAllTeacher()
+        public async Task<IActionResult> GetAllTeacher()
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _service.GetAllTeacher();
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
         #endregion
 
         #region Get All Teacher Available
         [HttpGet("Available/{majorId}")]
-        public async Task<APIResponse> GetAllTeacherAvailableByMajorId(string majorId)
+        public async Task<IActionResult> GetAllTeacherAvailableByMajorId(string majorId)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _service.GetAllTeacherAvailableByMajorId(majorId);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
         #endregion
 
         #region Add New Teacher
         [HttpPost]
-        public async Task<APIResponse> AddNewTeacher(UserDTO userDTO)
+        public async Task<IActionResult> AddNewTeacher(UserDTO userDTO)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _service.AddNewTeacher(userDTO);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
         #endregion
 
         #region Update Teacher
         [HttpPut]
-        public async Task<APIResponse> UpdateTeacher(UserDTO userDTO)
+        public async Task<IActionResult> UpdateTeacher(UserDTO userDTO)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _service.UpdateTeacher(userDTO);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
         #endregion
 
         #region Import From Excel
         [HttpPost("import")]
-        public async Task<APIResponse> ImportTeachers(IFormFile file)
+        public async Task<IActionResult> ImportTeachers(IFormFile file)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _service.ImportTeachersFromExcel(file);
-            return aPIResponse;
+            return Ok(aPIResponse);
+            }
+        #endregion
+
+        #region Update Status
+        [HttpPut("ChangeStatus")]
+        public async Task<IActionResult> ChangeStudentStatus(List<string> userIds, int status)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=await _service.ChangeUsersStatusSelected(userIds, status);
+            return Ok(aPIResponse);
             }
         #endregion
         }

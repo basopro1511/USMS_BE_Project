@@ -2,6 +2,7 @@
 using ClassBusinessObject.ModelDTOs;
 using ClassBusinessObject.Models;
 using ClassService.Repositories.StudentInClassRepository;
+using ISUZU_NEXT.Server.Core.Extentions;
 using Repositories.SubjectRepository;
 using System.Net.Http;
 using System.Text.Json;
@@ -29,10 +30,10 @@ namespace ClassService.Services.StudentInClassServices
         ///  Get All Student In Class
         /// </summary>
         /// <returns></returns>
-        public APIResponse GetAllStudentInClass()
+        public async Task<APIResponse> GetAllStudentInClass()
             {
             APIResponse aPIResponse = new APIResponse();
-            List<StudentInClassDTO>? studentInClasses = _repository.GetAllStudentInClass();
+            List<StudentInClass>? studentInClasses =await _repository.GetAllStudentInClass();
             if (studentInClasses==null||studentInClasses.Count==0)
                 {
                 aPIResponse.IsSuccess=false;
@@ -48,10 +49,10 @@ namespace ClassService.Services.StudentInClassServices
         ///  Get Student In Class by Student Id
         /// </summary>
         /// <returns></returns>
-        public APIResponse GetStudentInClassByStudentId(string student)
+        public async Task<APIResponse> GetStudentInClassByStudentId(string student)
             {
             APIResponse aPIResponse = new APIResponse();
-            StudentInClassDTO studentInClasses = _repository.GetStudentInClassByStudentId(student);
+            StudentInClass studentInClasses =await _repository.GetStudentInClassByStudentId(student);
             if (studentInClasses==null)
                 {
                 aPIResponse.IsSuccess=false;
@@ -67,10 +68,10 @@ namespace ClassService.Services.StudentInClassServices
         ///  Get Student In Class by ClassId
         /// </summary>
         /// <returns></returns>
-        public APIResponse GetStudentInClassByClassId(int id)
+        public async Task<APIResponse> GetStudentInClassByClassId(int id)
             {
             APIResponse aPIResponse = new APIResponse();
-            List<StudentInClassDTO> studentsInClasses = _repository.GetStudentInClassByClassId(id);
+            List<StudentInClass> studentsInClasses =await _repository.GetStudentInClassByClassId(id);
             if (studentsInClasses==null)
                 {
                 aPIResponse.IsSuccess=false;
@@ -86,10 +87,10 @@ namespace ClassService.Services.StudentInClassServices
         /// Class SubjectId by studentId
         /// </summary>
         /// <returns>a list int of classSubjectId</returns>
-        public APIResponse GetClassSubjectId(string id)
+        public async Task<APIResponse> GetClassSubjectId(string id)
             {
             APIResponse aPIResponse = new APIResponse();
-            List<int>? studentInClasses = _repository.GetClassSubjectId(id);
+            List<int>? studentInClasses =await _repository.GetClassSubjectId(id);
             if (studentInClasses==null||studentInClasses.Count==0)
                 {
                 aPIResponse.IsSuccess=false;
@@ -106,17 +107,17 @@ namespace ClassService.Services.StudentInClassServices
         /// </summary>
         /// <param name="studentInClassDTO"></param>
         /// <returns>APIResponse indicating success</returns>
-        public APIResponse AddStudentToClass(StudentInClassDTO studentInClassDTO)
+        public async Task<APIResponse> AddStudentToClass(StudentInClassDTO studentInClassDTO)
             {
             APIResponse aPIResponse = new APIResponse();
-            var checkExist = _repository.GetStudentInClassByStudentIdAndClass(studentInClassDTO.StudentId,studentInClassDTO.ClassSubjectId);
+            var checkExist =await _repository.GetStudentInClassByStudentIdAndClass(studentInClassDTO.StudentId,studentInClassDTO.ClassSubjectId);
             if (checkExist != null)
                 {
                 aPIResponse.IsSuccess=false;
                 aPIResponse.Message="Sinh viên này đã tồn tại trong lớp học";
                 return aPIResponse;
                 }
-            int numberOfStudent = GetStudentCountByClassSubjectId(studentInClassDTO.ClassSubjectId);
+            int numberOfStudent = await GetStudentCountByClassSubjectId(studentInClassDTO.ClassSubjectId);
             int numberOfStudentAfterAdd = numberOfStudent + 1;
             if (numberOfStudentAfterAdd>40)
                 {
@@ -124,7 +125,9 @@ namespace ClassService.Services.StudentInClassServices
                 aPIResponse.Message="Số lượng sinh viên thêm vào đã giới hạn của lớp ( giới hạn 1 lớp có tối đa 40 sinh viên )";
                 return aPIResponse;
                 }
-            bool success = _repository.AddStudentToClass(studentInClassDTO);
+            StudentInClass studentInClass = new StudentInClass();
+            studentInClass.CopyProperties(studentInClassDTO);
+            bool success =await _repository.AddStudentToClass(studentInClass);
             if (success)
                 {
                 return new APIResponse
@@ -147,13 +150,14 @@ namespace ClassService.Services.StudentInClassServices
         /// </summary>
         /// <param name="studentsInClassDTO"></param>
         /// <returns>APIResponse indicating success</returns>
-        public APIResponse AddMultipleStudentsToClass(List<StudentInClassDTO> studentsInClassDTO)
+        public async Task<APIResponse> AddMultipleStudentsToClass(List<StudentInClassDTO> studentsInClassDTO)
             {
             APIResponse apiResponse = new APIResponse();
             try
                 {
+                List<StudentInClass> studentInClasses = new List<StudentInClass>();
                 int classSubjectId = studentsInClassDTO.First().ClassSubjectId;
-                List<StudentInClassDTO> existingStudents = _repository.GetStudentInClassByClassId(classSubjectId);
+                List<StudentInClass> existingStudents =await _repository.GetStudentInClassByClassId(classSubjectId);
                 var existingStudentIds = new HashSet<string>(existingStudents.Select(s => s.StudentId));
                 // Lọc sinh viên chưa có trong lớp
                 List<StudentInClassDTO> newStudents = studentsInClassDTO
@@ -165,14 +169,21 @@ namespace ClassService.Services.StudentInClassServices
                     apiResponse.Message="Tất cả sinh viên đã có trong lớp.";
                     return apiResponse;
                     }
-                int numberOfStudent = GetStudentCountByClassSubjectId(classSubjectId);
+                int numberOfStudent =await GetStudentCountByClassSubjectId(classSubjectId);
                 int numberOfStudentAfterAdd = numberOfStudent + newStudents.Count;
                 if (numberOfStudentAfterAdd>40) {
                     apiResponse.IsSuccess=false;
                     apiResponse.Message="Số lượng sinh viên thêm vào đã giới hạn của lớp ( giới hạn 1 lớp có tối đa 40 sinh viên )" ;
                     return apiResponse;
                     }
-                bool success = _repository.AddMultipleStudentsToClass(newStudents);
+                foreach (var item in newStudents)
+                    {
+                    StudentInClass studentInClass = new StudentInClass();
+                    studentInClass.CopyProperties(item);
+                    studentInClasses.Add(studentInClass);
+                    }
+                studentInClasses.CopyProperties(studentsInClassDTO);
+                bool success = await _repository.AddMultipleStudentsToClass(studentInClasses);
                 apiResponse.IsSuccess=success;
                 apiResponse.Message=success ? $"Thêm {newStudents.Count} sinh viên thành công." : "Thêm sinh viên thất bại.";
                 apiResponse.Result=newStudents;
@@ -192,10 +203,12 @@ namespace ClassService.Services.StudentInClassServices
         /// </summary>
         /// <param name="studentInClassDTO"></param>
         /// <returns>APIResponse indicating success</returns>
-        public APIResponse UpdateStudentInClass(StudentInClassDTO studentInClassDTO)
+        public async Task<APIResponse> UpdateStudentInClass(StudentInClassDTO studentInClassDTO)
             {
             APIResponse aPIResponse = new APIResponse();
-            bool success = _repository.UpdateStudentInClass(studentInClassDTO);
+            StudentInClass studentInClass = new StudentInClass();
+            studentInClass.CopyProperties(studentInClassDTO);
+            bool success = await _repository.UpdateStudentInClass(studentInClass);
             aPIResponse.IsSuccess=success;
             aPIResponse.Message=success ? "Cập nhật thông tin sinh viên thành công" : "Cập nhật thất bại";
             return aPIResponse;
@@ -208,10 +221,10 @@ namespace ClassService.Services.StudentInClassServices
         /// </summary>
         /// <param name="studentClassId"></param>
         /// <returns>APIResponse indicating success</returns>
-        public APIResponse DeleteStudentFromClass(int studentClassId)
+        public async Task<APIResponse> DeleteStudentFromClass(int studentClassId)
             {
             APIResponse aPIResponse = new APIResponse();
-            bool success = _repository.DeleteStudentFromClass(studentClassId);
+            bool success =await _repository.DeleteStudentFromClass(studentClassId);
             aPIResponse.IsSuccess=success;
             aPIResponse.Message=success ? "Xóa sinh viên khỏi lớp thành công" : "Xóa thất bại";
             return aPIResponse;
@@ -259,12 +272,12 @@ namespace ClassService.Services.StudentInClassServices
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public APIResponse GetStudentInClassByClassIdWithStudentData(int id)
+        public async Task<APIResponse> GetStudentInClassByClassIdWithStudentData(int id)
             {
             try
                 {
                 APIResponse aPIResponse = new APIResponse();
-                List<StudentInClassDTO> studentsInClasses = _repository.GetStudentInClassByClassId(id);
+                List<StudentInClass> studentsInClasses =await _repository.GetStudentInClassByClassId(id);
                 List<StudentDTO> studentDTOs = new List<StudentDTO>();
                 if (studentsInClasses==null)
                     {
@@ -335,13 +348,13 @@ namespace ClassService.Services.StudentInClassServices
         /// </summary>
         /// <param name="classId">Class ID</param>
         /// <returns>List of students not in the class</returns>
-        public APIResponse GetAvailableStudentsForClass(int classId)
+        public async Task<APIResponse> GetAvailableStudentsForClass(int classId)
             {
             APIResponse aPIResponse = new APIResponse();
             // Lấy danh sách tất cả sinh viên
             List<StudentDTO> allStudents = getAllStudent();
             // Lấy danh sách sinh viên đã có trong lớp
-            List<StudentInClassDTO> studentsInClass = _repository.GetStudentInClassByClassId(classId);
+            List<StudentInClass> studentsInClass =await _repository.GetStudentInClassByClassId(classId);
             if (allStudents==null||allStudents.Count==0)
                 {
                 aPIResponse.IsSuccess=false;
@@ -350,7 +363,7 @@ namespace ClassService.Services.StudentInClassServices
                 }
             if (studentsInClass==null)
                 {
-                studentsInClass=new List<StudentInClassDTO>();
+                studentsInClass=new List<StudentInClass>();
                 }
             // Loại bỏ những sinh viên đã có trong lớp
             List<StudentDTO> availableStudents = allStudents.Where(student => !studentsInClass.Any(sic => sic.StudentId==student.UserId))
@@ -370,9 +383,9 @@ namespace ClassService.Services.StudentInClassServices
         #endregion
 
         #region GetStudentCountByClassSubjectId
-        public int GetStudentCountByClassSubjectId(int classSubjectId)
+        public async Task<int> GetStudentCountByClassSubjectId(int classSubjectId)
             {
-            return _repository.GetStudentCountByClassSubjectId(classSubjectId);
+            return await _repository.GetStudentCountByClassSubjectId(classSubjectId);
             }
         #endregion
 

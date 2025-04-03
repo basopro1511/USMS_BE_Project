@@ -1,6 +1,7 @@
 ﻿using BusinessObject;
 using BusinessObject.ModelDTOs;
 using BusinessObject.Models;
+using ISUZU_NEXT.Server.Core.Extentions;
 using NuGet.Protocol.Core.Types;
 using OfficeOpenXml;
 using System.Globalization;
@@ -33,7 +34,7 @@ namespace UserService.Services.StaffServices
         public async Task<APIResponse> GetAllStaff()
             {
             APIResponse aPIResponse = new APIResponse();
-            List<UserDTO> staffs = await _repository.GetAllStaff();
+            List<User> staffs = await _repository.GetAllStaff();
             #region validation 
             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
             {
@@ -189,7 +190,9 @@ namespace UserService.Services.StaffServices
                 userDTO.PasswordHash=HashPassword(userDTO.PasswordHash);
                 userDTO.Status=1; // 1 là đang hoạt động
                 userDTO.MajorId=null;
-                bool isSuccess = await _repository.AddNewStaff(userDTO);
+                User user = new User();
+                user.CopyProperties(userDTO);
+                bool isSuccess = await _repository.AddNewStaff(user);
                 if (isSuccess)
                     {
                     return new APIResponse
@@ -259,8 +262,10 @@ namespace UserService.Services.StaffServices
                 {
                 userDTO.UserAvartar=staff.UserAvartar;
                 }
-            userDTO.MajorId=null;
-            bool isSuccess = await _repository.UpdateStaff(userDTO);
+            userDTO.MajorId=null; 
+            User user = new User();
+            user.CopyProperties(userDTO);
+            bool isSuccess = await _repository.UpdateStaff(user);
             if (isSuccess)
                 {
                 return new APIResponse
@@ -407,6 +412,45 @@ namespace UserService.Services.StaffServices
             }
         #endregion
 
+        #region Change Users Status Selected 
+        /// <summary>
+        /// Change user status
+        /// </summary>
+        /// <param name="userIds"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        public async Task<APIResponse> ChangeUsersStatusSelected(List<string> userIds, int status)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            if (userIds==null||!userIds.Any())
+                {
+                aPIResponse.IsSuccess=false;
+                aPIResponse.Message="Danh sách nhân viên không hợp lệ.";
+                return aPIResponse;
+                }
+            bool isSuccess = await _userRepository.ChangeUserStatusSelected(userIds, status);
+            if (isSuccess)
+                {
+                aPIResponse.IsSuccess=true;
+                switch (status)
+                    {
+                    case 0:
+                        aPIResponse.Message="Đã thay đổi trạng thái các nhân viên thành 'Vô hiệu hóa'.";
+                        break;
+                    case 1:
+                        aPIResponse.Message="Đã thay đổi trạng thái các nhân viên thành 'Đang khả dụng'.";
+                        break;
+                    case 2:
+                        aPIResponse.Message="Đã thay đổi trạng thái các nhân viên thành 'Đang tạm hoãn'.";
+                        break;
+                    default:
+                        aPIResponse.Message="Trạng thái không hợp lệ.";
+                        break;
+                    }
+                }
+            return aPIResponse;
+            }
+        #endregion
         }
     }
 

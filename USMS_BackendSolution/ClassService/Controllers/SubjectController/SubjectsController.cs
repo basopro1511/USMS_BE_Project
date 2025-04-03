@@ -2,6 +2,7 @@
 using ClassBusinessObject.ModelDTOs;
 using Services.SubjectServices;
 using Microsoft.AspNetCore.Mvc;
+using Services.ClassServices;
 
 namespace ClassService.Controllers.SubjectController
     {
@@ -16,72 +17,80 @@ namespace ClassService.Controllers.SubjectController
             }
 
         [HttpGet]
-        public async Task<APIResponse> GetSubjects()
+        public async Task<IActionResult> GetSubjects()
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _subjectService.GetAllSubjects();
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         [HttpGet("{id}")]
-        public async Task<APIResponse> GetSubjectById(string id)
+        public async Task<IActionResult> GetSubjectById(string id)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _subjectService.GetSubjectById(id);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         [HttpGet("Available")]
-        public async Task<APIResponse> GetSubjectsAvailable()
+        public async Task<IActionResult> GetSubjectsAvailable()
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _subjectService.GetAllSubjectsAvailable();
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         [HttpPost]
-        public async Task<APIResponse> CreateSubject(SubjectDTO subject)
+        public async Task<IActionResult> CreateSubject(SubjectDTO subject)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _subjectService.CreateSubject(subject);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         [HttpPut]
-        public async Task<APIResponse> UpdateSubject(SubjectDTO subject)
+        public async Task<IActionResult> UpdateSubject(SubjectDTO subject)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _subjectService.UpdateSubject(subject);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         [HttpGet("SwitchStateSubject/{subjectId}/{status}")]
-        public async Task<APIResponse> SwitchStateSubject(string subjectId, int status)
+        public async Task<IActionResult> SwitchStateSubject(string subjectId, int status)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _subjectService.SwitchStateSubject(subjectId, status);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         #region Get Subjects by MajorId
         [HttpGet("GetSubjectByMajor/{id}")]
-        public async Task<APIResponse> GetSubjectsByMajor(string id)
+        public async Task<IActionResult> GetSubjectsByMajor(string id)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _subjectService.GetSubjectByMajorId(id);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
         #endregion
 
         #region GetSubjects by MajorId and Term
         [HttpGet("GetSubjectByMajorAndTerm/{id}/{term}")]
-        public async Task<APIResponse> GetSubjectsByMajorAndTerm(string id, int term)
+        public async Task<IActionResult> GetSubjectsByMajorAndTerm(string id, int term)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _subjectService.GetSubjectByMajorIdAndTerm(id, term);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
         #endregion
 
+        [HttpPut("ChangeSelectStatus")]
+        public async Task<IActionResult> ChangeStatusSubject(List<string> ids, int status)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=await _subjectService.ChangeSubjectStatusSelected(ids, status);
+            return Ok(aPIResponse);
+            }
         }
     }
+

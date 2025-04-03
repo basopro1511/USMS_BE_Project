@@ -11,11 +11,15 @@ namespace BusinessObject.ModelDTOs
         public string Email { get; set; }
         public string Password { get; set; }
         }
-
     public class ResetPasswordDTO
         {
         public string UserId { get; set; }
         public string oldPassword { get; set; }
+        public string newPassword { get; set; }
+        }
+    public class ResetPasswordByEmailDTO
+        {
+        public string Email { get; set; }
         public string newPassword { get; set; }
         }
     }

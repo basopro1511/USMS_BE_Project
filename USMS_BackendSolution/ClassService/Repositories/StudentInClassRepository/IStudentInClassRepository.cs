@@ -1,18 +1,19 @@
 ﻿using ClassBusinessObject.ModelDTOs;
+using ClassBusinessObject.Models;
 
 namespace ClassService.Repositories.StudentInClassRepository
     {
     public interface IStudentInClassRepository
         {
-        public List<StudentInClassDTO> GetAllStudentInClass();
-        public StudentInClassDTO GetStudentInClassByStudentId(string studentId);
-        public List<StudentInClassDTO> GetStudentInClassByClassId(int classSubjectId);
-        public List<int> GetClassSubjectId(string studentId);
-        public bool AddStudentToClass(StudentInClassDTO studentInClassDTO);
-        public bool AddMultipleStudentsToClass(List<StudentInClassDTO> studentsInClassDTO);
-        public bool UpdateStudentInClass(StudentInClassDTO studentInClassDTO);
-        public bool DeleteStudentFromClass(int studentClassId);
-        public StudentInClassDTO GetStudentInClassByStudentIdAndClass(string studentId, int classSubjectId);
-        public int GetStudentCountByClassSubjectId(int classSubjectId);
+        public Task<List<StudentInClass>> GetAllStudentInClass();
+        public Task<StudentInClass> GetStudentInClassByStudentId(string studentId);
+        public Task<List<StudentInClass>> GetStudentInClassByClassId(int classSubjectId);
+        public Task<List<int>> GetClassSubjectId(string studentId);
+        public Task<bool> AddStudentToClass(StudentInClass studentInClassDTO);
+        public Task<bool> AddMultipleStudentsToClass(List<StudentInClass> studentsInClassDTO);
+        public Task<bool> UpdateStudentInClass(StudentInClass studentInClassDTO);
+        public Task<bool> DeleteStudentFromClass(int studentClassId);
+        public Task<StudentInClass> GetStudentInClassByStudentIdAndClass(string studentId, int classSubjectId);
+        public Task<int> GetStudentCountByClassSubjectId(int classSubjectId);
         }
     }

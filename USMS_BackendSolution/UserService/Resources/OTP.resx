@@ -117,7 +117,133 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="OTP" xml:space="preserve">
-    <value />
+  <data name="OTPTemplate" xml:space="preserve">
+    <value>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+  &lt;head&gt;
+    &lt;meta charset="UTF-8" /&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;
+    &lt;meta http-equiv="X-UA-Compatible" content="ie=edge" /&gt;
+    &lt;title&gt;OTP&lt;/title&gt;
+
+    &lt;link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&amp;display=swap"
+      rel="stylesheet"
+    /&gt;
+  &lt;/head&gt;
+  &lt;body
+    style="
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #ffffff;
+      font-size: 14px;
+    "
+  &gt;
+    &lt;div
+      style="
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 45px 30px 60px;
+        background: #f4f7ff;
+        background-image: url(https://archisketch-resources.s3.ap-northeast-2.amazonaws.com/vrstyler/1661497957196_595865/email-template-background-banner);
+        background-repeat: no-repeat;
+        background-size: 800px 452px;
+        background-position: top center;
+        font-size: 14px;
+        color: #434343;
+      "
+    &gt;
+      &lt;main&gt;
+        &lt;div
+          style="
+            margin: 0;
+            margin-top: 70px;
+            padding: 92px 30px 115px;
+            background: #ffffff;
+            border-radius: 30px;
+            text-align: center;
+          "
+        &gt;
+          &lt;div style="width: 100%; max-width: 489px; margin: 0 auto;"&gt;
+            &lt;h1
+              style="
+                margin: 0;
+                font-size: 24px;
+                font-weight: 500;
+                color: #1f1f1f;
+              "
+            &gt;
+                OTP của bạn là
+            &lt;/h1&gt;
+            &lt;p
+              style="
+                margin: 0;
+                margin-top: 60px;
+                font-size: 40px;
+                font-weight: 600;
+                letter-spacing: 25px;
+                color: #ba3d4f;
+              "
+            &gt;
+              @paramOTP
+            &lt;/p&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;p
+          style="
+            max-width: 400px;
+            margin: 0 auto;
+            margin-top: 90px;
+            text-align: center;
+            font-weight: 500;
+            color: #8c8c8c;
+          "
+        &gt;
+          Cần hỗ trợ? Hãy liên hệ đến 
+          &lt;a
+            href="mailto:namplt.work@gmail.com"
+            style="color: #499fb6; text-decoration: none;"
+            &gt;usmsSupport@fpt.edu.vn&lt;/a
+          &gt;
+          hoặc 
+          &lt;a
+            href=""
+            target="_blank"
+            style="color: #499fb6; text-decoration: none;"
+            &gt;IT Support&lt;/a
+          &gt;
+        &lt;/p&gt;
+      &lt;/main&gt;
+
+      &lt;footer
+        style="
+          width: 100%;
+          max-width: 490px;
+          margin: 20px auto 0;
+          text-align: center;
+          border-top: 1px solid #e6ebf1;
+        "
+      &gt;
+        &lt;p
+          style="
+            margin: 0;
+            margin-top: 40px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #434343;
+          "
+        &gt;
+          Đại học FPT&lt;/p&gt;
+        &lt;p style="margin: 0; margin-top: 8px; color: #434343;"&gt;
+          600, Đường Nguyễn Văn Cừ nối dài, Quận Ninh Kiều, Thành phố Cần Thơ
+        &lt;/p&gt;
+        &lt;p style="margin: 0; margin-top: 16px; color: #434343;"&gt;
+          Copyright © 2010 Company. All rights reserved.
+        &lt;/p&gt;
+      &lt;/footer&gt;
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</value>
   </data>
 </root>

@@ -1,5 +1,8 @@
 ﻿using BusinessObject;
 using BusinessObject.ModelDTOs;
+using BusinessObject.Models;
+using ISUZU_NEXT.Server.Core.Extentions;
+using Microsoft.EntityFrameworkCore;
 using UserService.Repository.MajorRepository;
 
 namespace UserService.Services.MajorServices
@@ -21,13 +24,20 @@ namespace UserService.Services.MajorServices
         public async Task<APIResponse> GetAllMajor()
         {
             APIResponse aPIResponse = new APIResponse();
-            List<MajorDTO> classSubjects = await _repository.GetAllMajor();
-            if (classSubjects == null)
+            List<Major> majors = await _repository.GetAllMajor();
+            List<MajorDTO> majorDTOs = new List<MajorDTO>();
+            foreach (var item in majors)
+                {
+                MajorDTO majorDTO = new MajorDTO();
+                majorDTO.CopyProperties(item);
+                majorDTOs.Add(majorDTO);
+                }
+            if (majors== null)
             {
                 aPIResponse.IsSuccess = false;
-                aPIResponse.Message = "Chưa có Chuyên ngành!";
+                aPIResponse.Message = "Không tìm thấy chuyên ngành!";
             }
-            aPIResponse.Result = classSubjects;
+            aPIResponse.Result =majorDTOs;
             return aPIResponse;
         }
         #endregion

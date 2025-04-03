@@ -12,7 +12,7 @@ namespace UserService.Repository.StaffRepository
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public Task<List<UserDTO>> GetAllStaff();
+        public Task<List<User>> GetAllStaff();
         #endregion
 
         #region Add Staff
@@ -22,7 +22,7 @@ namespace UserService.Repository.StaffRepository
         /// <param name="userDTO"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public Task<bool> AddNewStaff(UserDTO userDTO);
+        public Task<bool> AddNewStaff(User user);
        #endregion
 
         #region Update Staff
@@ -31,7 +31,7 @@ namespace UserService.Repository.StaffRepository
         /// </summary>
         /// <param name="userDTO"></param>
         /// <returns></returns>
-        public Task<bool> UpdateStaff(UserDTO userDTO);
+        public Task<bool> UpdateStaff(User user);
         #endregion                                          '
 
         #region Update Staff (Personal infor )
@@ -40,7 +40,7 @@ namespace UserService.Repository.StaffRepository
         /// </summary>
         /// <param name="userDTO"></param>
         /// <returns></returns>
-        public  Task<bool> UpdatePersonalInformationForStaff(UserDTO userDTO);
+        public  Task<bool> UpdatePersonalInformationForStaff(User user);
         #endregion
 
         #region Add List User ( use for Import Excel )
@@ -49,7 +49,7 @@ namespace UserService.Repository.StaffRepository
         /// </summary>
         /// <param name="teachers"></param>
         /// <returns></returns>
-        public  Task<bool> AddStaffsAsync(List<User> teachers);
+        public  Task<bool> AddStaffsAsync(List<User> users);
         #endregion
         }
     }

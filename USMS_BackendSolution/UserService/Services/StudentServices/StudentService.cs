@@ -2,6 +2,7 @@
 using BusinessObject.AppDBContext;
 using BusinessObject.ModelDTOs;
 using BusinessObject.Models;
+using ISUZU_NEXT.Server.Core.Extentions;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using System.Globalization;
@@ -34,14 +35,18 @@ namespace UserService.Services.StudentServices
         public async Task<APIResponse> GetAllStudent()
             {
             APIResponse aPIResponse = new APIResponse();
-            List<UserDTO> users = await _repository.GetAllStudent();
-            foreach (var userDTO in users)
+            List<User> users = await _repository.GetAllStudent();
+            List<UserDTO> usersDTOs = new List<UserDTO>();
+            foreach (var item in users)
                 {
                 using (var _db = new MyDbContext())
                     {
-                    var student = _db.Student.FirstOrDefault(x => x.StudentId==userDTO.UserId);      
+                    UserDTO userDTO = new UserDTO();
+                    userDTO.CopyProperties(item);
+                    Student? student =await _db.Student.FirstOrDefaultAsync(x => x.StudentId==userDTO.UserId);      
                     if (student !=null) 
                     userDTO.Term=student.Term;
+                    usersDTOs.Add(userDTO);
                     }
                 };
             #region validation 
@@ -61,7 +66,7 @@ namespace UserService.Services.StudentServices
                     }
                 }
             #endregion
-            aPIResponse.Result=users;
+            aPIResponse.Result=usersDTOs;
             return aPIResponse;
             }
         #endregion
@@ -235,14 +240,16 @@ namespace UserService.Services.StudentServices
                 userDTO.RoleId=5; //Id Student là 5
                 userDTO.PasswordHash=HashPassword(userDTO.PasswordHash);
                 userDTO.Status=1; // 1 là đang hoạt động
-                bool isSuccess = await _repository.AddNewStudent(userDTO);
+                User user = new User();
+                user.CopyProperties(userDTO);
+                bool isSuccess = await _repository.AddNewStudent(user);
                 if (isSuccess)
                     {
-                    StudentTableDTO studentDTO = new StudentTableDTO();
-                    studentDTO.StudentId=userDTO.UserId;
-                    studentDTO.MajorId=userDTO.MajorId;
-                    studentDTO.Term=1;
-                    bool isAdded = await _repository.AddNewStudentForStudentTable(studentDTO);
+                    Student student = new Student();
+                    student.StudentId=userDTO.UserId;
+                    student.MajorId=userDTO.MajorId;
+                    student.Term=1;
+                    bool isAdded = await _repository.AddNewStudentForStudentTable(student);
                     return new APIResponse
                         {
                         IsSuccess=true,
@@ -311,8 +318,10 @@ namespace UserService.Services.StudentServices
                 {
                 userDTO.UserAvartar=user.UserAvartar;
                 }
-            #endregion
-            bool isSuccess = await _repository.UpdateStudent(userDTO);
+            #endregion             
+            User userModel = new User();
+            userModel.CopyProperties(userDTO);
+            bool isSuccess = await _repository.UpdateStudent(userModel);
             if (isSuccess)
                 {
                 await _repository.UpdateStudentTerm(userDTO.UserId, userDTO.Term); // Update Term trong bảng student
@@ -456,11 +465,11 @@ namespace UserService.Services.StudentServices
                     {
                     foreach (var item in teachers)
                         {
-                        StudentTableDTO studentDTO = new StudentTableDTO();
-                        studentDTO.StudentId=item.UserId;
-                        studentDTO.MajorId=item.MajorId;
-                        studentDTO.Term=1;
-                        await _repository.AddNewStudentForStudentTable(studentDTO);
+                        Student student = new Student();
+                        student.StudentId=item.UserId;
+                        student.MajorId=item.MajorId;
+                        student.Term=1;
+                        await _repository.AddNewStudentForStudentTable(student);
                         }
                     return new APIResponse { IsSuccess=true, Message="Import sinh viên thành công." };
                     }
@@ -474,8 +483,6 @@ namespace UserService.Services.StudentServices
         #endregion
 
         #region Get Student By ID
-
-        #endregion
         /// <summary>
         /// Get All Student from Database
         /// </summary>
@@ -484,7 +491,9 @@ namespace UserService.Services.StudentServices
         public async Task<APIResponse> GetUserById(string userId)
             {
             APIResponse aPIResponse = new APIResponse();
-           UserDTO user = await _repository.GetStudentById(userId);
+           User user = await _repository.GetStudentById(userId);
+            UserDTO userDTO = new UserDTO();
+            userDTO.CopyProperties(user);
             using (var _db= new MyDbContext())
                 {
                 var student = await _db.Student.FirstOrDefaultAsync(x => x.StudentId==userId);
@@ -496,7 +505,7 @@ namespace UserService.Services.StudentServices
                         Message="Không tìm thấy sinh viên"
                         };
                     }
-                user.Term=student.Term;
+                userDTO.Term=student.Term;
                 }
             #region validation 
             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
@@ -515,9 +524,53 @@ namespace UserService.Services.StudentServices
                     }
                 }
             #endregion
-            aPIResponse.Result=user;
+            aPIResponse.Result=userDTO;
             return aPIResponse;
             }
+        #endregion
+
+        #region Change Users Status Selected 
+        /// <summary>
+        /// Change user status
+        /// </summary>
+        /// <param name="userIds"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        public async Task<APIResponse> ChangeUsersStatusSelected(List<string> userIds, int status)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            if (userIds==null||!userIds.Any())
+                {
+                aPIResponse.IsSuccess=false;
+                aPIResponse.Message="Danh sách sinh viên không hợp lệ.";
+                return aPIResponse;
+                }
+            bool isSuccess = await _userRepository.ChangeUserStatusSelected(userIds, status);
+            if (isSuccess)
+                {
+                aPIResponse.IsSuccess=true;
+                switch (status)
+                    {
+                    case 0:
+                        aPIResponse.Message="Đã thay đổi trạng thái các sinh viên thành 'Vô hiệu hóa'.";
+                        break;
+                    case 1:
+                        aPIResponse.Message="Các sinh viên đã được kích hoạt.";
+                        break;
+                    case 2:
+                        aPIResponse.Message="Các sinh viên đã hoãn tạm thời.";
+                        break;
+                    case 3:
+                        aPIResponse.Message="Các sinh viên đã tốt nghiệp.";
+                        break;
+                    default:
+                        aPIResponse.Message="Trạng thái không hợp lệ.";
+                        break;
+                    }
+                }
+            return aPIResponse;
+            }
+        #endregion
         }
     }
 

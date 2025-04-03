@@ -2,6 +2,7 @@
 using BusinessObject;
 using BusinessObject.ModelDTOs;
 using BusinessObject.Models;
+using ISUZU_NEXT.Server.Core.Extentions;
 using Microsoft.EntityFrameworkCore;
 using NuGet.DependencyResolver;
 using OfficeOpenXml;
@@ -41,7 +42,7 @@ namespace UserService.Services.TeacherService
         public async Task<APIResponse> GetAllTeacher()
             {
             APIResponse aPIResponse = new APIResponse();
-            List<UserDTO> teachers = await _repository.GetAllTeacher();
+            List<User> teachers = await _repository.GetAllTeacher();
             #region validation 
             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
             {
@@ -73,7 +74,7 @@ namespace UserService.Services.TeacherService
         public async Task<APIResponse> GetAllTeacherAvailableByMajorId(string majorId)
             {
             APIResponse aPIResponse = new APIResponse();
-            List<UserDTO> teachers = await _repository.GetAllTeacherAvailableByMajorId(majorId);
+            List<User> teachers = await _repository.GetAllTeacherAvailableByMajorId(majorId);
             #region validation 
             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
             {
@@ -240,7 +241,9 @@ namespace UserService.Services.TeacherService
                 userDTO.RoleId=4; //Id teacher là 4
                 userDTO.PasswordHash=HashPassword(userDTO.PasswordHash);
                 userDTO.Status=1; // 1 là đang hoạt động
-                bool isSuccess = await _repository.AddNewTeacher(userDTO);
+                User user = new User();
+                user.CopyProperties(userDTO);
+                bool isSuccess = await _repository.AddNewTeacher(user);
                 if (isSuccess)
                     {
                     return new APIResponse
@@ -311,8 +314,10 @@ namespace UserService.Services.TeacherService
                 {
                 userDTO.UserAvartar=teacher.UserAvartar;
                 }
-            #endregion
-            bool isSuccess = await _repository.UpdateTeacher(userDTO);
+            #endregion                             
+            User user = new User();
+            user.CopyProperties(userDTO);
+            bool isSuccess = await _repository.UpdateTeacher(user);
             if (isSuccess)
                 {
                 return new APIResponse
@@ -459,6 +464,45 @@ namespace UserService.Services.TeacherService
             }
         #endregion
 
+        #region Change Users Status Selected 
+        /// <summary>
+        /// Change user status
+        /// </summary>
+        /// <param name="userIds"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        public async Task<APIResponse> ChangeUsersStatusSelected(List<string> userIds, int status)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            if (userIds==null||!userIds.Any())
+                {
+                aPIResponse.IsSuccess=false;
+                aPIResponse.Message="Danh sách giáo viên không hợp lệ.";
+                return aPIResponse;
+                }
+            bool isSuccess = await _userRepository.ChangeUserStatusSelected(userIds, status);
+            if (isSuccess)
+                {
+                aPIResponse.IsSuccess=true;
+                switch (status)
+                    {
+                    case 0:
+                        aPIResponse.Message="Đã thay đổi trạng thái các giáo viên thành 'Vô hiệu hóa'.";
+                        break;
+                    case 1:
+                        aPIResponse.Message="Đã thay đổi trạng thái các giáo viên thành 'Đang khả dụng'.";
+                        break;
+                    case 2:
+                        aPIResponse.Message="Đã thay đổi trạng thái các giáo viên thành 'Đang tạm hoãn'.";
+                        break;
+                    default:
+                        aPIResponse.Message="Trạng thái không hợp lệ.";
+                        break;
+                    }
+                }
+            return aPIResponse;
+            }
+        #endregion
         }
     }
 

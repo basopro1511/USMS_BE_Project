@@ -1,21 +1,19 @@
-﻿using SchedulerBusinessObject.ModelDTOs;
-using SchedulerBusinessObject.SchedulerModels;
+﻿using SchedulerBusinessObject.SchedulerModels;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Repositories.RoomRepository
-{
-    public interface IRoomRepository
     {
-        public Task<List<RoomDTO>> GetAllRooms();
-        public Task<RoomDTO> GetRoomById(string id);
-        public Task<bool> AddNewRoom(RoomDTO roomDTO);
-        public Task<bool> UpdateRoom(RoomDTO updateRoomDTO);
-        public Task<bool> DeleteRoom(string id);
-        public Task<bool> ChangeRoomStatus(string roomId, int newStatus);
-        public Task<List<Room>> GetAvailableRooms(DateOnly date, TimeOnly startTime, TimeOnly endTime);
+    public interface IRoomRepository
+        {
+        Task<List<Room>> GetAllRooms();
+        Task<Room> GetRoomById(string id);
+        Task<bool> AddNewRoom(Room room);
+        Task<bool> UpdateRoom(Room updateRoom);
+        Task<bool> DeleteRoom(string id);
+        Task<bool> ChangeRoomStatus(string roomId, int newStatus);
+        Task<List<Room>> GetAvailableRooms(DateOnly date, TimeOnly startTime, TimeOnly endTime);
+        Task<bool> ChangeRoomStatusSelected(List<string> roomIds, int status);
         }
     }

@@ -1,4 +1,5 @@
-﻿using Repositories.RoomRepository;
+﻿using ISUZU_NEXT.Server.Core.Extentions;
+using Repositories.RoomRepository;
 using Repositories.ScheduleRepository;
 using SchedulerBusinessObject;
 using SchedulerBusinessObject.ModelDTOs;
@@ -29,18 +30,22 @@ namespace SchedulerService.Services.ExamScheduleServices
         public async Task<APIResponse> GetAllExamSchedules()
             {
             APIResponse aPIResponse = new APIResponse();
-            List<ExamScheduleDTO> examSchedules = await _examScheduleRepository.GetAllExamSchedule();
+            List<ExamSchedule> examSchedules = await _examScheduleRepository.GetAllExamSchedule();
             if (examSchedules==null)
                 {
                 aPIResponse.IsSuccess=false;
                 aPIResponse.Message="Không tìm thấy lịch thi khả dụng!";
                 }
+            List<ExamScheduleDTO> examScheduleDTOs = new List<ExamScheduleDTO>();
             foreach (var item in examSchedules)
                 {
+                ExamScheduleDTO exam = new ExamScheduleDTO();
                 int numberOfStudent = await _examScheduleRepository.CountStudentInExamSchedule(item.ExamScheduleId);
-                item.NumberOfStudentInExamSchedule =numberOfStudent;
+                exam.CopyProperties(item);
+                exam.NumberOfStudentInExamSchedule =numberOfStudent;
+                examScheduleDTOs.Add(exam);
                 }
-            aPIResponse.Result=examSchedules;
+            aPIResponse.Result=examScheduleDTOs;
             return aPIResponse;
             }
         #endregion
@@ -132,7 +137,9 @@ namespace SchedulerService.Services.ExamScheduleServices
                     Message=errorMsg
                     };
                 }
-            bool isAdded = await _examScheduleRepository.AddNewExamSchedule(examSchedule);
+            ExamSchedule exam = new ExamSchedule();
+            exam.CopyProperties(examSchedule);
+            bool isAdded = await _examScheduleRepository.AddNewExamSchedule(exam);
             if (isAdded)
                 {
                 return new APIResponse
@@ -167,7 +174,9 @@ namespace SchedulerService.Services.ExamScheduleServices
                     Message=errorMsg
                     };
                 }
-            bool isAdded = await _examScheduleRepository.UpdateExamSchedule(examSchedule);
+            ExamSchedule exam = new ExamSchedule();
+            exam.CopyProperties(examSchedule);
+            bool isAdded = await _examScheduleRepository.UpdateExamSchedule(exam);
             if (isAdded)
                 {
                 return new APIResponse
@@ -594,6 +603,46 @@ namespace SchedulerService.Services.ExamScheduleServices
             #endregion       
             aPIResponse.IsSuccess=true;
             aPIResponse.Result=examSchedules;
+            return aPIResponse;
+            }
+        #endregion
+
+        #region Change Exam SCHEDULE Status Selected 
+        /// <summary>
+        /// Change Exam SCHEDULE status
+        /// </summary>
+        /// <param name="userIds"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        public async Task<APIResponse> ChangeExamScheduleStatusSelected(List<int> Ids, int status)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            if (Ids==null||!Ids.Any())
+                {
+                aPIResponse.IsSuccess=false;
+                aPIResponse.Message="Danh sách lớp học không hợp lệ.";
+                return aPIResponse;
+                }
+            bool isSuccess = await _examScheduleRepository.ChangeExamScheduleStatusSelected(Ids, status);
+            if (isSuccess)
+                {
+                aPIResponse.IsSuccess=true;
+                switch (status)
+                    {
+                    case 0:
+                        aPIResponse.Message="Đã thay đổi trạng thái các lịnh thi đã chọn thành 'Chưa bắt đầu'.";
+                        break;
+                    case 1:
+                        aPIResponse.Message="Đã thay đổi trạng thái các lịnh thi đã chọn thành 'Đang diễn ra'.";
+                        break;
+                    case 2:
+                        aPIResponse.Message="Đã thay đổi trạng thái các lịnh thi đã chọn thành 'Đã kết thúc'.";
+                        break;
+                    default:
+                        aPIResponse.Message="Trạng thái không hợp lệ.";
+                        break;
+                    }
+                }
             return aPIResponse;
             }
         #endregion

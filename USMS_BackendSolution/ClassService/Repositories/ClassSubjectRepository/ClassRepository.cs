@@ -14,26 +14,20 @@ namespace Repositories.ClassSubjectRepository
     {
     public class ClassRepository : IClassRepository
         {
+        #region Get All Class Subject
         /// <summary>
         /// Get All Class Subjects
         /// </summary>
         /// <returns>A list of all Class Subject</returns>
         /// <exception cref="Exception"></exception>
-        public async Task<List<ClassSubjectDTO>> GetAllClassSubjects()
+        public async Task<List<ClassSubject>> GetAllClassSubjects()
             {
             try
                 {
                 using (var dbContext = new MyDbContext())
                     {
                     List<ClassSubject> classSubjects = await dbContext.ClassSubject.ToListAsync();
-                    List<ClassSubjectDTO> classSubjectDTOs = new List<ClassSubjectDTO>();
-                    foreach (var classSubject in classSubjects)
-                        {
-                        ClassSubjectDTO ClassSubjectDTO = new ClassSubjectDTO();
-                        ClassSubjectDTO.CopyProperties(classSubject);
-                        classSubjectDTOs.Add(ClassSubjectDTO);
-                        }
-                    return classSubjectDTOs;
+                    return classSubjects;
                     }
                 }
             catch (Exception ex)
@@ -41,78 +35,100 @@ namespace Repositories.ClassSubjectRepository
                 throw new Exception(ex.Message);
                 }
             }
+        #endregion
 
+        #region Get ClassSubject by ClassSubjectId
         /// <summary>
         /// Get ClassSubject by ClassSubjectId
         /// </summary>
         /// <param name="id"></param>
         /// <returns>a ClassSubject with suitable ClassSubjectId</returns>
         /// <exception cref="Exception"></exception>
-        public async Task<ClassSubjectDTO> GetClassSubjectById(int id)
-            {
-            try
-                {
-                var classSubjects = await GetAllClassSubjects();
-                ClassSubjectDTO? classSubjectDTO = classSubjects.FirstOrDefault(x => x.ClassSubjectId==id);
-                return  classSubjectDTO;
-                }
-            catch (Exception ex)
-                {
-                throw new Exception(ex.Message);
-                }
-            }
-
-        /// <summary>
-        /// Get ClassSubject by ClassId
-        /// </summary>
-        /// <param name="classId"></param>
-        /// <returns>a ClassSubject with suitable ClassId</returns>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="Exception"></exception>
-        public async Task<List<ClassSubjectDTO>> GetClassSubjectByClassIds(string classId)
-            {
-            try
-                {
-                var classSubjects = await GetAllClassSubjects();
-                List<ClassSubjectDTO> classSubjectDTOs = classSubjects.Where(x => x.ClassId==classId).ToList();
-                return classSubjectDTOs;
-                }
-            catch (Exception ex)
-                {
-                throw new Exception(ex.Message);
-                }
-            }
-
-        public async Task<ClassSubjectDTO> GetExistingClassSubject(string classId, string subjectId, string semesterId)
-            {
-            try
-                {
-                var classSubjects =await GetAllClassSubjects();
-                ClassSubjectDTO classSubjectDTO = classSubjects.FirstOrDefault(x => x.ClassId==classId&&x.SubjectId==subjectId&&x.SemesterId==semesterId);
-                return classSubjectDTO;
-                }
-            catch (Exception ex)
-                {
-                throw new Exception(ex.Message);
-                }
-            }
-
-        /// <summary>
-        /// Create new ClassSubject 
-        /// </summary>
-        /// <param name="classSubjectDTO"></param>
-        /// <returns>true if success</returns>
-        public async Task<bool> AddNewClassSubject(AddUpdateClassSubjectDTO classSubjectDTO)
+        public async Task<ClassSubject> GetClassSubjectById(int id)
             {
             try
                 {
                 using (var dbContext = new MyDbContext())
                     {
-                    var classSubject = new ClassSubject();
-                    classSubject.CopyProperties(classSubjectDTO);
+                    ClassSubject classSubject = await dbContext.ClassSubject.FirstOrDefaultAsync(x => x.ClassSubjectId==id);
+                    return classSubject;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
+        #region Get ClassSubject by ClassId
+        /// <summary>
+        /// Get ClassSubject by ClassId
+        /// </summary>
+        /// <param name="classId"></param>
+        /// <returns>A list of ClassSubject with the specified ClassId</returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<List<ClassSubject>> GetClassSubjectByClassIds(string classId)
+            {
+            try
+                {
+                using (var dbContext = new MyDbContext())
+                    {
+                    List<ClassSubject> classSubjects = await dbContext.ClassSubject
+                        .Where(x => x.ClassId==classId)
+                        .ToListAsync();
+                    return classSubjects;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
+        #region Get Existing ClassSubject
+        /// <summary>
+        /// Get an existing ClassSubject by ClassId, SubjectId and SemesterId
+        /// </summary>
+        /// <param name="classId"></param>
+        /// <param name="subjectId"></param>
+        /// <param name="semesterId"></param>
+        /// <returns>A ClassSubject matching the criteria</returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<ClassSubject> GetExistingClassSubject(string classId, string subjectId, string semesterId)
+            {
+            try
+                {
+                using (var dbContext = new MyDbContext())
+                    {
+                    ClassSubject classSubject = await dbContext.ClassSubject.FirstOrDefaultAsync(x => x.ClassId==classId&&x.SubjectId==subjectId&&
+                                                  x.SemesterId==semesterId);
+                    return classSubject;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
+        #region Add New ClassSubject
+        /// <summary>
+        /// Create new ClassSubject 
+        /// </summary>
+        /// <param name="classSubject">ClassSubject model object</param>
+        /// <returns>true if success</returns>
+        public async Task<bool> AddNewClassSubject(ClassSubject classSubject)
+            {
+            try
+                {
+                using (var dbContext = new MyDbContext())
+                    {
                     dbContext.ClassSubject.Add(classSubject);
                     classSubject.CreatedAt=DateTime.Now;
-                  await  dbContext.SaveChangesAsync();
+                    await dbContext.SaveChangesAsync();
                     return true;
                     }
                 }
@@ -121,24 +137,27 @@ namespace Repositories.ClassSubjectRepository
                 return false;
                 }
             }
+        #endregion
 
+        #region Update ClassSubject
         /// <summary>
-        /// Update Class Subject
+        /// Update ClassSubject
         /// </summary>
-        /// <param name="updateClassSubjectDTO"></param>
-        /// <returns></returns>
-        public async Task<bool> UpdateClassSubject(AddUpdateClassSubjectDTO updateClassSubjectDTO)
+        /// <param name="updatedClassSubject">ClassSubject model object with updated data</param>
+        /// <returns>true if update success</returns>
+        public async Task<bool> UpdateClassSubject(ClassSubject updatedClassSubject)
             {
             try
                 {
                 using (var dbContext = new MyDbContext())
                     {
-                    var existingClassSubject = await GetClassSubjectToUpdate(updateClassSubjectDTO.ClassSubjectId);
+                    var existingClassSubject = await dbContext.ClassSubject
+                        .FirstOrDefaultAsync(cs => cs.ClassSubjectId==updatedClassSubject.ClassSubjectId);
                     if (existingClassSubject==null)
                         {
                         return false;
                         }
-                    existingClassSubject.CopyProperties(updateClassSubjectDTO);
+                    existingClassSubject.CopyProperties(updatedClassSubject);
                     dbContext.Entry(existingClassSubject).State=EntityState.Modified;
                     await dbContext.SaveChangesAsync();
                     return true;
@@ -149,12 +168,14 @@ namespace Repositories.ClassSubjectRepository
                 return false;
                 }
             }
+        #endregion
 
+        #region Get ClassSubject to Update
         /// <summary>
-        /// Method use to get ClassSubject to update
+        /// Method used to get ClassSubject to update
         /// </summary>
         /// <param name="id"></param>
-        /// <returns></returns>
+        /// <returns>The existing ClassSubject</returns>
         /// <exception cref="Exception"></exception>
         public async Task<ClassSubject> GetClassSubjectToUpdate(int id)
             {
@@ -162,7 +183,7 @@ namespace Repositories.ClassSubjectRepository
                 {
                 using (var dbContext = new MyDbContext())
                     {
-                    var existingClassSubject =await dbContext.ClassSubject.FirstOrDefaultAsync(cs => cs.ClassSubjectId==id);
+                    var existingClassSubject = await dbContext.ClassSubject.FirstOrDefaultAsync(cs => cs.ClassSubjectId==id);
                     return existingClassSubject;
                     }
                 }
@@ -171,12 +192,14 @@ namespace Repositories.ClassSubjectRepository
                 throw new Exception(ex.Message, ex);
                 }
             }
+        #endregion
 
+        #region Change Status of ClassSubject
         /// <summary>
-        /// Update Status of Class Subject
+        /// Update Status of ClassSubject
         /// </summary>
         /// <param name="id"></param>
-        /// <returns></returns>
+        /// <returns>true if update success</returns>
         /// <exception cref="Exception"></exception>
         public async Task<bool> ChangeStatusClassSubject(int id)
             {
@@ -184,8 +207,14 @@ namespace Repositories.ClassSubjectRepository
                 {
                 using (var dbContext = new MyDbContext())
                     {
-                    ClassSubject classSubject = await GetClassSubjectToUpdate(id);
-                    classSubject.Status=classSubject.Status;
+                    ClassSubject classSubject = await dbContext.ClassSubject.FirstOrDefaultAsync(cs => cs.ClassSubjectId==id);
+                    if (classSubject==null)
+                        {
+                        return false;
+                        }
+
+                    // Cập nhật trạng thái theo logic nghiệp vụ (ở đây chưa có thay đổi cụ thể)
+                    // Ví dụ: classSubject.Status = newStatus;
                     await dbContext.SaveChangesAsync();
                     return true;
                     }
@@ -195,17 +224,28 @@ namespace Repositories.ClassSubjectRepository
                 throw new Exception(ex.Message, ex);
                 }
             }
+        #endregion
 
         #region Get ClassSubject by MajorId, ClassId, Term
-        public async Task<List<ClassSubjectDTO>> GetClassSubjectByMajorIdClassIdTerm(string majorId, string classId, int term)
+        /// <summary>
+        /// Get ClassSubject by MajorId, ClassId, and Term
+        /// </summary>
+        /// <param name="majorId"></param>
+        /// <param name="classId"></param>
+        /// <param name="term"></param>
+        /// <returns>A list of ClassSubject matching the criteria</returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<List<ClassSubject>> GetClassSubjectByMajorIdClassIdTerm(string majorId, string classId, int term)
             {
             try
                 {
-                var classSubjects = await GetAllClassSubjects();
-                classSubjects= classSubjects.Where(cs => cs.MajorId==majorId
-                          &&cs.ClassId==classId
-                          &&cs.Term==term).ToList();
-                return classSubjects;
+                using (var dbContext = new MyDbContext())
+                    {
+                    List<ClassSubject> classSubjects = await dbContext.ClassSubject
+                        .Where(cs => cs.MajorId==majorId&&cs.ClassId==classId&&cs.Term==term)
+                        .ToListAsync();
+                    return classSubjects;
+                    }
                 }
             catch (Exception ex)
                 {
@@ -214,7 +254,7 @@ namespace Repositories.ClassSubjectRepository
             }
         #endregion
 
-        #region Lấy danh sách ClassId dựa vào MajorId
+        #region Get ClassIds by MajorId
         /// <summary>
         /// Lấy danh sách ClassId (phân biệt) dựa vào MajorId
         /// </summary>
@@ -226,11 +266,10 @@ namespace Repositories.ClassSubjectRepository
                 {
                 using (var dbContext = new MyDbContext())
                     {
-                    var classIds = await dbContext.ClassSubject
-                                                  .Where(cs => cs.MajorId==majorId)
-                                                  .Select(cs => cs.ClassId)
-                                                  .Distinct()
-                                                  .ToListAsync();
+                    var classIds = await dbContext.ClassSubject.Where(cs => cs.MajorId==majorId)
+                        .Select(cs => cs.ClassId)
+                        .Distinct()
+                        .ToListAsync();
                     return classIds;
                     }
                 }
@@ -239,7 +278,6 @@ namespace Repositories.ClassSubjectRepository
                 throw new Exception($"Lỗi khi lấy ClassId cho MajorId={majorId}: {ex.Message}", ex);
                 }
             }
-
         #endregion
 
         #region Get Subject in ClassSubject to provide SubjectId for add ExamSchedule
@@ -248,25 +286,18 @@ namespace Repositories.ClassSubjectRepository
         /// </summary>
         /// <param name="majorId"></param>
         /// <param name="semesterId"></param>
-        /// <returns></returns>
-        public async Task<List<ClassSubjectDTO>> GetSubjectInClassSubjectByMajorIdAndSemesterId(string majorId, string semesterId)
+        /// <returns>A list of ClassSubject matching the criteria</returns>
+        public async Task<List<ClassSubject>> GetSubjectInClassSubjectByMajorIdAndSemesterId(string majorId, string semesterId)
             {
             try
                 {
                 using (var dbContext = new MyDbContext())
                     {
                     List<ClassSubject>? classSubjects = await dbContext.ClassSubject.Where(x => x.MajorId==majorId&&x.SemesterId==semesterId)
-                        .GroupBy(x => x.SubjectId)
-                        .Select(g => g.First())
-                        .ToListAsync();
-                    List<ClassSubjectDTO> classSubjectDTOs = new List<ClassSubjectDTO>();
-                    foreach (var item in classSubjects)
-                        {
-                        ClassSubjectDTO classSubjectDTO = new ClassSubjectDTO();
-                        classSubjectDTO.CopyProperties(item);
-                        classSubjectDTOs.Add(classSubjectDTO);
-                        }
-                    return classSubjectDTOs;
+                .GroupBy(x => x.SubjectId)
+                .Select(g => g.First())
+                .ToListAsync();
+                    return classSubjects;
                     }
                 }
             catch (Exception ex)
@@ -276,5 +307,36 @@ namespace Repositories.ClassSubjectRepository
             }
         #endregion
 
+        #region
+        /// <summary>
+        /// Change Class selected Status 
+        /// </summary>
+        /// <param name="userIds"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<bool> ChangeClassStatusSelected(List<int> classIds, int status)
+            {
+            try
+                {
+                using (var _db = new MyDbContext())
+                    {
+                    var Ids = await _db.ClassSubject.Where(x => classIds.Contains(x.ClassSubjectId)).ToListAsync();
+                    if (!Ids.Any())
+                        return false;
+                    foreach (var item in Ids)
+                        {
+                        item.Status=status;
+                        }
+                    await _db.SaveChangesAsync();
+                    return true;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
         }
     }

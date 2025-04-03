@@ -18,43 +18,43 @@ namespace SchedulerService.Controllers.StudentInExamScheduleController
             }
 
         [HttpGet("{id}")]
-        public async Task<APIResponse> GetAllStudentInExamScheduleByExamScheduleId(int id)
+        public async Task<IActionResult> GetAllStudentInExamScheduleByExamScheduleId(int id)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _service.GetAllStudentInExamScheduleByExamScheduleId(id);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         [HttpPost]
-        public async Task<APIResponse> AddStudentToExamSchedule(StudentInExamScheduleDTO studentInExamScheduleDTO)
+        public async Task<IActionResult> AddStudentToExamSchedule(StudentInExamScheduleDTO studentInExamScheduleDTO)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _service.AddNewStudentToExamSchedule(studentInExamScheduleDTO);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         [HttpPost("AddMutipleStudents")]
-        public async Task<APIResponse> AddMutipleStudentToExamSchedule(List<StudentInExamScheduleDTO> studentInExamScheduleDTOs)
+        public async Task<IActionResult> AddMutipleStudentToExamSchedule(List<StudentInExamScheduleDTO> studentInExamScheduleDTOs)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _service.AddMultipleStudentsToExamSchedule(studentInExamScheduleDTOs);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         [HttpDelete("{id}")]
-        public async Task<APIResponse> RemoveStudentToClass(int id)
+        public async Task<IActionResult> RemoveStudentToClass(int id)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _service.RemoveStudentInExamScheduleClass(id);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         [HttpGet("AvailableStudents/{id}")]
-        public async Task<APIResponse> AvailableStudent(int id)
+        public async Task<IActionResult> AvailableStudent(int id)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _service.GetAvailableStudentsForExamSchedule(id);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         }

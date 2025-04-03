@@ -25,11 +25,11 @@ namespace UserService.Controllers.AuthController
             }
 
         [HttpPost]
-        public async Task<APIResponse> Login([FromBody] LoginDTO model)
+        public async Task<IActionResult> Login([FromBody] LoginDTO model)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse= await _loginService.Login(model);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         private string GenerateJwtToken(string username)

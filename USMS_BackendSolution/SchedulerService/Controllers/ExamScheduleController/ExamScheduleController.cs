@@ -20,86 +20,94 @@ namespace SchedulerService.Controllers.ExamScheduleController
 
         // GET: api/ExamSchedules
         [HttpGet]
-        public async Task<APIResponse> GetAllExamSchedules()
+        public async Task<IActionResult> GetAllExamSchedules()
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _examScheduleService.GetAllExamSchedules();
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         // GET: api/UnassignedTeacherExamSchedules
         [HttpGet("UnassignedTeacherExamSchedules")]
-        public async Task<APIResponse> GetUnassignedTeacherExamSchedules()
+        public async Task<IActionResult> GetUnassignedTeacherExamSchedules()
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _examScheduleService.GetUnassignedTeacherExamSchedules();
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         // GET: api/UnassignedRoomExamSchedules
         [HttpGet("UnassignedRoomExamSchedules")]
-        public async Task<APIResponse> GetUnassignedRoomExamSchedules()
+        public async Task<IActionResult> GetUnassignedRoomExamSchedules()
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _examScheduleService.GetUnassignedRoomExamSchedules();
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         [HttpPost]
-        public async Task<APIResponse> AddNewExamSchedule(ExamScheduleDTO examScheduleDTO)
+        public async Task<IActionResult> AddNewExamSchedule(ExamScheduleDTO examScheduleDTO)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _examScheduleService.AddNewExamSchedule(examScheduleDTO);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         [HttpPut]
-        public async Task<APIResponse> UpdateExamSchedule(ExamScheduleDTO examScheduleDTO)
+        public async Task<IActionResult> UpdateExamSchedule(ExamScheduleDTO examScheduleDTO)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _examScheduleService.UpdateExamSchedule(examScheduleDTO);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
 
         [HttpPut("AssignTeacher/{id}/{teacherId}")]
-        public async Task<APIResponse> AssignTeacher(int id, string teacherId)
+        public async Task<IActionResult> AssignTeacher(int id, string teacherId)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _examScheduleService.AssignTeacherToExamSchedule(id, teacherId);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         [HttpPut("AssignRoom/{id}/{roomId}")]
-        public async Task<APIResponse> AssignRoom(int id, string roomId)
+        public async Task<IActionResult> AssignRoom(int id, string roomId)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _examScheduleService.AssignRoomToExamSchedule(id, roomId);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         [HttpGet("AvailableTeachers/{date}/{startTime}/{endTime}")]
-        public async Task<APIResponse> GetAvailableTeachers(DateOnly date, TimeOnly startTime, TimeOnly endTime)
+        public async Task<IActionResult> GetAvailableTeachers(DateOnly date, TimeOnly startTime, TimeOnly endTime)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _examScheduleService.GetAllTeacherAvailableForAddExamSchedule(date,startTime,endTime);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         [HttpGet("Student/{id}")]
-        public async Task<APIResponse> GetExamScheduleForStudent(string id)
+        public async Task<IActionResult> GetExamScheduleForStudent(string id)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _examScheduleService.GetExamScheduleForStudent(id);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
         [HttpGet("Teacher/{id}")]
-        public async Task<APIResponse> GetExamScheduleForTeacher(string id)
+        public async Task<IActionResult> GetExamScheduleForTeacher(string id)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _examScheduleService.GetExamScheduleForTeacher(id);
-            return aPIResponse;
+            return Ok(aPIResponse);
+            }
+
+        [HttpPut("ChangeSelectStatus")]
+        public async Task<IActionResult> ChangeStatusClassSubject(List<int> ids, int status)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=await _examScheduleService.ChangeExamScheduleStatusSelected(ids, status);
+            return Ok(aPIResponse);
             }
         }
     }

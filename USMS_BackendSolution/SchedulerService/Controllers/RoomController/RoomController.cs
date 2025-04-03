@@ -19,73 +19,78 @@ namespace SchedulerService.Controllers.RoomController
 
         // GET: api/Rooms
         [HttpGet]
-        public async Task<APIResponse> GetAllRoom()
+        public async Task<IActionResult> GetAllRoom()
         {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse =await _roomService.GetAllRooms();
-            return aPIResponse;
+            return Ok(aPIResponse);
         }
 
         //GET: api/Rooms/{Id}
         [HttpGet("{id}")]
-        public async Task<APIResponse> GetRoomById(string id)
+        public async Task<IActionResult> GetRoomById(string id)
         {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse =await _roomService.GetRoomById(id);
-            return aPIResponse;
+            return Ok(aPIResponse);
         }
 
         //POST: api/Rooms
         [HttpPost]
-        public async Task<APIResponse> AddNewRoom(RoomDTO roomDTO)
+        public async Task<IActionResult> AddNewRoom(RoomDTO roomDTO)
         {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse =await _roomService.AddNewRoom(roomDTO);
-            return aPIResponse;
+            return Ok(aPIResponse);
         }
 
         //PUT: api/Rooms
         [HttpPut]
-        public async Task<APIResponse> UpdateRoom(RoomDTO room)
+        public async Task<IActionResult> UpdateRoom(RoomDTO room)
         {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse =await _roomService.UpdateRoom(room);
-            return aPIResponse;
+            return Ok(aPIResponse);
         }
         //PUT: api/Rooms
         [HttpDelete("{id}")]
-        public async Task<APIResponse> DeleteRoom(string id)
+        public async Task<IActionResult> DeleteRoom(string id)
         {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse =await _roomService.DeleteRoom(id);
-            return aPIResponse;
+            return Ok(aPIResponse);
         }
 
         [HttpGet("ChangeStatus/{id}/{status}")]
-        public async Task<APIResponse> ChangeStatusRoomDisable(string id, int status)
+        public async Task<IActionResult> ChangeStatusRoomDisable(string id, int status)
         {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse =await _roomService.ChangeRoomStatus(id,status);
-            return aPIResponse;
+            return Ok(aPIResponse);
         }
 
         [HttpGet("AvailableRooms/{date}/{slotId}")]
-        public async Task<APIResponse> GetAvailableRooms(DateOnly date,int slotId)
+        public async Task<IActionResult> GetAvailableRooms(DateOnly date,int slotId)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse =await _roomService.GetAvailableRooms(date, slotId);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
 
 
         [HttpGet("AvailableRoomsToAddExamSchedule/{date}/{startTime}/{endTime}")]
-        public async Task<APIResponse> AvailableRooms(DateOnly date, TimeOnly startTime, TimeOnly endTime)
+        public async Task<IActionResult> AvailableRooms(DateOnly date, TimeOnly startTime, TimeOnly endTime)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _roomService.GetAvailableRooms(date, startTime, endTime);
-            return aPIResponse;
+            return Ok(aPIResponse);
+            }
+        [HttpPut("ChangeSelectStatus")]
+        public async Task<IActionResult> ChangeStatusRoomSelected(List<string> ids, int status)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=await _roomService.ChangeRoomStatusSelected(ids, status);
+            return Ok(aPIResponse);
             }
         }
-
-
 }

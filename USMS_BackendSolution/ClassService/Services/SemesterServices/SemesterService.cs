@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ClassBusinessObject.Models;
+using ISUZU_NEXT.Server.Core.Extentions;
 
 namespace Services.SemesterServices
 {
@@ -22,10 +24,10 @@ namespace Services.SemesterServices
         /// Retrieve all Semesters in Database
         /// </summary>
         /// <returns>A list of all Semesters in DB</returns>
-        public APIResponse GetAllSemesters()
+        public async Task<APIResponse> GetAllSemesters()
         {
             APIResponse response = new APIResponse();
-            List<SemesterDTO> semesters = _semesterRepository.GetAllSemesters();
+            List<Semester> semesters =await _semesterRepository.GetAllSemesters();
             if (semesters == null || !semesters.Any())
             {
                 response.IsSuccess = false;
@@ -42,10 +44,10 @@ namespace Services.SemesterServices
         /// </summary>
         /// <param name="id"></param>
         /// <returns>A Semester by ID</returns>
-        public APIResponse GetSemesterById(string id)
+        public async Task<APIResponse> GetSemesterById(string id)
         {
             APIResponse response = new APIResponse();
-            SemesterDTO semester = _semesterRepository.GetSemesterById(id);
+            Semester semester =await _semesterRepository.GetSemesterById(id);
             if (semester == null)
             {
                 response.IsSuccess = false;
@@ -61,10 +63,10 @@ namespace Services.SemesterServices
         /// Add a new Semester to the database
         /// </summary>
         /// <param name="semesterDto"></param>
-        public APIResponse AddSemester(SemesterDTO semesterDto)
+        public async Task<APIResponse> AddSemester(SemesterDTO semesterDto)
         {
             APIResponse response = new APIResponse();
-            SemesterDTO existingSemester = _semesterRepository.GetSemesterById(semesterDto.SemesterId);
+            Semester existingSemester =await _semesterRepository.GetSemesterById(semesterDto.SemesterId);
             if (existingSemester != null)
             {
                 return new APIResponse
@@ -73,7 +75,9 @@ namespace Services.SemesterServices
                     Message = $" Kỳ học với mã: {semesterDto.SemesterId} đã tồn tại. Vui lòng kiểm tra lại"
                 };
             }
-            bool isAdded = _semesterRepository.AddNewSemester(semesterDto);
+            Semester semester = new Semester();
+            semester.CopyProperties(semesterDto);
+            bool isAdded =await _semesterRepository.AddNewSemester(semester);
             if (isAdded)
             {
                 response.IsSuccess = true;
@@ -93,10 +97,10 @@ namespace Services.SemesterServices
         /// Update an existing Semester
         /// </summary>
         /// <param name="semesterDto"></param>
-        public APIResponse UpdateSemester(SemesterDTO semesterDto)
+        public async Task<APIResponse> UpdateSemester(SemesterDTO semesterDto)
         {
             APIResponse response = new APIResponse();
-            SemesterDTO existingSemester = _semesterRepository.GetSemesterById(semesterDto.SemesterId);
+            Semester existingSemester =await _semesterRepository.GetSemesterById(semesterDto.SemesterId);
             if (existingSemester == null)
             {
                 return new APIResponse
@@ -112,8 +116,10 @@ namespace Services.SemesterServices
                     IsSuccess = false,
                     Message = "Ngày bắt đầu không thể diển ra sau ngày kết thúc."
                 };
-            } 
-            bool isUpdated = _semesterRepository.UpdateSemester(semesterDto);
+                }
+            Semester semester = new Semester();
+            semester.CopyProperties(semesterDto);
+            bool isUpdated =await _semesterRepository.UpdateSemester(semester);
             if (isUpdated)
             {
                 response.IsSuccess = true;
@@ -134,10 +140,10 @@ namespace Services.SemesterServices
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public APIResponse ChangeStatusSemester(string id, int status)
+        public async Task<APIResponse> ChangeStatusSemester(string id, int status)
         {
             APIResponse response = new APIResponse();
-            SemesterDTO existingSemester = _semesterRepository.GetSemesterById(id);
+            Semester existingSemester =await _semesterRepository.GetSemesterById(id);
             if (existingSemester == null)
             {
                 return new APIResponse
@@ -147,7 +153,6 @@ namespace Services.SemesterServices
                 };
             }
             // Validate status input
-
             if (status < 0 || status > 2)
             {
                 response.IsSuccess = false;
@@ -155,20 +160,20 @@ namespace Services.SemesterServices
                 return response;
             }
             // Update the semester's status
-            bool isUpdated = _semesterRepository.ChangeStatusSemester(id, status);
+            bool isUpdated = await _semesterRepository.ChangeStatusSemester(id, status);
             if (isUpdated)
             {
                 response.IsSuccess = true;
                 // Provide the message based on the status value
                 switch (status)
                 {
-                    case 0:
+                    case 2:
                         response.Message = $" Kỳ học với mã: {id} đã kết thúc.";
                         break;
                     case 1:
                         response.Message = $" Kỳ học với mã: {id} đang diễn ra.";
                         break;
-                    case 2:
+                    case 0:
                         response.Message = $" Kỳ học với mã: {id} chưa bắt đầu.";
                         break;
                 }

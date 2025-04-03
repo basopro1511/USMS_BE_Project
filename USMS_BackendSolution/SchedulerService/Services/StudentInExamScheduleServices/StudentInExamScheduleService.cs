@@ -1,4 +1,5 @@
-﻿using SchedulerBusinessObject;
+﻿using ISUZU_NEXT.Server.Core.Extentions;
+using SchedulerBusinessObject;
 using SchedulerBusinessObject.ModelDTOs;
 using SchedulerBusinessObject.SchedulerModels;
 using SchedulerService.Repository.SlotRepository;
@@ -30,18 +31,17 @@ namespace SchedulerService.Services.StudentInExamScheduleServices
             try
                 {
                 APIResponse aPIResponse = new APIResponse();
-                List<StudentInExamScheduleDTO> studentInExamSchedules = await _repository.GetAllStudentInExamScheduleByExamScheduleId(examScheduleId);
+                List<StudentInExamSchedule> studentModels = await _repository.GetAllStudentInExamScheduleByExamScheduleId(examScheduleId);
                 List<StudentDTO> studentDTOs = new List<StudentDTO>();
-                if (studentInExamSchedules==null)
+                if (studentModels==null||studentModels.Count==0)
                     {
                     aPIResponse.IsSuccess=false;
                     aPIResponse.Message="Không có sinh viên nào trong phòng thi";
                     return aPIResponse;
                     }
-                foreach (var item in studentInExamSchedules)
+                foreach (var item in studentModels)
                     {
-                    StudentDTO studentDTO = new StudentDTO();
-                    studentDTO=await getStudentData(item.StudentId);
+                    StudentDTO studentDTO = await GetStudentData(item.StudentId);
                     if (studentDTO==null)
                         {
                         aPIResponse.IsSuccess=false;
@@ -51,7 +51,6 @@ namespace SchedulerService.Services.StudentInExamScheduleServices
                     studentDTO.ExamScheduleId=examScheduleId;
                     studentDTO.StudentExamId=item.StudentExamId;
                     studentDTOs.Add(studentDTO);
-
                     }
                 aPIResponse.IsSuccess=true;
                 aPIResponse.Result=studentDTOs;
@@ -76,34 +75,26 @@ namespace SchedulerService.Services.StudentInExamScheduleServices
             try
                 {
                 APIResponse aPIResponse = new APIResponse();
-                var student = await _repository.GetStudentInExamScheduleByExamScheduleIdAndStudentId(examScheduleDTO.ExamScheduleId, examScheduleDTO.StudentId);
-                if (student==null)
+                StudentInExamSchedule existingModel = await _repository.GetStudentInExamScheduleByExamScheduleIdAndStudentId(examScheduleDTO.ExamScheduleId, examScheduleDTO.StudentId);
+                if (existingModel!=null)
                     {
                     aPIResponse.IsSuccess=false;
-                    aPIResponse.Message="Không tìm thấy sinh viên trong phòng.";
-                    }
-                int numberOfStudent = await _repository.CountStudentInExamSchedule(examScheduleDTO.ExamScheduleId);
-                int numberOfStudentAfterAdd = numberOfStudent+1;
-                if (numberOfStudentAfterAdd>20)
-                    {
-                    aPIResponse.IsSuccess=false;
-                    aPIResponse.Message="Số lượng sinh viên thêm vào đã giới hạn của phòng ( giới hạn 1 phòng có tối đa 20 sinh viên )";
+                    aPIResponse.Message="Sinh viên này đã có trong phòng thi.";
                     return aPIResponse;
                     }
-                bool success = await _repository.AddNewStudentToExamSchedule(examScheduleDTO);
-                if (success)
+                int numberOfStudent = await _repository.CountStudentInExamSchedule(examScheduleDTO.ExamScheduleId);
+                if (numberOfStudent+1>20)
                     {
-                    return new APIResponse
-                        {
-                        IsSuccess=true,
-                        Message="Thêm sinh viên vào phòng thi thành công"
-                        };
+                    aPIResponse.IsSuccess=false;
+                    aPIResponse.Message="Số lượng sinh viên thêm vào đã giới hạn của phòng (giới hạn tối đa 20 sinh viên).";
+                    return aPIResponse;
                     }
-                return new APIResponse
-                    {
-                    IsSuccess=false,
-                    Message="Thêm sinh viên vào phòng thi thất bại! "
-                    };
+                StudentInExamSchedule model = new StudentInExamSchedule();
+                model.CopyProperties(examScheduleDTO);
+                bool success = await _repository.AddNewStudentToExamSchedule(model);
+                if (success)
+                    return new APIResponse { IsSuccess=true, Message="Thêm sinh viên vào phòng thi thành công" };
+                return new APIResponse { IsSuccess=false, Message="Thêm sinh viên vào phòng thi thất bại!" };
                 }
             catch (Exception ex)
                 {
@@ -149,27 +140,28 @@ namespace SchedulerService.Services.StudentInExamScheduleServices
                 {
                 APIResponse aPIResponse = new APIResponse();
                 int examScheduleId = studentInExamScheduleDTOs.First().ExamScheduleId;
-                List<StudentInExamScheduleDTO> existingStudents = await _repository.GetAllStudentInExamScheduleByExamScheduleId(examScheduleId);
-                var existingStudentIds = new HashSet<string>(existingStudents.Select(s => s.StudentId));
-                // Lọc sinh viên chưa có trong lớp
-                List<StudentInExamScheduleDTO> newStudents = studentInExamScheduleDTOs
-                    .Where(dto => !existingStudentIds.Contains(dto.StudentId))
-                    .ToList();
+                List<StudentInExamSchedule> existingModels = await _repository.GetAllStudentInExamScheduleByExamScheduleId(examScheduleId);
+                var existingStudentIds = new HashSet<string>(existingModels.Select(s => s.StudentId));
+                List<StudentInExamScheduleDTO> newStudents = studentInExamScheduleDTOs.Where(dto => !existingStudentIds.Contains(dto.StudentId)).ToList();
                 if (newStudents.Count==0)
                     {
                     aPIResponse.IsSuccess=false;
                     aPIResponse.Message="Tất cả sinh viên đã có trong lớp.";
                     return aPIResponse;
                     }
-                int numberOfStudent = await _repository.CountStudentInExamSchedule(examScheduleId);
-                int numberOfStudentAfterAdd = numberOfStudent+newStudents.Count;
-                if (numberOfStudentAfterAdd>40)
+                if (await _repository.CountStudentInExamSchedule(examScheduleId)+newStudents.Count>40)
                     {
                     aPIResponse.IsSuccess=false;
-                    aPIResponse.Message="Số lượng sinh viên thêm vào đã giới hạn của lớp ( giới hạn 1 lớp có tối đa 40 sinh viên )";
+                    aPIResponse.Message="Số lượng sinh viên thêm vào đã vượt quá giới hạn của lớp (tối đa 40 sinh viên).";
                     return aPIResponse;
                     }
-                bool success = await _repository.AddMultipleStudentsToExamSchedule(newStudents);
+                List<StudentInExamSchedule> models = newStudents.Select(dto =>
+                {
+                    StudentInExamSchedule m = new StudentInExamSchedule();
+                    m.CopyProperties(dto);
+                    return m;
+                }).ToList();
+                bool success = await _repository.AddMultipleStudentsToExamSchedule(models);
                 aPIResponse.IsSuccess=success;
                 aPIResponse.Message=success ? $"Thêm {newStudents.Count} sinh viên thành công." : "Thêm sinh viên thất bại.";
                 aPIResponse.Result=newStudents;
@@ -189,30 +181,17 @@ namespace SchedulerService.Services.StudentInExamScheduleServices
         /// <param name="studentId"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        private async Task<StudentDTO> getStudentData(string studentId)
+        private async Task<StudentDTO> GetStudentData(string studentId)
             {
             try
                 {
                 var response = await _httpClient.GetAsync($"https://localhost:7067/api/Student/{studentId}");
-                if (!response.IsSuccessStatusCode)
-                    {
-                    return null;
-                    }
+                if (!response.IsSuccessStatusCode) return null;
                 var apiResponse = await response.Content.ReadFromJsonAsync<APIResponse>();
-                if (apiResponse==null||!apiResponse.IsSuccess)
-                    {
-                    return null;
-                    }
-                if (apiResponse.Result is not JsonElement dataResponse)
-                    {
-                    return null;
-                    }
-                var options = new JsonSerializerOptions
-                    {
-                    PropertyNameCaseInsensitive=true
-                    };
-                var student = dataResponse.Deserialize<StudentDTO>(options);
-                return student;
+                if (apiResponse==null||!apiResponse.IsSuccess) return null;
+                if (apiResponse.Result is not JsonElement dataResponse) return null;
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive=true };
+                return dataResponse.Deserialize<StudentDTO>(options);
                 }
             catch (Exception ex)
                 {
@@ -265,35 +244,34 @@ namespace SchedulerService.Services.StudentInExamScheduleServices
         public async Task<APIResponse> GetAvailableStudentsForExamSchedule(int examScheduleId)
             {
             APIResponse aPIResponse = new APIResponse();
-            // Lấy danh sách tất cả sinh viên
             List<StudentDTO> allStudents = await getAllStudent();
-            // Lấy danh sách sinh viên đã có trong lớp
-            List<StudentInExamScheduleDTO> studentsInClass = await _repository.GetAllStudentInExamScheduleByExamScheduleId(examScheduleId);
+            List<StudentInExamSchedule> studentModels = await _repository.GetAllStudentInExamScheduleByExamScheduleId(examScheduleId);
+            List<StudentInExamScheduleDTO> studentsInExam = new List<StudentInExamScheduleDTO>();
+            if (studentModels!=null)
+                {
+                foreach (var model in studentModels)
+                    {
+                    StudentInExamScheduleDTO dto = new StudentInExamScheduleDTO();
+                    dto.CopyProperties(model);
+                    studentsInExam.Add(dto);
+                    }
+                }
             if (allStudents==null||allStudents.Count==0)
                 {
                 aPIResponse.IsSuccess=false;
                 aPIResponse.Message="Không tìm thấy sinh viên nào.";
                 return aPIResponse;
                 }
-            if (studentsInClass==null)
-                {
-                studentsInClass=new List<StudentInExamScheduleDTO>();
-                }
-            // Loại bỏ những sinh viên đã có trong lớp
-            List<StudentDTO> availableStudents = allStudents.Where(student => !studentsInClass.Any(sic => sic.StudentId==student.UserId))
-                .ToList();
+            List<StudentDTO> availableStudents = allStudents.Where(student => !studentsInExam.Any(sic => sic.StudentId==student.UserId)).ToList();
             if (availableStudents.Count==0)
                 {
                 aPIResponse.IsSuccess=false;
                 aPIResponse.Message="Tất cả sinh viên đã có trong lớp.";
                 return aPIResponse;
                 }
-            else
-                {
-                aPIResponse.IsSuccess=true;
-                aPIResponse.Result=availableStudents;
-                return aPIResponse;
-                }
+            aPIResponse.IsSuccess=true;
+            aPIResponse.Result=availableStudents;
+            return aPIResponse;
             }
         #endregion
 

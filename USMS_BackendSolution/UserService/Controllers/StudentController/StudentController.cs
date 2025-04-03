@@ -1,4 +1,5 @@
-﻿using BusinessObject;
+﻿using Azure;
+using BusinessObject;
 using BusinessObject.ModelDTOs;
 using Microsoft.AspNetCore.Mvc;
 using UserService.Services.StudentServices;
@@ -14,53 +15,64 @@ namespace UserService.Controllers.StudentController
         {
             _service= studentService;
         }
+
         #region Get All Student
         [HttpGet]
-        public async Task<APIResponse> GetAllStudent()
+        public async Task<IActionResult> GetAllStudent()
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _service.GetAllStudent();
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
         #endregion
 
         #region Get Student By Id
         [HttpGet("{id}")]
-        public async Task<APIResponse> GetStudentById(string id)
+        public async Task<IActionResult> GetStudentById(string id)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _service.GetUserById(id);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
         #endregion
 
         #region Add New Student
         [HttpPost]
-        public async Task<APIResponse> AddNewStudent(UserDTO userDTO)
+        public async Task<IActionResult> AddNewStudent(UserDTO userDTO)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _service.AddNewStudent(userDTO);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
         #endregion
 
         #region Update Student
         [HttpPut]
-        public async Task<APIResponse> UpdateStudent(UserDTO userDTO)
+        public async Task<IActionResult> UpdateStudent(UserDTO userDTO)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _service.UpdateStudent(userDTO);
-            return aPIResponse;
+            return Ok(aPIResponse);
             }
         #endregion
 
         #region Import From Excel
         [HttpPost("import")]
-        public async Task<APIResponse> ImportStudents(IFormFile file)
+        public async Task<IActionResult> ImportStudents(IFormFile file)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _service.ImportStudentsFromExcel(file);
-            return aPIResponse;
+            return Ok(aPIResponse);
+            }
+        #endregion
+
+        #region Update Student
+        [HttpPut("ChangeStatus")]
+        public async Task<IActionResult> ChangeStudentStatus( List<string> userIds, int status)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=await _service.ChangeUsersStatusSelected(userIds, status);
+            return Ok(aPIResponse);
             }
         #endregion
         }

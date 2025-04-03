@@ -20,45 +20,43 @@ namespace SchedulerService.Controllers.SemesterController
         }
         // GET: api/Semester
         [HttpGet]
-        public APIResponse GetAllSemesters()
+        public async Task<IActionResult> GetAllSemesters()
         {
             APIResponse response = new APIResponse();
-            response = _semesterService.GetAllSemesters();
-            return response;
-        }
+            response =await _semesterService.GetAllSemesters();
+            return Ok(response);
+            }
         // GET: api/Semester/{id}
         [HttpGet("{id}")]
-        public APIResponse GetSemesterById(string id)
+        public async Task<IActionResult> GetSemesterById(string id)
         {
             APIResponse response = new APIResponse();
-            response = _semesterService.GetSemesterById(id);
-            return response;
-        }
+            response =await _semesterService.GetSemesterById(id);
+            return Ok(response);
+            }
         // POST: api/Semester
         [HttpPost]
-        public APIResponse AddNewSemester(SemesterDTO semesterDTO)
+        public async Task<IActionResult> AddNewSemester(SemesterDTO semesterDTO)
         {
             APIResponse response = new APIResponse();
-            response = _semesterService.AddSemester(semesterDTO);
-            return response;
-        }
+            response =await _semesterService.AddSemester(semesterDTO);
+            return Ok(response);
+            }
         // PUT: api/ClassSubject
         [HttpPut]
-        public APIResponse UpdateSemester(SemesterDTO semesterDTO)
+        public async Task<IActionResult> UpdateSemester(SemesterDTO semesterDTO)
         {
             APIResponse response = new APIResponse();
-            response = _semesterService.UpdateSemester(semesterDTO);
-            return response;
-        }
+            response =await _semesterService.UpdateSemester(semesterDTO);
+            return Ok(response);
+            }
         // Get: api/Semester/ChangeStatus/{id}
         [HttpGet("ChangeStatus/{id}/{status}")]
-        public APIResponse ChangeStatusSemester(string id, int status)
+        public async Task<IActionResult> ChangeStatusSemester(string id, int status)
         {
             APIResponse response = new APIResponse();
-            response = _semesterService.ChangeStatusSemester(id, status);
-            return response;
+            response =await _semesterService.ChangeStatusSemester(id, status);
+            return Ok(response);
+            }
         }
-        
-
-    }
 }

@@ -35,34 +35,41 @@ namespace Services.ClassServices
         public async Task<APIResponse> GetAllClassSubject()
             {
             APIResponse aPIResponse = new APIResponse();
-            List<ClassSubjectDTO> classSubjects = await _classRepository.GetAllClassSubjects();
-
-            StudentInClassService studentInClassService = new StudentInClassService();
-
-            foreach (var item in classSubjects)
+            List<ClassSubject> classSubjectModels = await _classRepository.GetAllClassSubjects();
+            List<ClassSubjectDTO> classSubjectDTOs = new List<ClassSubjectDTO>();
+            foreach (var model in classSubjectModels)
                 {
-                int numberOfStudent = studentInClassService.GetStudentCountByClassSubjectId(item.ClassSubjectId);
+                ClassSubjectDTO dto = new ClassSubjectDTO();
+                dto.CopyProperties(model);
+                classSubjectDTOs.Add(dto);
+                }
+            StudentInClassService studentInClassService = new StudentInClassService();
+            foreach (var item in classSubjectDTOs)
+                {
+                int numberOfStudent = await studentInClassService.GetStudentCountByClassSubjectId(item.ClassSubjectId);
                 item.NumberOfStudentInClasss=numberOfStudent; // Gán vào thuộc tính đúng
                 }
-            if (classSubjects==null)
+            if (classSubjectDTOs==null||classSubjectDTOs.Count==0)
                 {
                 aPIResponse.IsSuccess=false;
                 aPIResponse.Message="Không tìm thấy lớp học khả dụng";
                 }
-            foreach (var item in classSubjects)
+            else
                 {
-                var majorName =await GetMajorNameById(item.MajorId);
-                item.MajorName=majorName.MajorName??"Null";
+                foreach (var item in classSubjectDTOs)
+                    {
+                    var majorName = await GetMajorNameById(item.MajorId);
+                    item.MajorName=majorName.MajorName??"Null";
+                    }
                 }
-
-            aPIResponse.Result=classSubjects;
+            aPIResponse.Result=classSubjectDTOs;
             return aPIResponse;
             }
         #endregion
 
         #region get all Major by major API
         /// <summary>
-        ///   Get All Major by Major API
+        /// Get All Major by Major API
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
@@ -70,8 +77,8 @@ namespace Services.ClassServices
             {
             try
                 {
-                var response = _httpClient.GetAsync("https://localhost:7067/api/Major").Result;
-                var apiResponse = response.Content.ReadFromJsonAsync<APIResponse>().Result;
+                var response = await _httpClient.GetAsync("https://localhost:7067/api/Major");
+                var apiResponse = await response.Content.ReadFromJsonAsync<APIResponse>();
                 if (apiResponse==null||!apiResponse.IsSuccess)
                     {
                     return null;
@@ -85,7 +92,7 @@ namespace Services.ClassServices
                     {
                     PropertyNameCaseInsensitive=true
                     };
-                return  dataResponse.Value.Deserialize<List<ClassSubjectDTO>>(options);
+                return dataResponse.Value.Deserialize<List<ClassSubjectDTO>>(options);
                 }
             catch (Exception ex)
                 {
@@ -128,13 +135,18 @@ namespace Services.ClassServices
         public async Task<APIResponse> GetClassSubjectById(int id)
             {
             APIResponse aPIResponse = new APIResponse();
-            ClassSubjectDTO classSubject =await _classRepository.GetClassSubjectById(id);
-            if (classSubject==null)
+            ClassSubject model = await _classRepository.GetClassSubjectById(id);
+            if (model==null)
                 {
                 aPIResponse.IsSuccess=false;
                 aPIResponse.Message="ClassSubject with Id: "+id+" is not found";
                 }
-            aPIResponse.Result=classSubject;
+            else
+                {
+                ClassSubjectDTO dto = new ClassSubjectDTO();
+                dto.CopyProperties(model);
+                aPIResponse.Result=dto;
+                }
             return aPIResponse;
             }
         #endregion
@@ -148,13 +160,23 @@ namespace Services.ClassServices
         public async Task<APIResponse> GetClassSubjectByClassId(string id)
             {
             APIResponse aPIResponse = new APIResponse();
-            List<ClassSubjectDTO> classSubjects =await _classRepository.GetClassSubjectByClassIds(id);
-            if (classSubjects==null||classSubjects.Count==0)
+            List<ClassSubject> models = await _classRepository.GetClassSubjectByClassIds(id);
+            List<ClassSubjectDTO> dtos = new List<ClassSubjectDTO>();
+            foreach (var model in models)
+                {
+                ClassSubjectDTO dto = new ClassSubjectDTO();
+                dto.CopyProperties(model);
+                dtos.Add(dto);
+                }
+            if (dtos==null||dtos.Count==0)
                 {
                 aPIResponse.IsSuccess=false;
                 aPIResponse.Message="Lớp với mã :"+id+" Không tìm thấy !";
                 }
-            aPIResponse.Result=classSubjects;
+            else
+                {
+                aPIResponse.Result=dtos;
+                }
             return aPIResponse;
             }
         #endregion
@@ -163,18 +185,30 @@ namespace Services.ClassServices
         /// <summary>
         /// Retrive list ClassSubjects by MajorId, ClassId, Subject Id
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns>a list ClassSubjects byMajorId, ClassId, Subject Id </returns>
+        /// <param name="majorId"></param>
+        /// <param name="classId"></param>
+        /// <param name="term"></param>
+        /// <returns>a list ClassSubjects by MajorId, ClassId, Subject Id </returns>
         public async Task<APIResponse> GetClassSubjectByMajorIdClassIdSubjectId(string majorId, string classId, int term)
             {
             APIResponse aPIResponse = new APIResponse();
-            List<ClassSubjectDTO> classSubjects =await _classRepository.GetClassSubjectByMajorIdClassIdTerm(majorId, classId, term);
-            if (classSubjects==null||classSubjects.Count==0)
+            List<ClassSubject> models = await _classRepository.GetClassSubjectByMajorIdClassIdTerm(majorId, classId, term);
+            List<ClassSubjectDTO> dtos = new List<ClassSubjectDTO>();
+            foreach (var model in models)
+                {
+                ClassSubjectDTO dto = new ClassSubjectDTO();
+                dto.CopyProperties(model);
+                dtos.Add(dto);
+                }
+            if (dtos==null||dtos.Count==0)
                 {
                 aPIResponse.IsSuccess=false;
                 aPIResponse.Message="Không tìm thấy lớp học";
                 }
-            aPIResponse.Result=classSubjects;
+            else
+                {
+                aPIResponse.Result=dtos;
+                }
             return aPIResponse;
             }
         #endregion
@@ -183,31 +217,39 @@ namespace Services.ClassServices
         /// <summary>
         /// Add New ClassSubject to database
         /// </summary>
-        /// <param name="classSubject"></param>
+        /// <param name="classSubject">AddUpdateClassSubjectDTO object</param>
         public async Task<APIResponse> AddNewClassSubject(AddUpdateClassSubjectDTO classSubject)
             {
             APIResponse aPIResponse = new APIResponse();
             int count = 1;
             string subtringSemesterId = classSubject.SemesterId.Substring(2); // Ví dụ FA25 -> "25"
-            using (var dbContext = new MyDbContext()) // Truy vấn trực tiếp từ database
+            // Kiểm tra trùng lặp trực tiếp từ database
+            using (var dbContext = new MyDbContext())
                 {
-                // Tạo ClassId ban đầu
                 classSubject.ClassId=$"{classSubject.MajorId}C{subtringSemesterId}{count:D2}";
-                // Kiểm tra trùng lặp với vòng lặp while
-                while (await dbContext.ClassSubject
-                    .AnyAsync(x => x.ClassId==classSubject.ClassId&&x.SubjectId==classSubject.SubjectId&&x.SemesterId==classSubject.SemesterId))
+                while (await dbContext.ClassSubject.AnyAsync(x => x.ClassId==classSubject.ClassId&&x.SubjectId==classSubject.SubjectId&&x.SemesterId==classSubject.SemesterId))
                     {
                     count++; // Tăng số thứ tự
                     classSubject.ClassId=$"{classSubject.MajorId}C{subtringSemesterId}{count:D2}";
                     }
-                var classSubjectEntity = new ClassSubject();
-                classSubjectEntity.CopyProperties(classSubject);
-                dbContext.ClassSubject.Add(classSubjectEntity);
-                await dbContext.SaveChangesAsync(); // Lưu thay đổi vào DB
+                }
+            ClassSubject model = new ClassSubject();
+            model.CopyProperties(classSubject);
+            bool result = await _classRepository.AddNewClassSubject(model);
+            if (result)
+                {
                 return new APIResponse
                     {
                     IsSuccess=true,
                     Message=$"Thêm mới lớp học thành công! Mã lớp học là: {classSubject.ClassId}"
+                    };
+                }
+            else
+                {
+                return new APIResponse
+                    {
+                    IsSuccess=false,
+                    Message="Thêm mới lớp học thất bại!"
                     };
                 }
             }
@@ -215,23 +257,17 @@ namespace Services.ClassServices
 
         #region Update ClassSubject
         /// <summary>
-        /// Udate ClassSubject in databse
+        /// Update ClassSubject in database
         /// </summary>
-        /// <param name="ClassSubject"></param>
+        /// <param name="classSubject">AddUpdateClassSubjectDTO object</param>
         public async Task<APIResponse> UpdateClassSubject(AddUpdateClassSubjectDTO classSubject)
             {
             APIResponse aPIResponse = new APIResponse();
-            //var existClass =await _classRepository.GetExistingClassSubject(classSubject.ClassId, classSubject.SubjectId, classSubject.SemesterId);
-            //if (existClass != null)
-            //    {
-            //    return new APIResponse
-            //        {
-            //        IsSuccess=false,
-            //        Message=$"Lớp học có mã {classSubject.ClassId} cho học kỳ {classSubject.SemesterId} và môn {classSubject.SubjectId} đã tồn tại. Vui lòng chọn mã khác hoặc kiểm tra lại thông tin."
-            //        };
-            //    }
-            bool isAdded =await _classRepository.UpdateClassSubject(classSubject);
-            if (isAdded)
+            // Mapping từ DTO sang model
+            ClassSubject model = new ClassSubject();
+            model.CopyProperties(classSubject);
+            bool isUpdated = await _classRepository.UpdateClassSubject(model);
+            if (isUpdated)
                 {
                 return new APIResponse
                     {
@@ -247,17 +283,17 @@ namespace Services.ClassServices
             }
         #endregion
 
-        #region Get Class Subject by MajorId
+        #region Get Class Subject by MajorId (Change Status)
         /// <summary>
         /// Change Status of Class Subject
         /// </summary>
         /// <param name="id"></param>
-        /// <returns></returns>
+        /// <returns>APIResponse with status change result</returns>
         public async Task<APIResponse> ChangeStatusClassSubject(int id)
             {
-            var response = new APIResponse();
-            ClassSubjectDTO existingClassSubject = await _classRepository.GetClassSubjectById(id);
-            if (existingClassSubject==null)
+            APIResponse aPIResponse = new APIResponse();
+            ClassSubject model = await _classRepository.GetClassSubjectById(id);
+            if (model==null)
                 {
                 return new APIResponse
                     {
@@ -265,13 +301,13 @@ namespace Services.ClassServices
                     Message="Lớp học với mã lớp đã cung cấp không tồn tại!"
                     };
                 }
-            bool isSuccess =await _classRepository.ChangeStatusClassSubject(id);
+            bool isSuccess = await _classRepository.ChangeStatusClassSubject(id);
             if (isSuccess)
                 {
                 return new APIResponse
                     {
                     IsSuccess=true,
-                    Message="Thay đổi trạng thái lớp học thành công ."
+                    Message="Thay đổi trạng thái lớp học thành công."
                     };
                 }
             return new APIResponse
@@ -327,20 +363,69 @@ namespace Services.ClassServices
         public async Task<APIResponse> GetSubjectIdsByMajorIdAndSemesterId(string majorId, string semesterId)
             {
             APIResponse aPIResponse = new APIResponse();
-            List<ClassSubjectDTO> subjectIds = await _classRepository.GetSubjectInClassSubjectByMajorIdAndSemesterId(majorId, semesterId);
-            if (subjectIds==null||subjectIds.Count==0)
+            List<ClassSubject> models = await _classRepository.GetSubjectInClassSubjectByMajorIdAndSemesterId(majorId, semesterId);
+            List<ClassSubjectDTO> dtos = new List<ClassSubjectDTO>();
+            foreach (var model in models)
+                {
+                ClassSubjectDTO dto = new ClassSubjectDTO();
+                dto.CopyProperties(model);
+                dtos.Add(dto);
+                }
+            if (dtos==null||dtos.Count==0)
                 {
                 aPIResponse.IsSuccess=false;
                 aPIResponse.Message="Không tìm thấy mã môn học.";
                 }
-            aPIResponse.Result=subjectIds;
+            else
+                {
+                aPIResponse.IsSuccess=true;
+                aPIResponse.Result=dtos;
+                }
             return aPIResponse;
             }
         #endregion
 
+        #region Change Class Status Selected 
+        /// <summary>
+        /// Change class status
+        /// </summary>
+        /// <param name="userIds"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        public async Task<APIResponse> ChangeClassStatusSelected(List<int> Ids, int status)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            if (Ids==null||!Ids.Any())
+                {
+                aPIResponse.IsSuccess=false;
+                aPIResponse.Message="Danh sách lớp học không hợp lệ.";
+                return aPIResponse;
+                }
+            bool isSuccess = await _classRepository.ChangeClassStatusSelected(Ids, status);
+            if (isSuccess)
+                {
+                aPIResponse.IsSuccess=true;
+                switch (status)
+                    {
+                    case 0:
+                        aPIResponse.Message="Đã thay đổi trạng thái các lớp học thành 'Chưa bắt đầu'.";
+                        break;
+                    case 1:
+                        aPIResponse.Message="Đã thay đổi trạng thái các lớp học thành 'Đang diễn ra'.";
+                        break;
+                    case 2:
+                        aPIResponse.Message="Đã thay đổi trạng thái các lớp học thành 'Đã kết thúc'.";
+                        break;
+                    default:
+                        aPIResponse.Message="Trạng thái không hợp lệ.";
+                        break;
+                    }
+                }
+            return aPIResponse;
+            }
+        #endregion
+
+        #region Copy + Paste  
+        #endregion
         }
     }
-
-//Copy Paste 
-#region Copy + Pase  
-#endregion

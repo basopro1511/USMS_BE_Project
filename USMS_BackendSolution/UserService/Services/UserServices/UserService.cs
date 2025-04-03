@@ -9,6 +9,7 @@ using System.Security.Cryptography;
 using System.Text;
 using UserService.Repository.UserRepository;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 
 namespace UserService.Services.UserServices
     {
@@ -154,6 +155,7 @@ namespace UserService.Services.UserServices
             return random.Next(0, 999999).ToString("D6");
             }
         #endregion
+
         #region Forgot Password
         /// <summary>
         /// Forgot password send OTP
@@ -164,7 +166,6 @@ namespace UserService.Services.UserServices
             {
             APIResponse aPIResponse = new APIResponse();
             var isExist = await _userRepository.GetUserByEmail(email);
-
             if (isExist == null)
                 {
                 aPIResponse.IsSuccess=false;
@@ -181,7 +182,7 @@ namespace UserService.Services.UserServices
                 string emailBody = template.Replace("@paramOTP", otp);
                 MailMessage mail = new MailMessage();
                 mail.From=new MailAddress(fromEmail);
-                mail.To.Add(email);
+                mail.To.Add(isExist.PersonalEmail);
                 mail.Subject=$"Mã OTP của bạn là: {otp}";
                 mail.Body=emailBody;
                 mail.IsBodyHtml=true;
@@ -189,14 +190,66 @@ namespace UserService.Services.UserServices
                 smtp.Credentials=new NetworkCredential(fromEmail, appPassword);
                 smtp.EnableSsl=true;
                 smtp.Send(mail);
+                return new APIResponse
+                    {
+                    IsSuccess=true,
+                    Message="Đã gửi mã OTP đến email cá nhân : "+isExist.PersonalEmail,
+                    Result=otp
+                    };
                 }
             catch (Exception ex)
                 {
                 aPIResponse.IsSuccess=false;
                 aPIResponse.Message="Lỗi khi gửi OTP: "+ex.Message;
                 }
-
             return aPIResponse;
+            }
+        #endregion
+
+        #region Reset Password
+        /// <summary>
+        /// Reset password
+        /// </summary>
+        /// <param name="resetPassword"></param>
+        /// <returns></returns>
+        public async Task<APIResponse> ResetPasswordByEmail(ResetPasswordByEmailDTO resetPasswordByEmailDTO)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            UserDTO user = await _userRepository.GetUserByEmail(resetPasswordByEmailDTO.Email);
+            if (user==null)
+                {
+                return new APIResponse
+                    {
+                    IsSuccess=false,
+                    Message="Không tìm thấy người dùng khả dụng!."
+                };
+            }
+            if (resetPasswordByEmailDTO.newPassword.Length<8||resetPasswordByEmailDTO.newPassword.Length>36)
+                {
+                return new APIResponse
+                    {
+                    IsSuccess=false,
+                    Message="Độ dài mật khẩu mới phải từ 8 đến 36 ký tự."
+                    };
+                }
+            resetPasswordByEmailDTO.newPassword=HashPassword(resetPasswordByEmailDTO.newPassword);
+            bool isSuccess = await _userRepository.ResetPasswordByEmail(resetPasswordByEmailDTO);
+            if (isSuccess)
+                {
+                return new APIResponse
+                    {
+                    IsSuccess=true,
+                    Message="Cập nhật mật khẩu thành công!"
+                    };
+                }
+            else
+                {
+                return new APIResponse
+                    {
+                    IsSuccess=false,
+                    Message="Cập nhật mật khẩu thất bại!"
+                    };
+                };
             }
         #endregion
         }

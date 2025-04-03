@@ -19,46 +19,46 @@ namespace SchedulerService.Controllers.SlotController
 
         // GET: api/Rooms
         [HttpGet]
-        public async Task<APIResponse> GetAllSlots()
+        public async Task<IActionResult> GetAllSlots()
         {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse =await _slotService.GetAllSlots();
-            return aPIResponse;
+            return Ok(aPIResponse);
         }
 
         //GET: api/Rooms/{Id}
         [HttpGet("{id}")]
-        public async Task<APIResponse> GeSlotById(int id)
+        public async Task<IActionResult> GeSlotById(int id)
         {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse =await _slotService.GetSlotById(id);
-            return aPIResponse;
+            return Ok(aPIResponse);
         }
 
         //POST: api/Rooms
         [HttpPost]
-        public async Task<APIResponse> AddNewSlot(TimeSlotDTO slotDTO)
+        public async Task<IActionResult> AddNewSlot(TimeSlotDTO slotDTO)
         {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse =await _slotService.AddNewSlot(slotDTO);
-            return aPIResponse;
+            return Ok(aPIResponse);
         }
 
         //PUT: api/Rooms
         [HttpPut]
-        public async Task<APIResponse> UpdateSlot(TimeSlotDTO slotDTO)
+        public async Task<IActionResult> UpdateSlot(TimeSlotDTO slotDTO)
         {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse =await _slotService.UpdateTimeSlot(slotDTO);
-            return aPIResponse;
+            return Ok(aPIResponse);
         }
 
         [HttpGet("ChangeStatus/{id}/{status}")]
-        public async Task<APIResponse> ChangeSlotStatus(int id, int status)
+        public async Task<IActionResult> ChangeSlotStatus(int id, int status)
         {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse =await _slotService.ChangeSlotStatus(id, status);
-            return aPIResponse;
+            return Ok(aPIResponse);
         }
     }
 }

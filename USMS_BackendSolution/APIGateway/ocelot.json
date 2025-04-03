@@ -64,6 +64,18 @@
             "UpstreamPathTemplate": "/api/Room/AvailableRoomsToAddExamSchedule/{date}/{startTime}/{endTime}",
             "UpstreamHttpMethod": [ "GET" ]
         },
+        {
+            "DownstreamPathTemplate": "/api/Room/ChangeSelectStatus",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Room/ChangeSelectStatus",
+            "UpstreamHttpMethod": [ "PUT" ]
+        },
         /* Room API End */
 
         /* Slot API Start */
@@ -205,6 +217,18 @@
             "UpstreamPathTemplate": "/api/Subjects/GetSubjectByMajorAndTerm/{id}/{term}",
             "UpstreamHttpMethod": [ "GET" ]
         },
+        {
+            "DownstreamPathTemplate": "/api/Subjects/ChangeSelectStatus",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7286
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Subjects/ChangeSelectStatus",
+            "UpstreamHttpMethod": [ "PUT" ]
+        },
         /* Subject API End */
 
         /* Major API Start */
@@ -270,6 +294,18 @@
             ],
             "UpstreamPathTemplate": "/api/ClassSubject/SubjectIds/{majorId}/{semesterId}",
             "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/ClassSubject/ChangeSelectStatus",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7286
+                }
+            ],
+            "UpstreamPathTemplate": "/api/ClassSubject/ChangeSelectStatus",
+            "UpstreamHttpMethod": [ "PUT" ]
         },
         /* Class Subject API End */
 
@@ -460,6 +496,18 @@
             "UpstreamPathTemplate": "/api/Student/import",
             "UpstreamHttpMethod": [ "POST" ]
         },
+        {
+            "DownstreamPathTemplate": "/api/Student/ChangeStatus",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7179
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Student/ChangeStatus",
+            "UpstreamHttpMethod": [ "PUT" ]
+        },
         /* Student API End */
 
         /* User API Start */
@@ -486,6 +534,30 @@
             ],
             "UpstreamPathTemplate": "/api/User/ResetPassword",
             "UpstreamHttpMethod": [ "PUT" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/User/ResetPasswordByEmail",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7179
+                }
+            ],
+            "UpstreamPathTemplate": "/api/User/ResetPasswordByEmail",
+            "UpstreamHttpMethod": [ "PUT" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/User/ForgotPassword/{email}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7179
+                }
+            ],
+            "UpstreamPathTemplate": "/api/User/ForgotPassword/{email}",
+            "UpstreamHttpMethod": [ "POST" ]
         },
         /* User API End */
 
@@ -525,6 +597,18 @@
             ],
             "UpstreamPathTemplate": "/api/Teacher/import",
             "UpstreamHttpMethod": [ "POST" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Teacher/ChangeStatus",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7179
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Teacher/ChangeStatus",
+            "UpstreamHttpMethod": [ "PUT" ]
         },
         /* Teacher API End */
 
@@ -588,6 +672,18 @@
             ],
             "UpstreamPathTemplate": "/api/ExamSchedule/Teacher/{id}",
             "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/ExamSchedule/ChangeSelectStatus",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/ExamSchedule/ChangeSelectStatus",
+            "UpstreamHttpMethod": [ "PUT" ]
         },
         /* ExamSchedule API End */
 
@@ -678,6 +774,18 @@
             ],
             "UpstreamPathTemplate": "/api/Staff/import",
             "UpstreamHttpMethod": [ "POST" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Staff/ChangeStatus",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7179
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Staff/ChangeStatus",
+            "UpstreamHttpMethod": [ "PUT" ]
         },
         /* Staff API End */
 

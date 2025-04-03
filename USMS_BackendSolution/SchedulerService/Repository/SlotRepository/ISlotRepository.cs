@@ -1,14 +1,13 @@
-﻿using SchedulerBusinessObject.ModelDTOs;
+﻿using SchedulerBusinessObject.SchedulerModels;
 
 namespace SchedulerService.Repository.SlotRepository
-{
-    public interface ISlotRepository
     {
-        public  Task<List<TimeSlotDTO>> getAllTimeSlot();
-        public  Task<TimeSlotDTO> GetTimeSlotById(int id);
-        public  Task<bool> AddNewTimeSlot(TimeSlotDTO timeSlotDTO);
-        public  Task<bool> UpdateTimeSlot(TimeSlotDTO timeSlotDTO);
-        public  Task<bool> ChangeTimeSlotStatus(int slotId, int newStatus);
-
+    public interface ISlotRepository
+        {
+        Task<List<TimeSlot>> GetAllTimeSlot();
+        Task<TimeSlot> GetTimeSlotById(int id);
+        Task<bool> AddNewTimeSlot(TimeSlot timeSlot);
+        Task<bool> UpdateTimeSlot(TimeSlot timeSlot);
+        Task<bool> ChangeTimeSlotStatus(int slotId, int newStatus);
+        }
     }
-}
