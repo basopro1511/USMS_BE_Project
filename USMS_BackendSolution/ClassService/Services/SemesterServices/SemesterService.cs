@@ -31,7 +31,7 @@ namespace Services.SemesterServices
             if (semesters == null || !semesters.Any())
             {
                 response.IsSuccess = false;
-                response.Message = "Không có kỳ học nào!";
+                response.Message = "Không có học kỳ nào!";
             }
             response.Result = semesters;
             return response;
@@ -51,7 +51,7 @@ namespace Services.SemesterServices
             if (semester == null)
             {
                 response.IsSuccess = false;
-                response.Message = $" Kỳ học với mã: {id} không tồn tại. Vui lòng kiểm tra lại";
+                response.Message = $" Học kỳ với mã: {id} không tồn tại. Vui lòng kiểm tra lại";
             }
             response.Result = semester;
             return response;
@@ -72,7 +72,7 @@ namespace Services.SemesterServices
                 return new APIResponse
                 {
                     IsSuccess = false,
-                    Message = $" Kỳ học với mã: {semesterDto.SemesterId} đã tồn tại. Vui lòng kiểm tra lại"
+                    Message = $" Học kỳ với mã: {semesterDto.SemesterId} đã tồn tại. Vui lòng kiểm tra lại"
                 };
             }
             Semester semester = new Semester();
@@ -81,12 +81,12 @@ namespace Services.SemesterServices
             if (isAdded)
             {
                 response.IsSuccess = true;
-                response.Message = "Thêm kỳ học thành công";
+                response.Message = "Thêm học kỳ thành công";
             }
             else
             {
                 response.IsSuccess = false;
-                response.Message = "Thêm kỳ học thất bại.";
+                response.Message = "Thêm học kỳ thất bại.";
             }
             return response;
         }
@@ -106,7 +106,7 @@ namespace Services.SemesterServices
                 return new APIResponse
                 {
                     IsSuccess = false,
-                    Message = "Mã kỳ học được cung cấp không tồn tại!"
+                    Message = "Mã học kỳ được cung cấp không tồn tại!"
                 };
             }
             if (semesterDto.EndDate <= semesterDto.StartDate)
@@ -123,12 +123,12 @@ namespace Services.SemesterServices
             if (isUpdated)
             {
                 response.IsSuccess = true;
-                response.Message = $"Kỳ học với mã: {semesterDto.SemesterId} đã được cập nhật thành công.";
+                response.Message = $"Học kỳ với mã: {semesterDto.SemesterId} đã được cập nhật thành công.";
             }
             else
             {
                 response.IsSuccess = false;
-                response.Message = $" Cập nhật kỳ học với mã: {semesterDto.SemesterId} thất bại.";
+                response.Message = $" Cập nhật học kỳ với mã: {semesterDto.SemesterId} thất bại.";
             }
             return response;
         }
@@ -149,7 +149,7 @@ namespace Services.SemesterServices
                 return new APIResponse
                 {
                     IsSuccess = false,
-                    Message = "Mã kỳ học được cung cấp không tồn tại!"
+                    Message = "Mã học kỳ được cung cấp không tồn tại!"
                 };
             }
             // Validate status input
@@ -168,20 +168,20 @@ namespace Services.SemesterServices
                 switch (status)
                 {
                     case 2:
-                        response.Message = $" Kỳ học với mã: {id} đã kết thúc.";
+                        response.Message = $" Học kỳ với mã: {id} đã kết thúc.";
                         break;
                     case 1:
-                        response.Message = $" Kỳ học với mã: {id} đang diễn ra.";
+                        response.Message = $" Học kỳ với mã: {id} đang diễn ra.";
                         break;
                     case 0:
-                        response.Message = $" Kỳ học với mã: {id} chưa bắt đầu.";
+                        response.Message = $" Học kỳ với mã: {id} chưa bắt đầu.";
                         break;
                 }
             }
             else
             {
                 response.IsSuccess = false;
-                response.Message = "Cập nhật kỳ học thất bại.";
+                response.Message = "Cập nhật học kỳ thất bại.";
             }
             return response;
         }

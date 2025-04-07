@@ -14,7 +14,7 @@ namespace ClassService.Controllers.ClassSubjectController
         private readonly ClassSubjectService _classSubjectService;
         public ClassSubjectController(ClassSubjectService classSubjectService)
             {
-            _classSubjectService = classSubjectService;
+            _classSubjectService=classSubjectService;
             }
 
         // GET: api/ClassSubject
@@ -22,7 +22,7 @@ namespace ClassService.Controllers.ClassSubjectController
         public async Task<IActionResult> GetAllClassSubject()
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse = await _classSubjectService.GetAllClassSubject();
+            aPIResponse=await _classSubjectService.GetAllClassSubject();
             return Ok(aPIResponse);
             }
 
@@ -31,7 +31,7 @@ namespace ClassService.Controllers.ClassSubjectController
         public async Task<IActionResult> GetClassSubjectById(int id)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse =await _classSubjectService.GetClassSubjectById(id);
+            aPIResponse=await _classSubjectService.GetClassSubjectById(id);
             return Ok(aPIResponse);
             }
 
@@ -40,7 +40,7 @@ namespace ClassService.Controllers.ClassSubjectController
         public async Task<IActionResult> GetClassSubjectByClassId(string classId)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse =await _classSubjectService.GetClassSubjectByClassId(classId);
+            aPIResponse=await _classSubjectService.GetClassSubjectByClassId(classId);
             return Ok(aPIResponse);
             }
 
@@ -49,7 +49,7 @@ namespace ClassService.Controllers.ClassSubjectController
         public async Task<IActionResult> AddNewClassSubject(AddUpdateClassSubjectDTO classSubjectDTO)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse =await _classSubjectService.AddNewClassSubject(classSubjectDTO);
+            aPIResponse=await _classSubjectService.AddNewClassSubject(classSubjectDTO);
             return Ok(aPIResponse);
             }
 
@@ -58,7 +58,7 @@ namespace ClassService.Controllers.ClassSubjectController
         public async Task<IActionResult> UpdateClassSubject(AddUpdateClassSubjectDTO classSubjectDTO)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse =await _classSubjectService.UpdateClassSubject(classSubjectDTO);
+            aPIResponse=await _classSubjectService.UpdateClassSubject(classSubjectDTO);
             return Ok(aPIResponse);
             }
 
@@ -66,7 +66,7 @@ namespace ClassService.Controllers.ClassSubjectController
         public async Task<IActionResult> ChangeStatusClassSubject(int id)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse =await _classSubjectService.ChangeStatusClassSubject(id);
+            aPIResponse=await _classSubjectService.ChangeStatusClassSubject(id);
             return Ok(aPIResponse);
             }
 
@@ -74,7 +74,7 @@ namespace ClassService.Controllers.ClassSubjectController
         public async Task<IActionResult> GetClassSubjects(string majorId, string classId, int term)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse =await _classSubjectService.GetClassSubjectByMajorIdClassIdSubjectId(majorId, classId, term);
+            aPIResponse=await _classSubjectService.GetClassSubjectByMajorIdClassIdSubjectId(majorId, classId, term);
             return Ok(aPIResponse);
             }
 
@@ -106,9 +106,23 @@ namespace ClassService.Controllers.ClassSubjectController
         public async Task<IActionResult> ChangeStatusClassSubject(List<int> ids, int status)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse=await _classSubjectService.ChangeClassStatusSelected(ids,status);
+            aPIResponse=await _classSubjectService.ChangeClassStatusSelected(ids, status);
+            return Ok(aPIResponse);
+            }
+        #region
+        [HttpPost("AutoCreateClass")]
+        public async Task<IActionResult> AutoCreateClassSubject(List<string> studentIds,
+    int classCapacity,
+    string majorId,
+    string subjectId,
+    string semesterId,
+    int term)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=await _classSubjectService.AutoCreateClassesForStudents(studentIds,classCapacity,majorId,subjectId,semesterId,term);
             return Ok(aPIResponse);
             }
         }
-
+    #endregion
     }
+

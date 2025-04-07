@@ -223,7 +223,7 @@ namespace Services.ClassServices
             APIResponse aPIResponse = new APIResponse();
             int count = 1;
             string subtringSemesterId = classSubject.SemesterId.Substring(2); // Ví dụ FA25 -> "25"
-            // Kiểm tra trùng lặp trực tiếp từ database
+                                                                              // Kiểm tra trùng lặp trực tiếp từ database
             using (var dbContext = new MyDbContext())
                 {
                 classSubject.ClassId=$"{classSubject.MajorId}C{subtringSemesterId}{count:D2}";
@@ -235,13 +235,16 @@ namespace Services.ClassServices
                 }
             ClassSubject model = new ClassSubject();
             model.CopyProperties(classSubject);
-            bool result = await _classRepository.AddNewClassSubject(model);
-            if (result)
+            ClassSubject result = await _classRepository.AddNewClassSubject(model);
+            ClassSubjectDTO classSubjectDTO = new ClassSubjectDTO();
+            classSubjectDTO.CopyProperties(result);
+            if (result != null)
                 {
                 return new APIResponse
                     {
                     IsSuccess=true,
-                    Message=$"Thêm mới lớp học thành công! Mã lớp học là: {classSubject.ClassId}"
+                    Message=$"Thêm mới lớp học thành công! Mã lớp học là: {classSubject.ClassId}" ,
+                    Result=classSubjectDTO
                     };
                 }
             else
@@ -423,6 +426,106 @@ namespace Services.ClassServices
                 }
             return aPIResponse;
             }
+        #endregion
+
+        #region AUTO GENERATE CLASS SUBJECT
+        public async Task<APIResponse> AutoCreateClassesForStudents(
+    List<string> studentIds, // danh sách StudentId từ file import
+    int classCapacity,       // giới hạn số sinh viên mỗi lớp (cấu hình qua parameter)
+    string majorId,
+    string subjectId,
+    string semesterId,
+    int term)
+            {
+            try
+                {
+                StudentInClassService _studentInClassService = new StudentInClassService();
+                int totalStudents = studentIds.Count;
+                if (totalStudents==0)
+                    {
+                    return new APIResponse { IsSuccess=false, Message="Không có sinh viên nào được import." };
+                    }
+                // Tính số lớp cần tạo: theo yêu cầu chia đều, số lớp là số tối thiểu sao cho không vượt quá classCapacity
+                int numClasses = (int)Math.Ceiling((double)totalStudents/classCapacity);
+                // Để chia đều theo kiểu 33-33-32-32, ta tính:
+                int quotient = totalStudents/numClasses;   // số sinh viên cơ bản mỗi lớp
+                int remainder = totalStudents%numClasses;    // số lớp sẽ nhận thêm 1 sinh viên
+                // Danh sách các lớp được tạo (để trả về hoặc dùng trong log)
+                List<ClassSubject> createdClasses = new List<ClassSubject>();
+                // Và giả sử _classRepository có hàm AddStudentInClassList để thêm list StudentInClass
+                int studentIndex = 0;
+                for (int i = 0; i<numClasses; i++)
+                    {
+                    // Số sinh viên lớp thứ i: nếu i < remainder thì nhận quotient + 1, ngược lại nhận quotient
+                    int classStudentCount = quotient+(i<remainder ? 1 : 0);
+                    // Tạo lớp mới bằng cách sử dụng DTO đã có sẵn.
+                    AddUpdateClassSubjectDTO newClassDto = new AddUpdateClassSubjectDTO
+                        {
+                        MajorId=majorId,
+                        SubjectId=subjectId,
+                        SemesterId=semesterId,
+                        Term=term,
+                        // Các thuộc tính khác nếu cần; Lưu ý: ClassId sẽ được tạo tự động trong hàm AddNewClassSubject của ClassSubjectService.
+                        };
+                    ClassSubject classSubject = new ClassSubject();
+                    APIResponse addResponse = await AddNewClassSubject(newClassDto);
+                    if (!addResponse.IsSuccess)
+                        {
+                        return new APIResponse { IsSuccess=false, Message="Lỗi tạo lớp: "+addResponse.Message };
+                        }
+                    // Giả sử addResponse.Result trả về ClassSubjectDTO chứa thông tin lớp vừa tạo
+                    ClassSubjectDTO? createdDto = addResponse.Result as ClassSubjectDTO;
+                    if (createdDto ==null)
+                        {
+                        return new APIResponse { IsSuccess=false, Message="Không thể lấy thông tin lớp vừa tạo." };
+                        }
+                    // Tạo danh sách các bản ghi StudentInClass cho lớp này
+                    List<StudentInClassDTO> studentAssignments = new List<StudentInClassDTO>();
+                    for (int j = 0; j<classStudentCount; j++)
+                        {
+                        if (studentIndex>=totalStudents)
+                            {
+                            break;
+                            }
+                        StudentInClassDTO sic = new StudentInClassDTO
+                            {
+                            // ClassSubjectId của lớp vừa tạo
+                            ClassSubjectId=createdDto.ClassSubjectId,
+                            StudentId=studentIds[studentIndex]
+                            };
+                        studentAssignments.Add(sic);
+                        studentIndex++;
+                        }
+                    APIResponse assignResult = await _studentInClassService.AddMultipleStudentsToClass(studentAssignments);
+                    if (!assignResult.IsSuccess)
+                        {
+                        return new APIResponse { IsSuccess=false, Message=$"Lỗi phân chia sinh viên cho lớp {createdDto.ClassId}." };
+                        }
+                    createdClasses.Add(new ClassSubject
+                        {
+                        ClassSubjectId=createdDto.ClassSubjectId,
+                        ClassId=createdDto.ClassId,
+                        SubjectId=createdDto.SubjectId,
+                        SemesterId=createdDto.SemesterId,
+                        MajorId=createdDto.MajorId,
+                        Term=createdDto.Term,
+                        CreatedAt=createdDto.CreatedAt,
+                        Status=createdDto.Status
+                        });
+                    }
+                return new APIResponse
+                    {
+                    IsSuccess=true,
+                    Message=$"Tạo tự động {numClasses} lớp thành công và phân chia {totalStudents} sinh viên.",
+                    Result=createdClasses
+                    };
+                }
+            catch (Exception ex)
+                {
+                return new APIResponse { IsSuccess=false, Message=ex.Message };
+                }
+            }
+
         #endregion
 
         #region Copy + Paste  

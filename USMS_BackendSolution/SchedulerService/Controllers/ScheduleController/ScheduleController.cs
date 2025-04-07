@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchedulerBusinessObject;
 using SchedulerBusinessObject.ModelDTOs;
 using SchedulerDataAccess.Services.SchedulerServices;
+using Services.RoomServices;
 
 namespace SchedulerService.Controllers.Schedule
 {
@@ -24,8 +25,14 @@ namespace SchedulerService.Controllers.Schedule
 			aPIResponse =await _scheduleService.GetAllSchedule();
 			return Ok(aPIResponse);
 		}
-
-		[HttpPost]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetSchedule(int id)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=await _scheduleService.GetScheduleById(id);
+            return Ok(aPIResponse);
+            }
+        [HttpPost]
 		public async Task<IActionResult> PostSchedule(ClassScheduleDTO schedule)
 		{
 			APIResponse aPIResponse = new APIResponse();
@@ -78,6 +85,13 @@ namespace SchedulerService.Controllers.Schedule
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _scheduleService.GetAllTeacherAvailableForAddSchedule(majorId,date,slot);
+            return Ok(aPIResponse);
+            }
+        [HttpPut("ChangeStatus/{majorId}/{classId}/{term}/{status}")]
+        public async Task<IActionResult> ChangeStatusSchedule(string majorId, string classId, int term, int status)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=await _scheduleService.ChangeScheduleStatus(majorId,classId,term, status);
             return Ok(aPIResponse);
             }
         }

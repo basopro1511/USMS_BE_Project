@@ -13,7 +13,7 @@ namespace Repositories.ClassSubjectRepository
         Task<List<ClassSubject>> GetAllClassSubjects();
         Task<ClassSubject> GetClassSubjectById(int id);
         Task<List<ClassSubject>> GetClassSubjectByClassIds(string classId);
-        Task<bool> AddNewClassSubject(ClassSubject classSubject);
+        Task<ClassSubject> AddNewClassSubject(ClassSubject classSubject);
         Task<bool> UpdateClassSubject(ClassSubject updateClassSubject);
         Task<bool> ChangeStatusClassSubject(int id);
         Task<ClassSubject> GetExistingClassSubject(string classId, string subjectId, string semesterId);

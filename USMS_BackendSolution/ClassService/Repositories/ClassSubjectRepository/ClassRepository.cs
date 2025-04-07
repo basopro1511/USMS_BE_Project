@@ -120,21 +120,21 @@ namespace Repositories.ClassSubjectRepository
         /// </summary>
         /// <param name="classSubject">ClassSubject model object</param>
         /// <returns>true if success</returns>
-        public async Task<bool> AddNewClassSubject(ClassSubject classSubject)
+        public async Task<ClassSubject?> AddNewClassSubject(ClassSubject classSubject)
             {
             try
                 {
                 using (var dbContext = new MyDbContext())
                     {
-                    dbContext.ClassSubject.Add(classSubject);
                     classSubject.CreatedAt=DateTime.Now;
+                    dbContext.ClassSubject.Add(classSubject);
                     await dbContext.SaveChangesAsync();
-                    return true;
+                    return classSubject; // Trả về bản ghi đã tạo
                     }
                 }
             catch (Exception)
                 {
-                return false;
+                return null;
                 }
             }
         #endregion

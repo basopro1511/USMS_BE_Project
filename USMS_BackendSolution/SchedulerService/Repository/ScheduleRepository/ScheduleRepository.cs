@@ -25,7 +25,7 @@ namespace Repositories.ScheduleRepository
                     return schedules;
                     }
                 }
-            catch(Exception ex)
+            catch (Exception ex)
                 {
                 throw new Exception(ex.Message);
                 }
@@ -38,19 +38,17 @@ namespace Repositories.ScheduleRepository
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<ScheduleDTO> GetScheduleById(int classScheduleId)
+        public async Task<Schedule> GetScheduleById(int classScheduleId)
             {
             try
                 {
                 using (var _db = new MyDbContext())
                     {
-                    Schedule? schedule = await _db.Schedule.FirstOrDefaultAsync(x=> x.ScheduleId == classScheduleId);
-                    ScheduleDTO scheduleDto = new ScheduleDTO();
-                    scheduleDto.CopyProperties(schedule);
-                    return scheduleDto;
+                    Schedule? schedule = await _db.Schedule.FirstOrDefaultAsync(x => x.ScheduleId==classScheduleId);
+                    return schedule;
                     }
                 }
-            catch(Exception ex)
+            catch (Exception ex)
                 {
                 throw new Exception(ex.Message);
                 }
@@ -68,13 +66,13 @@ namespace Repositories.ScheduleRepository
             {
             try
                 {
-                using(var dbContext = new MyDbContext())
+                using (var dbContext = new MyDbContext())
                     {
                     await dbContext.Schedule.AddAsync(schedule);
                     dbContext.SaveChanges();
                     }
                 }
-            catch(Exception ex)
+            catch (Exception ex)
                 {
                 throw new Exception(ex.Message);
                 }
@@ -93,14 +91,14 @@ namespace Repositories.ScheduleRepository
             {
             try
                 {
-                using(var dbContext = new MyDbContext())
+                using (var dbContext = new MyDbContext())
                     {
-                    return  dbContext.Schedule.Where(s => s.Status == 1 &&
-                                                                s.Date == date &&
-                                                                s.SlotId == slotId).ToList();
+                    return dbContext.Schedule.Where(s => s.Status==1&&
+                                                                s.Date==date&&
+                                                                s.SlotId==slotId).ToList();
                     }
                 }
-            catch(Exception ex)
+            catch (Exception ex)
                 {
                 throw new Exception(ex.Message);
                 }
@@ -108,27 +106,19 @@ namespace Repositories.ScheduleRepository
         #endregion
 
         #region Get ClassSchedules by ClassSubjectIds
-        public async Task<List<ViewScheduleDTO>> GetClassSchedulesByClassSubjectIds(List<int> classSubjectIds)
+        public async Task<List<Schedule>> GetClassSchedulesByClassSubjectIds(List<int> classSubjectIds)
             {
             try
                 {
-                using(var _dbContext = new MyDbContext())
+                using (var _dbContext = new MyDbContext())
                     {
-        
                     var schedules = await _dbContext.Schedule
                         .Where(cs => classSubjectIds.Contains(cs.ClassSubjectId))
                         .ToListAsync();
-                    List<ViewScheduleDTO> classScheduleDTOs = new List<ViewScheduleDTO>();
-                    foreach(var item in schedules)
-                        {
-                        ViewScheduleDTO classScheduleDTO = new ViewScheduleDTO();
-                        classScheduleDTO.CopyProperties(item);
-                        classScheduleDTOs.Add(classScheduleDTO);
-                        }
-                    return classScheduleDTOs;
+                    return schedules;
                     }
                 }
-            catch(Exception ex)
+            catch (Exception ex)
                 {
                 throw new Exception(ex.Message);
                 }
@@ -136,24 +126,17 @@ namespace Repositories.ScheduleRepository
         #endregion
 
         #region Get ClassSchedules by ClassSubjectId
-        public async Task<List<ViewScheduleDTO>> GetClassSchedulesByClassSubjectId(int classSubjectId)
+        public async Task<List<Schedule>> GetClassSchedulesByClassSubjectId(int classSubjectId)
             {
             try
                 {
-                using(var _dbContext = new MyDbContext())
+                using (var _dbContext = new MyDbContext())
                     {
-                    List<Schedule> schedules =await _dbContext.Schedule.Where(cs => classSubjectId == cs.ClassSubjectId).ToListAsync();
-                    List<ViewScheduleDTO> classScheduleDTOs = new List<ViewScheduleDTO>();
-                    foreach(var item in schedules)
-                        {
-                        ViewScheduleDTO classScheduleDTO = new ViewScheduleDTO();
-                        classScheduleDTO.CopyProperties(item);
-                        classScheduleDTOs.Add(classScheduleDTO);
-                        }
-                    return classScheduleDTOs;
+                    List<Schedule> schedules = await _dbContext.Schedule.Where(cs => classSubjectId==cs.ClassSubjectId).ToListAsync();
+                    return schedules;
                     }
                 }
-            catch(Exception ex)
+            catch (Exception ex)
                 {
                 throw new Exception(ex.Message);
                 }
@@ -176,7 +159,7 @@ namespace Repositories.ScheduleRepository
                     return schedules;
                     }
                 }
-            catch(Exception ex)
+            catch (Exception ex)
                 {
                 throw new Exception(ex.Message);
                 }
@@ -190,22 +173,22 @@ namespace Repositories.ScheduleRepository
         /// <param name="scheduleDto"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<bool> UpdateSchedule(ScheduleDTO scheduleDto)
+        public async Task<bool> UpdateSchedule(Schedule scheduleModel)
             {
             try
                 {
-                using(var dbContext = new MyDbContext())
+                using (var dbContext = new MyDbContext())
                     {
-                    var schedule =await dbContext.Schedule.FirstOrDefaultAsync(x => x.ScheduleId == scheduleDto.ClassScheduleId);
-                    if(schedule == null)
+                    var scheduleExsist = await GetScheduleById(scheduleModel.ScheduleId);
+                    if (scheduleExsist==null)
                         return false;
-                    schedule.CopyProperties(scheduleDto); 
-                    dbContext.Entry(schedule).State = EntityState.Modified;
-                 await   dbContext.SaveChangesAsync();
+                    scheduleExsist.CopyProperties(scheduleModel);
+                    dbContext.Entry(scheduleExsist).State=EntityState.Modified;
+                    await dbContext.SaveChangesAsync();
                     }
                 return true;
                 }
-            catch(Exception ex)
+            catch (Exception ex)
                 {
                 throw new Exception(ex.Message);
                 }
@@ -221,17 +204,17 @@ namespace Repositories.ScheduleRepository
             {
             try
                 {
-                using(var dbContext = new MyDbContext())
-                    {                                                                                   
-                    var schedule =await dbContext.Schedule.FirstOrDefaultAsync(s => s.ScheduleId == scheduleId);
-                    if(schedule == null)
-                        return false; 
+                using (var dbContext = new MyDbContext())
+                    {
+                    var schedule = await dbContext.Schedule.FirstOrDefaultAsync(s => s.ScheduleId==scheduleId);
+                    if (schedule==null)
+                        return false;
                     dbContext.Schedule.Remove(schedule);
-                   await dbContext.SaveChangesAsync();
-                    return true; 
+                    await dbContext.SaveChangesAsync();
+                    return true;
                     }
                 }
-            catch(Exception ex)
+            catch (Exception ex)
                 {
                 throw new Exception(ex.Message);
                 }
@@ -244,28 +227,29 @@ namespace Repositories.ScheduleRepository
         /// </summary>
         /// <param name="classSubjectId">Id của ClassSubject</param>
         /// <returns>Danh sách Schedule</returns>
-        public async Task<List<ViewScheduleDTO>> GetClassSchedulesForStaff(List<int> classSubjectIds, DateTime startDay, DateTime endDay)
+        public async Task<List<Schedule>> GetClassSchedulesForStaff(List<int> classSubjectIds, DateTime startDay, DateTime endDay)
             {
             try
                 {
-                using (var _dbContext = new MyDbContext()) {
-                var schedules = await _dbContext.Schedule
-                         .Where(s => classSubjectIds.Contains(s.ClassSubjectId)
-                                  &&s.Date>=DateOnly.FromDateTime(startDay)
-                                  &&s.Date<=DateOnly.FromDateTime(endDay))
-                         .Select(s => new ViewScheduleDTO
-                             {
-                             ClassScheduleId=s.ScheduleId,
-                             ClassSubjectId=s.ClassSubjectId,
-                             SlotId=s.SlotId,
-                             TeacherId=s.TeacherId,
-                             Date=s.Date,
-                             Status=s.Status,
-                             RoomId=s.RoomId,
-                             SlotNoInSubject=s.SlotNoInSubject
-                             })
-                         .ToListAsync();
-                return schedules;
+                using (var _dbContext = new MyDbContext())
+                    {
+                    var schedules = await _dbContext.Schedule
+                             .Where(s => classSubjectIds.Contains(s.ClassSubjectId)
+                                      &&s.Date>=DateOnly.FromDateTime(startDay)
+                                      &&s.Date<=DateOnly.FromDateTime(endDay))
+                             .Select(s => new Schedule
+                                 {
+                                 ScheduleId=s.ScheduleId,
+                                 ClassSubjectId=s.ClassSubjectId,
+                                 SlotId=s.SlotId,
+                                 TeacherId=s.TeacherId,
+                                 Date=s.Date,
+                                 Status=s.Status,
+                                 RoomId=s.RoomId,
+                                 SlotNoInSubject=s.SlotNoInSubject
+                                 })
+                             .ToListAsync();
+                    return schedules;
                     }
                 }
             catch (Exception ex)
@@ -281,19 +265,19 @@ namespace Repositories.ScheduleRepository
         /// </summary>
         /// <param name="classSubjectId">Id của ClassSubject</param>
         /// <returns>Danh sách Schedule</returns>
-        public async Task<List<ViewScheduleDTO>> GetClassSchedulesForStudent(List<int> classSubjectIds, DateTime startDay, DateTime endDay)
+        public async Task<List<Schedule>> GetClassSchedulesForStudent(List<int> classSubjectIds, DateTime startDay, DateTime endDay)
             {
             try
                 {
                 using (var _dbContext = new MyDbContext())
                     {
-                    var schedules =await _dbContext.Schedule
+                    var schedules = await _dbContext.Schedule
                          .Where(s => classSubjectIds.Contains(s.ClassSubjectId)
                                   &&s.Date>=DateOnly.FromDateTime(startDay)
                                   &&s.Date<=DateOnly.FromDateTime(endDay))
-                         .Select(s => new ViewScheduleDTO
+                         .Select(s => new Schedule
                              {
-                             ClassScheduleId=s.ScheduleId,
+                             ScheduleId=s.ScheduleId,
                              ClassSubjectId=s.ClassSubjectId,
                              SlotId=s.SlotId,
                              TeacherId=s.TeacherId,
@@ -322,29 +306,55 @@ namespace Repositories.ScheduleRepository
         /// <param name="endDay"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<List<ViewScheduleDTO>> GetScheduleForTeacher(string teacherId, DateTime startDay, DateTime endDay) {
+        public async Task<List<Schedule>> GetScheduleForTeacher(string teacherId, DateTime startDay, DateTime endDay)
+            {
             try
                 {
-                using (var dbcontext= new MyDbContext())
+                using (var dbcontext = new MyDbContext())
                     {
-                    var schedules =await dbcontext.Schedule.Where(s => s.TeacherId==teacherId&&s.Date>=DateOnly.FromDateTime(startDay)
+                    var schedules = await dbcontext.Schedule.Where(s => s.TeacherId==teacherId&&s.Date>=DateOnly.FromDateTime(startDay)
                                  &&s.Date<=DateOnly.FromDateTime(endDay)).ToListAsync();
-                    List<ViewScheduleDTO> viewScheduleDTOs = new List<ViewScheduleDTO>();
-                    foreach (var schedule in schedules)
-                        {
-                         ViewScheduleDTO viewScheduleDTO = new ViewScheduleDTO();
-                        viewScheduleDTO.CopyProperties(schedule);
-                        viewScheduleDTOs.Add(viewScheduleDTO);
-                      await dbcontext.SaveChangesAsync();
-                        }
-                    return viewScheduleDTOs;
+                    return schedules;
                     }
                 }
             catch (Exception ex)
                 {
-                throw new Exception (ex.Message);
+                throw new Exception(ex.Message);
                 }
             }
         #endregion
+
+        #region Change Schedule Status
+        /// <summary>
+        /// Change Schedule selected Status 
+        /// </summary>
+        /// <param name="classSubjectIds"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<bool> ChangeScheduleStatus(List<int> classSubjectIds, int status)
+            {
+            try
+                {
+                using (var _db = new MyDbContext())
+                    {
+                    var Ids = await _db.Schedule.Where(x => classSubjectIds.Contains(x.ClassSubjectId)).ToListAsync();
+                    if (!Ids.Any())
+                        return false;
+                    foreach (var item in Ids)
+                        {
+                        item.Status=status;
+                        }
+                    await _db.SaveChangesAsync();
+                    return true;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
         }
     }

@@ -2,6 +2,8 @@
 using BusinessObject;
 using BusinessObject.ModelDTOs;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol.Core.Types;
+using OfficeOpenXml;
 using UserService.Services.StudentServices;
 
 namespace UserService.Controllers.StudentController
@@ -75,5 +77,58 @@ namespace UserService.Controllers.StudentController
             return Ok(aPIResponse);
             }
         #endregion
+
+        #region
+        [HttpGet("export")]
+        public async Task<IActionResult> ExportStudentsToExcel([FromQuery] string? majorId)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            var export = await _service.ExportStudentsToExcel(majorId);
+
+            if (export==null)
+                {
+                aPIResponse.Message="Không có dữ liệu để xuất.";
+                return BadRequest(aPIResponse);
+                }
+
+            aPIResponse.Result="File đã được tạo và sẵn sàng để tải về.";
+            aPIResponse.Message="Export Thành công";
+
+            // Trả về tệp Excel trực tiếp
+            var fileBytes = export as byte[];
+            if (fileBytes==null)
+                {
+                aPIResponse.Message="Đã xảy ra lỗi khi tạo tệp Excel.";
+                return StatusCode(500, aPIResponse);
+                }
+
+            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "DanhSachSinhVien.xlsx");
+            }
+        #endregion
+        #region
+
+        [HttpGet("exportEmpty")]
+        public async Task<IActionResult> ExportFormAddStudent()
+            {
+            APIResponse aPIResponse = new APIResponse();
+            var export = await _service.ExportFormAddStudent();
+            if (export==null)
+                {
+                aPIResponse.Message="Không có dữ liệu để xuất.";
+                return BadRequest(aPIResponse);
+                }
+            aPIResponse.Result="File đã được tạo và sẵn sàng để tải về.";
+            aPIResponse.Message="Export Thành công";
+            // Trả về tệp Excel trực tiếp
+            var fileBytes = export as byte[];
+            if (fileBytes==null)
+                {
+                aPIResponse.Message="Đã xảy ra lỗi khi tạo tệp Excel.";
+                return StatusCode(500, aPIResponse);
+                }
+            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "DanhSachSinhVien.xlsx");
+            }
+        #endregion
+
         }
     }

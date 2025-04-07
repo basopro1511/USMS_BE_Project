@@ -52,7 +52,6 @@ namespace Services.SubjectServices
                   (!subjectDTO.SubjectId.Any(char.IsLetter) || !subjectDTO.SubjectId.Any(char.IsDigit),"Mã môn học phải chứa cả chữ và số!"),
                   (string.IsNullOrEmpty(subjectDTO.SubjectName),"Tên môn học không được để trống" ),
                   (subjectDTO.SubjectName.Length > 100, "Tên môn học phải có độ dài tối đa 100 ký tự!"),
-                  (string.IsNullOrEmpty(subjectDTO.MajorId),"Chuyên ngành không được để trống!"),
                   (subjectDTO.NumberOfSlot <= 4 || subjectDTO.NumberOfSlot > 30,"Số buổi học phải lớn hơn 4 và nhỏ hơn hoặc bằng 30!"),
                   (subjectDTO.Term <= 0 || subjectDTO.Term > 8,"Kỳ học phải lớn hơn 0 và nhỏ hơn hoặc bằng 8!"),
             };
@@ -108,7 +107,6 @@ namespace Services.SubjectServices
                   (!subjectDTO.SubjectId.Any(char.IsLetter) || !subjectDTO.SubjectId.Any(char.IsDigit),"Mã môn học phải chứa cả chữ và số!"),
                   (string.IsNullOrEmpty(subjectDTO.SubjectName),"Tên môn học không được để trống" ),
                   (subjectDTO.SubjectName.Length > 100, "Tên môn học phải có độ dài tối đa 100 ký tự!"),
-                  (string.IsNullOrEmpty(subjectDTO.MajorId),"Chuyên ngành không được để trống!"),
                   (subjectDTO.NumberOfSlot <= 4 || subjectDTO.NumberOfSlot > 30,"Số buổi học phải lớn hơn 4 và nhỏ hơn hoặc bằng 30!"),
                   (subjectDTO.Term <= 0 || subjectDTO.Term > 8,"Kỳ học phải lớn hơn 0 và nhỏ hơn hoặc bằng 8!"),
             };

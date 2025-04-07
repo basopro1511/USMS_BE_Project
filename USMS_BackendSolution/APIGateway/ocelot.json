@@ -260,6 +260,18 @@
             "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
         },
         {
+            "DownstreamPathTemplate": "/api/ClassSubject/{id}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7286
+                }
+            ],
+            "UpstreamPathTemplate": "/api/ClassSubject/{id}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
             "DownstreamPathTemplate": "/api/ClassSubject/ClassIdsByMajorId/{id}",
             "DownstreamScheme": "https",
             "DownstreamHostAndPorts": [
@@ -382,6 +394,18 @@
             "UpstreamPathTemplate": "/api/Schedule/Teacher/{id}/{startDay}/{endDay}",
             "UpstreamHttpMethod": [ "GET" ]
         },
+        {
+            "DownstreamPathTemplate": "/api/Schedule/ChangeStatus/{majorId}/{classId}/{term}/{status}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Schedule/ChangeStatus/{majorId}/{classId}/{term}/{status}",
+            "UpstreamHttpMethod": [ "PUT" ]
+        },
         /* Schedule API End */
 
         /* Student In Class API Start */
@@ -495,6 +519,30 @@
             ],
             "UpstreamPathTemplate": "/api/Student/import",
             "UpstreamHttpMethod": [ "POST" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Student/export",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7179
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Student/export",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Student/exportEmpty",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7179
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Student/exportEmpty",
+            "UpstreamHttpMethod": [ "GET" ]
         },
         {
             "DownstreamPathTemplate": "/api/Student/ChangeStatus",

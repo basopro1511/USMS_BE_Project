@@ -21,5 +21,6 @@ namespace ClassBusinessObject.ModelDTOs
         public int Term { get; set; }
         public string RoleName { get; set; }
         public string MajorName { get; set; }
+        public string? UserAvartar { get; set; }
         }
     }

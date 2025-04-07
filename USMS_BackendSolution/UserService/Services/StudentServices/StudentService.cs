@@ -3,6 +3,7 @@ using BusinessObject.AppDBContext;
 using BusinessObject.ModelDTOs;
 using BusinessObject.Models;
 using ISUZU_NEXT.Server.Core.Extentions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using System.Globalization;
@@ -43,9 +44,9 @@ namespace UserService.Services.StudentServices
                     {
                     UserDTO userDTO = new UserDTO();
                     userDTO.CopyProperties(item);
-                    Student? student =await _db.Student.FirstOrDefaultAsync(x => x.StudentId==userDTO.UserId);      
-                    if (student !=null) 
-                    userDTO.Term=student.Term;
+                    Student? student = await _db.Student.FirstOrDefaultAsync(x => x.StudentId==userDTO.UserId);
+                    if (student!=null)
+                        userDTO.Term=student.Term;
                     usersDTOs.Add(userDTO);
                     }
                 };
@@ -235,7 +236,7 @@ namespace UserService.Services.StudentServices
                 #endregion
                 #region 3. Save Image vào Cloud
                 CloudinaryService _cloudService = new CloudinaryService();
-                userDTO.UserAvartar = await _cloudService.UploadImageFromBase64(userDTO.UserAvartar);
+                userDTO.UserAvartar=await _cloudService.UploadImageFromBase64(userDTO.UserAvartar);
                 #endregion
                 userDTO.RoleId=5; //Id Student là 5
                 userDTO.PasswordHash=HashPassword(userDTO.PasswordHash);
@@ -400,6 +401,10 @@ namespace UserService.Services.StudentServices
                         int rowCount = worksheet.Dimension.Rows;
                         for (int row = 2; row<=rowCount; row++)
                             {
+                            if (string.IsNullOrWhiteSpace(worksheet.Cells[row, 2].Text))
+                                {
+                                break;
+                                }
                             string majorId = worksheet.Cells[row, 9].Text;
                             // Tạo prefix: majorId + currentYearSuffix, ví dụ: "SE25"
                             string prefix = majorId+currentYearSuffix;
@@ -409,17 +414,28 @@ namespace UserService.Services.StudentServices
                                 }
                             studentIdMap[prefix]++;
                             string nextUserId = prefix+studentIdMap[prefix].ToString("D4");
+                            DateOnly dob;
+                            if (worksheet.Cells[row, 8].Value is DateTime dt)
+                                {
+                                dob=DateOnly.FromDateTime(dt);
+                                }
+                            else
+                                {
+                                string dobText = worksheet.Cells[row, 8].Text.Trim();
+                                string[] acceptedFormats = { "d/M/yyyy", "dd/MM/yyyy", "d/MM/yyyy", "dd/M/yyyy" };
+                                bool isParsed = DateOnly.TryParseExact(dobText, acceptedFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out dob);
+                                }
                             var user = new User
                                 {
 
                                 FirstName=worksheet.Cells[row, 4].Text,
                                 MiddleName=worksheet.Cells[row, 3].Text,
                                 LastName=worksheet.Cells[row, 2].Text,
-                                Gender=worksheet.Cells[row, 5].Text.ToLower()=="female",  // nếu female là true, male sẽ là false
+                                Gender=worksheet.Cells[row, 5].Text.ToLower()=="Nữ",  // nếu female là true, male sẽ là false
                                 PasswordHash=HashPassword("123456789"),
                                 PersonalEmail=worksheet.Cells[row, 6].Text,
                                 PhoneNumber=worksheet.Cells[row, 7].Text,
-                                DateOfBirth=DateOnly.ParseExact(worksheet.Cells[row, 8].Text, "dd/MM/yyyy", CultureInfo.InvariantCulture),
+                                DateOfBirth=dob,
                                 RoleId=5,
                                 MajorId=worksheet.Cells[row, 9].Text,
                                 Status=1,
@@ -491,10 +507,10 @@ namespace UserService.Services.StudentServices
         public async Task<APIResponse> GetUserById(string userId)
             {
             APIResponse aPIResponse = new APIResponse();
-           User user = await _repository.GetStudentById(userId);
+            User user = await _repository.GetStudentById(userId);
             UserDTO userDTO = new UserDTO();
             userDTO.CopyProperties(user);
-            using (var _db= new MyDbContext())
+            using (var _db = new MyDbContext())
                 {
                 var student = await _db.Student.FirstOrDefaultAsync(x => x.StudentId==userId);
                 if (student==null)
@@ -571,6 +587,116 @@ namespace UserService.Services.StudentServices
             return aPIResponse;
             }
         #endregion
+
+        #region Export Student Information
+        /// <summary>
+        /// Export Student Data to Excel by MajorId ( MajorId can null to export all Student in Database )
+        /// </summary>
+        /// <param name="majorId"></param>
+        /// <returns></returns>
+        public async Task<byte[]> ExportStudentsToExcel(string? majorId)
+            {
+            var students = await _repository.GetAllStudent();
+            if (!string.IsNullOrEmpty(majorId))
+                students=students.Where(s => s.MajorId==majorId).ToList();
+            ExcelPackage.LicenseContext=LicenseContext.NonCommercial;
+            using (var package = new ExcelPackage())
+                {
+                var worksheet = package.Workbook.Worksheets.Add("Students");
+                // Header
+                worksheet.Cells[1, 1].Value="STT";
+                worksheet.Cells[1, 2].Value="Mã sinh viên";
+                worksheet.Cells[1, 3].Value="Họ";
+                worksheet.Cells[1, 4].Value="Tên đệm";
+                worksheet.Cells[1, 5].Value="Tên";
+                worksheet.Cells[1, 6].Value="Giới tính";
+                worksheet.Cells[1, 7].Value="Email";
+                worksheet.Cells[1, 8].Value="SĐT";
+                worksheet.Cells[1, 9].Value="Ngày sinh";
+                worksheet.Cells[1, 10].Value="Ngành";
+                worksheet.Cells[1, 11].Value="Địa Chỉ";
+                worksheet.Cells[1, 12].Value="Trạng thái";
+                int row = 2;
+                int stt = 1;
+                foreach (var s in students)
+                    {
+                    worksheet.Cells[row, 1].Value=stt++;
+                    worksheet.Cells[row, 2].Value=s.UserId;
+                    worksheet.Cells[row, 3].Value=s.LastName;
+                    worksheet.Cells[row, 4].Value=s.MiddleName;
+                    worksheet.Cells[row, 5].Value=s.FirstName;
+                    worksheet.Cells[row, 6].Value=s.Gender ? "Nữ" : "Nam";
+                    worksheet.Cells[row, 7].Value=s.Email;
+                    worksheet.Cells[row, 8].Value=s.PhoneNumber;
+                    worksheet.Cells[row, 9].Value=s.DateOfBirth.ToString("dd/MM/yyyy");
+                    worksheet.Cells[row, 10].Value=s.MajorId;
+                    worksheet.Cells[row, 11].Value=s.Address;
+                    worksheet.Cells[row, 12].Value=s.Status==1 ? "Đang học" : "Ngừng học";
+                    row++;
+                    }
+                return package.GetAsByteArray();
+                }
+            }
+        #endregion
+
+        #region Export Form Add Student Information
+        /// <summary>
+        /// Export From Add Student
+        /// </summary>
+        /// <param name="majorId"></param>
+        /// <returns></returns>
+        public async Task<byte[]> ExportFormAddStudent()
+            {
+            ExcelPackage.LicenseContext=LicenseContext.NonCommercial;
+
+            using (var package = new ExcelPackage())
+                {
+                var worksheet = package.Workbook.Worksheets.Add("Students");
+
+                // Header
+                worksheet.Cells[1, 1].Value="STT";
+                worksheet.Cells[1, 2].Value="Họ";
+                worksheet.Cells[1, 3].Value="Tên đệm";
+                worksheet.Cells[1, 4].Value="Tên";
+                worksheet.Cells[1, 5].Value="Giới tính";
+                worksheet.Cells[1, 6].Value="Email";
+                worksheet.Cells[1, 7].Value="SĐT";
+                worksheet.Cells[1, 8].Value="Ngày sinh";
+                worksheet.Cells[1, 9].Value="Chuyên Ngành";
+                worksheet.Cells[1, 10].Value="Địa Chỉ";
+                // Gán công thức tự động tăng STT từ dòng 2 đến 1000
+                for (int row = 2; row<=1000; row++)
+                    {
+                    worksheet.Cells[row, 1].Formula=$"=ROW()-1";
+                    }
+                // Định dạng các cột để bắt validation
+                var range = worksheet.Cells[2, 8, 1000, 8]; // Cột ngày sinh theo định dạng ngày/tháng/năm
+                range.Style.Numberformat.Format="dd/mm/yyyy";
+                var phoneRange = worksheet.Cells[2, 7, 1000, 7]; // Cột số điện thoại
+                phoneRange.Style.Numberformat.Format="@"; // Định dạng dạng text để giữ số 0 ở đầu tiên
+                // Tạo dropdown cho chọn iới tính: Nam / Nữ
+                var genderValidation = worksheet.DataValidations.AddListValidation("E2:E1000");
+                genderValidation.Formula.Values.Add("Nam");
+                genderValidation.Formula.Values.Add("Nữ");
+                genderValidation.ShowErrorMessage=true;
+                genderValidation.ErrorStyle=OfficeOpenXml.DataValidation.ExcelDataValidationWarningStyle.stop;
+                genderValidation.ErrorTitle="Giá trị không hợp lệ";
+                genderValidation.Error="Vui lòng chọn Nam hoặc Nữ";
+                // Tạo dropdown cho Chuyên ngành do chuyên ngành mặc định có 4 nên chỉ để 4, có thể dùng hàm getmajor nếu có CN mới
+                var majorValidation = worksheet.DataValidations.AddListValidation("I2:I1000");
+                majorValidation.Formula.Values.Add("SE");
+                majorValidation.Formula.Values.Add("BA");
+                majorValidation.Formula.Values.Add("LG");
+                majorValidation.Formula.Values.Add("CT");
+                majorValidation.ShowErrorMessage=true;
+                majorValidation.ErrorTitle="Sai chuyên ngành";
+                majorValidation.Error="Chuyên ngành chỉ có thể là SE, BA, LG hoặc CT";
+                worksheet.Cells.AutoFitColumns();
+                return package.GetAsByteArray();
+                }
+            }
+        #endregion
+
         }
     }
 
