@@ -4,6 +4,7 @@ using Services.ClassServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ClassBusinessObject.AppDBContext;
+using Services.SubjectServices;
 
 namespace ClassService.Controllers.ClassSubjectController
     {
@@ -77,6 +78,14 @@ namespace ClassService.Controllers.ClassSubjectController
             aPIResponse=await _classSubjectService.GetClassSubjectByMajorIdClassIdSubjectId(majorId, classId, term);
             return Ok(aPIResponse);
             }
+        
+        [HttpGet("ClassSubjects")]
+        public async Task<IActionResult> GetClassSubjectsByParam(string majorId, string classId,string semesterId, int term)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=await _classSubjectService.GetClassSubjectByMajorIdClassIdSemesterIdSubjectId(majorId, classId, semesterId, term);
+            return Ok(aPIResponse);
+            }
 
         #region Lấy danh sách ClassId dựa vào MajorId
         /// <summary>
@@ -102,6 +111,7 @@ namespace ClassService.Controllers.ClassSubjectController
             }
         #endregion
 
+        #region
         [HttpPut("ChangeSelectStatus")]
         public async Task<IActionResult> ChangeStatusClassSubject(List<int> ids, int status)
             {
@@ -109,20 +119,42 @@ namespace ClassService.Controllers.ClassSubjectController
             aPIResponse=await _classSubjectService.ChangeClassStatusSelected(ids, status);
             return Ok(aPIResponse);
             }
+        #endregion
+
         #region
         [HttpPost("AutoCreateClass")]
-        public async Task<IActionResult> AutoCreateClassSubject(List<string> studentIds,
-    int classCapacity,
-    string majorId,
-    string subjectId,
-    string semesterId,
-    int term)
+        public async Task<IActionResult> AutoCreateClassSubject(List<string> studentIds, int classCapacity, string majorId, string subjectId, string semesterId, int term)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse=await _classSubjectService.AutoCreateClassesForStudents(studentIds,classCapacity,majorId,subjectId,semesterId,term);
+            aPIResponse=await _classSubjectService.AutoCreateClassesForStudents(studentIds, classCapacity, majorId, subjectId, semesterId, term);
             return Ok(aPIResponse);
+            #endregion
             }
+
+        #region Export Data
+        [HttpGet("export")]
+        public async Task<IActionResult> ExportSubjectsToExcel([FromQuery] string? majorId, [FromQuery] string? classId, [FromQuery] string? subjectId, int? status)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            var export = await _classSubjectService.ExportClassToExcel(majorId,classId,subjectId, status);
+            if (export==null)
+                {
+                aPIResponse.Message="Không có dữ liệu để xuất.";
+                return BadRequest(aPIResponse);
+                }
+            aPIResponse.Result="File đã được tạo và sẵn sàng để tải về.";
+            aPIResponse.Message="Export Thành công";
+            // Trả về tệp Excel trực tiếp
+            var fileBytes = export as byte[];
+            if (fileBytes==null)
+                {
+                aPIResponse.Message="Đã xảy ra lỗi khi tạo tệp Excel.";
+                return StatusCode(500, aPIResponse);
+                }
+            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "DanhSachSinhVien.xlsx");
+            }
+        #endregion
+
         }
-    #endregion
     }
 

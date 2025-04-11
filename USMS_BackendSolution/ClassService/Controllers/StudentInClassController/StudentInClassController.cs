@@ -86,6 +86,30 @@ namespace ClassService.Controllers.StudentInClassController
             return Ok(aPIResponse);
             }
         #endregion
+
+        #region Export Data
+        [HttpGet("export")]
+        public async Task<IActionResult> ExportSubjectsToExcel([FromQuery] int id)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            var export = await _service.ExportStudentInClassToExcel(id);
+            if (export==null)
+                {
+                aPIResponse.Message="Không có dữ liệu để xuất.";
+                return BadRequest(aPIResponse);
+                }
+            aPIResponse.Result="File đã được tạo và sẵn sàng để tải về.";
+            aPIResponse.Message="Export Thành công";
+            // Trả về tệp Excel trực tiếp
+            var fileBytes = export as byte[];
+            if (fileBytes==null)
+                {
+                aPIResponse.Message="Đã xảy ra lỗi khi tạo tệp Excel.";
+                return StatusCode(500, aPIResponse);
+                }
+            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "DanhSachSinhVien.xlsx");
+            }
+        #endregion
         }
     }
 

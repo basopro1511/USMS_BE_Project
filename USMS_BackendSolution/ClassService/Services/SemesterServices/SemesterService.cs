@@ -7,6 +7,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using ClassBusinessObject.Models;
 using ISUZU_NEXT.Server.Core.Extentions;
+using OfficeOpenXml;
+using System.Globalization;
 
 namespace Services.SemesterServices
 {
@@ -218,5 +220,209 @@ namespace Services.SemesterServices
         //    return response;
         //}
         #endregion
+
+        #region Change Semester Status Selected 
+        /// <summary>
+        /// Change Semester status
+        /// </summary>
+        /// <param name="userIds"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        public async Task<APIResponse> ChangeSemesterStatusSelected(List<string> Ids, int status)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            if (Ids==null||!Ids.Any())
+                {
+                aPIResponse.IsSuccess=false;
+                aPIResponse.Message="Danh sách lớp học không hợp lệ.";
+                return aPIResponse;
+                }
+            bool isSuccess = await _semesterRepository.ChangeSemesterStatusSelected(Ids, status);
+            if (isSuccess)
+                {
+                aPIResponse.IsSuccess=true;
+                switch (status)
+                    {
+                    case 0:
+                        aPIResponse.Message="Đã thay đổi trạng thái các học kỳ thành 'Chưa bắt đầu'.";
+                        break;
+                    case 1:
+                        aPIResponse.Message="Đã thay đổi trạng thái các học kỳ thành 'Đang diễn ra'.";
+                        break;
+                    case 2:
+                        aPIResponse.Message="Đã thay đổi trạng thái các học kỳ thành 'Đã kết thúc'.";
+                        break;
+                    default:
+                        aPIResponse.Message="Trạng thái không hợp lệ.";
+                        break;
+                    }
+                }
+            return aPIResponse;
+            }
+        #endregion
+
+        #region Export Form Add Semester
+        /// <summary>
+        /// Export empty form for add model
+        /// </summary>
+        /// <returns></returns>
+        public Task<byte[]> ExportFormAddSemester()
+            {
+            ExcelPackage.LicenseContext=LicenseContext.NonCommercial;
+            using (var package = new ExcelPackage())
+                {
+                var worksheet = package.Workbook.Worksheets.Add("Semesters");
+                // Header
+                worksheet.Cells[1, 1].Value="STT";
+                worksheet.Cells[1, 2].Value="Mã học kỳ";
+                worksheet.Cells[1, 3].Value="Tên học kỳ";
+                worksheet.Cells[1, 4].Value="Thời gian bắt đầu";
+                worksheet.Cells[1, 5].Value="Thời gian kết thúc";
+                // Gán công thức tự động tăng STT từ dòng 2 đến 1000
+                for (int row = 2; row<=1000; row++)
+                    {
+                    worksheet.Cells[row, 1].Formula=$"=ROW()-1";
+                    }
+                worksheet.Cells.AutoFitColumns();
+                return Task.FromResult(package.GetAsByteArray());
+                }
+            }
+        #endregion
+
+        #region Export Room Information
+        /// <summary>
+        /// Export Room Information
+        /// </summary>
+        /// <param name="majorId"></param>
+        /// <returns></returns>
+        public async Task<byte[]> ExportSemestersToExcel(int? status)
+            {
+            var models = await _semesterRepository.GetAllSemesters();
+            if (status.HasValue)
+                models=models.Where(s => s.Status==status.Value).ToList();
+            ExcelPackage.LicenseContext=OfficeOpenXml.LicenseContext.NonCommercial;
+            using (var package = new ExcelPackage())
+                {
+                var worksheet = package.Workbook.Worksheets.Add("Semester");
+                // Header
+                worksheet.Cells[1, 1].Value="STT";
+                worksheet.Cells[1, 2].Value="Mã học kỳ";
+                worksheet.Cells[1, 3].Value="Tên học kỳ";
+                worksheet.Cells[1, 4].Value="Trạng thái";
+                worksheet.Cells[1, 5].Value="Thời gian bắt đầu";
+                worksheet.Cells[1, 6].Value="Thời gian kết thúc";
+                int row = 2;
+                int stt = 1;
+                foreach (var s in models)
+                    {
+                    worksheet.Cells[row, 1].Value=stt++;
+                    worksheet.Cells[row, 2].Value=s.SemesterId;
+                    worksheet.Cells[row, 3].Value=s.SemesterName;
+                    worksheet.Cells[row, 4].Value=s.Status==1 ? "Đang khả dụng" : s.Status==0 ? "Vô hiệu hóa" : "Đã kết thúc";
+                    worksheet.Cells[row, 5].Value=s.StartDate.ToString("dd/MM/yyyy");
+                    worksheet.Cells[row, 6].Value=s.EndDate.ToString("dd/MM/yyyy");
+                    row++;
+                    }
+                return package.GetAsByteArray();
+                }
+            }
+        #endregion
+
+        #region Import Rooms from Excels
+        /// <summary>
+        /// Import Rooms Form Excel
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public async Task<APIResponse> ImportSemestersFromExcel(IFormFile file)
+            {
+            try
+                {
+                if (file==null||file.Length==0)
+                    {
+                    return new APIResponse { IsSuccess=false, Message="File không hợp lệ." };
+                    }
+                var models = new List<Semester>();
+                ExcelPackage.LicenseContext=OfficeOpenXml.LicenseContext.NonCommercial;
+                using (var stream = new MemoryStream())
+                    {
+                    await file.CopyToAsync(stream);
+                    using (var package = new ExcelPackage(stream))
+                        {
+                        ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                        int rowCount = worksheet.Dimension.Rows;
+                        for (int row = 2; row<=rowCount; row++)
+                            {
+                            if (string.IsNullOrWhiteSpace(worksheet.Cells[row, 2].Text))
+                                {
+                                break;
+                                }
+                            DateOnly dtStartDate;
+                            if (worksheet.Cells[row, 4].Value is DateTime dt)
+                                {
+                                dtStartDate=DateOnly.FromDateTime(dt);
+                                }
+                            else
+                                {
+                                string dobText = worksheet.Cells[row,4].Text.Trim();
+                                string[] acceptedFormats = { "d/M/yyyy", "dd/MM/yyyy", "d/MM/yyyy", "dd/M/yyyy" };
+                                bool isParsed = DateOnly.TryParseExact(dobText, acceptedFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out dtStartDate);
+                                }
+                            DateOnly dtEndDate;
+                            if (worksheet.Cells[row, 5].Value is DateTime dtE)
+                                {
+                                dtEndDate=DateOnly.FromDateTime(dtE);
+                                }
+                            else
+                                {
+                                string dobText = worksheet.Cells[row, 5].Text.Trim();
+                                string[] acceptedFormats = { "d/M/yyyy", "dd/MM/yyyy", "d/MM/yyyy", "dd/M/yyyy" };
+                                bool isParsed = DateOnly.TryParseExact(dobText, acceptedFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out dtEndDate);
+                                }
+                            var model = new Semester
+                                {
+                                SemesterId=worksheet.Cells[row, 2].Text,
+                                SemesterName=worksheet.Cells[row, 3].Text,
+                                Status=1,
+                                StartDate=dtStartDate,
+                                EndDate=dtEndDate,
+                                };
+                            #region 1. Validation       
+                            string stt = worksheet.Cells[row, 1].Text;
+                            var existingData = await _semesterRepository.GetSemesterById(model.SemesterId);
+                            List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
+                              {
+                                 (existingData != null,"Mã học kỳ tại ô số "+ stt +" đã tồn tại!"),
+                                 (model.StartDate < model.EndDate ,"Thời gian bắt đầu tại ô số "+ stt +" không thể diễn ra trước thời gian kết thúc!"),
+                              };
+                            foreach (var validation in validations)
+                                {
+                                if (validation.condition)
+                                    {
+                                    return new APIResponse
+                                        {
+                                        IsSuccess=false,
+                                        Message=validation.errorMessage
+                                        };
+                                    }
+                                }
+                            #endregion
+                            models.Add(model);
+                            }
+                        }
+                    }
+                bool isSuccess = await _semesterRepository.AddSemestersAsyncs(models);
+                if (isSuccess)
+                    {
+                    return new APIResponse { IsSuccess=true, Message="Import học kỳ thành công." };
+                    }
+                return new APIResponse { IsSuccess=false, Message="Import học kỳ thất bại." };
+                }
+            catch (Exception ex)
+                {
+                return new APIResponse { IsSuccess=false, Message=ex.Message };
+                }
+            }
+        #endregion
+        }
     }
-}

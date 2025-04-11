@@ -221,5 +221,30 @@ namespace Repositories.RoomRepository
                 }
             }
         #endregion
+
+        #region Add list Room 
+        /// <summary>
+        /// Add a list of Rooms from Excel
+        /// </summary>
+        /// <param name="models"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<bool> AddRoomsAsyncs(List<Room> models)
+            {
+            try
+                {
+                using (var _db = new MyDbContext())
+                    {
+                    await _db.Room.AddRangeAsync(models);
+                    await _db.SaveChangesAsync();
+                    return true;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
         }
     }

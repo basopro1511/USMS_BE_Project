@@ -5,6 +5,7 @@ using ClassBusinessObject.Models;
 using ClassService.Services.StudentInClassServices;
 using ISUZU_NEXT.Server.Core.Extentions;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using Repositories.ClassSubjectRepository;
 using System;
 using System.Collections.Generic;
@@ -213,6 +214,38 @@ namespace Services.ClassServices
             }
         #endregion
 
+        #region Get ClassSubject By MajorId, ClassId, SemesterId, term
+        /// <summary>
+        /// Retrive list ClassSubjects by MajorId, ClassId, SemesterId
+        /// </summary>
+        /// <param name="majorId"></param>
+        /// <param name="classId"></param>
+        /// <param name="term"></param>
+        /// <returns>a list ClassSubjects by MajorId, ClassId, SemesterId </returns>
+        public async Task<APIResponse> GetClassSubjectByMajorIdClassIdSemesterIdSubjectId(string majorId, string classId, string semesterId, int term)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            List<ClassSubject> models = await _classRepository.GetClassSubjectByMajorIdClassIdSemesterIdTerm(majorId, classId, semesterId, term);
+            List<ClassSubjectDTO> dtos = new List<ClassSubjectDTO>();
+            foreach (var model in models)
+                {
+                ClassSubjectDTO dto = new ClassSubjectDTO();
+                dto.CopyProperties(model);
+                dtos.Add(dto);
+                }
+            if (dtos==null||dtos.Count==0)
+                {
+                aPIResponse.IsSuccess=false;
+                aPIResponse.Message="Không tìm thấy lớp học";
+                }
+            else
+                {
+                aPIResponse.Result=dtos;
+                }
+            return aPIResponse;
+            }
+        #endregion
+
         #region Add New ClassSubject
         /// <summary>
         /// Add New ClassSubject to database
@@ -238,12 +271,12 @@ namespace Services.ClassServices
             ClassSubject result = await _classRepository.AddNewClassSubject(model);
             ClassSubjectDTO classSubjectDTO = new ClassSubjectDTO();
             classSubjectDTO.CopyProperties(result);
-            if (result != null)
+            if (result!=null)
                 {
                 return new APIResponse
                     {
                     IsSuccess=true,
-                    Message=$"Thêm mới lớp học thành công! Mã lớp học là: {classSubject.ClassId}" ,
+                    Message=$"Thêm mới lớp học thành công! Mã lớp học là: {classSubject.ClassId}",
                     Result=classSubjectDTO
                     };
                 }
@@ -429,13 +462,7 @@ namespace Services.ClassServices
         #endregion
 
         #region AUTO GENERATE CLASS SUBJECT
-        public async Task<APIResponse> AutoCreateClassesForStudents(
-    List<string> studentIds, // danh sách StudentId từ file import
-    int classCapacity,       // giới hạn số sinh viên mỗi lớp (cấu hình qua parameter)
-    string majorId,
-    string subjectId,
-    string semesterId,
-    int term)
+        public async Task<APIResponse> AutoCreateClassesForStudents(List<string> studentIds, int classCapacity, string majorId, string subjectId, string semesterId, int term)
             {
             try
                 {
@@ -447,12 +474,10 @@ namespace Services.ClassServices
                     }
                 // Tính số lớp cần tạo: theo yêu cầu chia đều, số lớp là số tối thiểu sao cho không vượt quá classCapacity
                 int numClasses = (int)Math.Ceiling((double)totalStudents/classCapacity);
-                // Để chia đều theo kiểu 33-33-32-32, ta tính:
                 int quotient = totalStudents/numClasses;   // số sinh viên cơ bản mỗi lớp
                 int remainder = totalStudents%numClasses;    // số lớp sẽ nhận thêm 1 sinh viên
                 // Danh sách các lớp được tạo (để trả về hoặc dùng trong log)
                 List<ClassSubject> createdClasses = new List<ClassSubject>();
-                // Và giả sử _classRepository có hàm AddStudentInClassList để thêm list StudentInClass
                 int studentIndex = 0;
                 for (int i = 0; i<numClasses; i++)
                     {
@@ -475,7 +500,7 @@ namespace Services.ClassServices
                         }
                     // Giả sử addResponse.Result trả về ClassSubjectDTO chứa thông tin lớp vừa tạo
                     ClassSubjectDTO? createdDto = addResponse.Result as ClassSubjectDTO;
-                    if (createdDto ==null)
+                    if (createdDto==null)
                         {
                         return new APIResponse { IsSuccess=false, Message="Không thể lấy thông tin lớp vừa tạo." };
                         }
@@ -528,7 +553,64 @@ namespace Services.ClassServices
 
         #endregion
 
+        #region Export ClassSubject Information
+        /// <summary>
+        /// Export ClassSubject Information
+        /// </summary>
+        /// <param name="majorId"></param>
+        /// <returns></returns>
+        public async Task<byte[]> ExportClassToExcel(string? majorId, string? classId, string? subjectId, int? status)
+            {
+            APIResponse responseAPI = await GetAllClassSubject();
+            var models = responseAPI.Result as List<ClassSubjectDTO>;
+            if (models==null)
+                {
+                models=new List<ClassSubjectDTO>();
+                }
+            if (!string.IsNullOrEmpty(majorId))
+                models=models.Where(s => s.MajorId==majorId).ToList();
+            if (!string.IsNullOrEmpty(classId))
+                models=models.Where(s => s.ClassId==classId).ToList();
+            if (!string.IsNullOrEmpty(subjectId))
+                models=models.Where(s => s.SubjectId==subjectId).ToList();
+            if (status.HasValue)
+                models=models.Where(s => s.Status==status.Value).ToList();
+            ExcelPackage.LicenseContext=OfficeOpenXml.LicenseContext.NonCommercial;
+            using (var package = new ExcelPackage())
+                {
+                var worksheet = package.Workbook.Worksheets.Add("Classes");
+                // Header
+                worksheet.Cells[1, 1].Value="STT";
+                worksheet.Cells[1, 2].Value="Mã lớp học";
+                worksheet.Cells[1, 3].Value="Mã môn học";
+                worksheet.Cells[1, 4].Value="Mã học kỳ";
+                worksheet.Cells[1, 5].Value="Mã chuyên ngành";
+                worksheet.Cells[1, 6].Value="Kì học số";
+                worksheet.Cells[1, 7].Value="Sĩ số";
+                worksheet.Cells[1, 8].Value="Trạng thái";
+                worksheet.Cells[1, 9].Value="Thời gian tạo";
+                int row = 2;
+                int stt = 1;
+                foreach (var s in models)
+                    {
+                    worksheet.Cells[row, 1].Value=stt++;
+                    worksheet.Cells[row, 2].Value=s.ClassId;
+                    worksheet.Cells[row, 3].Value=s.SubjectId;
+                    worksheet.Cells[row, 4].Value=s.SemesterId;
+                    worksheet.Cells[row, 5].Value=s.MajorId;
+                    worksheet.Cells[row, 6].Value=s.Term;
+                    worksheet.Cells[row, 7].Value=s.NumberOfStudentInClasss;
+                    worksheet.Cells[row, 8].Value=s.Status==1 ? "Đang diễn ra" : s.Status==0 ? "Chưa bắt đầu" : "Đã kết thúc";
+                    worksheet.Cells[row, 9].Value=s.CreatedAt.ToString("dd/MM/yyyy");
+                    row++;
+                    }
+                return package.GetAsByteArray();
+                }
+            }
+        #endregion
+
         #region Copy + Paste  
         #endregion
         }
     }
+   

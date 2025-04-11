@@ -80,10 +80,10 @@ namespace UserService.Controllers.StudentController
 
         #region
         [HttpGet("export")]
-        public async Task<IActionResult> ExportStudentsToExcel([FromQuery] string? majorId)
+        public async Task<IActionResult> ExportStudentsToExcel([FromQuery] string? majorId, int? status)
             {
             APIResponse aPIResponse = new APIResponse();
-            var export = await _service.ExportStudentsToExcel(majorId);
+            var export = await _service.ExportStudentsToExcel(majorId, status);
 
             if (export==null)
                 {

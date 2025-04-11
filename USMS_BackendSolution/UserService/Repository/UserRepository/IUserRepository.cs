@@ -44,5 +44,7 @@ namespace UserService.Repository.UserRepository
         /// <exception cref="Exception"></exception>
         public Task<bool> ChangeUserStatusSelected(List<string> userIds, int status);
         #endregion
+        Task<bool> isPersonalEmailExist(string email);
+        Task<bool> isPhonelExist(string phoneNum);
         }
     }

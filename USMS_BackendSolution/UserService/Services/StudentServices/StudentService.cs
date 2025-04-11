@@ -26,7 +26,6 @@ namespace UserService.Services.StudentServices
             _userRepository=new UserRepository();
             }
 
-
         #region Get All Student
         /// <summary>
         /// Get All Student from Database
@@ -202,10 +201,14 @@ namespace UserService.Services.StudentServices
             try
                 {
                 APIResponse aPIResponse = new APIResponse();
-                var users = await _userRepository.GetAllUser();
                 #region 1. Validation
-                var existEmail = users.FirstOrDefault(x => x.Email==userDTO.Email);
-                var existPhone = users.FirstOrDefault(x => x.PhoneNumber==userDTO.PhoneNumber);
+                // Bắt tồn tại email cá nhân và số điện thoại
+                bool existEmail = await _userRepository.isPersonalEmailExist(userDTO.PersonalEmail);
+                bool existPhone = await _userRepository.isPhonelExist(userDTO.PhoneNumber);
+                // Bắt tên phải toàn là chữ và không được nhập số
+                bool isFirstNameValid = !string.IsNullOrEmpty(userDTO.FirstName)&&userDTO.FirstName.All(c => char.IsLetter(c));
+                bool isLastNameValid = !string.IsNullOrEmpty(userDTO.LastName)&&userDTO.LastName.All(c => char.IsLetter(c));
+                bool isMiddleNameValid = string.IsNullOrEmpty(userDTO.MiddleName)||userDTO.MiddleName.All(c => char.IsLetter(c));
                 List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
             {
                   (!userDTO.PhoneNumber.All(char.IsDigit) || userDTO.PhoneNumber.Length != 10 || !userDTO.PhoneNumber.StartsWith("0"),
@@ -213,8 +216,11 @@ namespace UserService.Services.StudentServices
                   (!IsValidEmail(userDTO.PersonalEmail), "Vui lòng nhập địa chỉ email hợp lệ (ví dụ: example@example.com)."),
                   (userDTO.PasswordHash.Length < 8 || userDTO.PasswordHash.Length > 36,"Độ dài mật khẩu phải từ 8 đến 20 ký tự."),
                   (userDTO.DateOfBirth > DateOnly.FromDateTime(DateTime.Now), "Ngày sinh không thể là ngày trong tương lai."),
-                  (existEmail != null, "Email này đã tồn tại trong hệ thống."),
-                  (existPhone != null, "Số điện thoại này đã tồn tại trong hệ thống."),
+                  (existEmail, "Email này đã tồn tại trong hệ thống."),
+                  (existPhone, "Số điện thoại này đã tồn tại trong hệ thống."),
+                  (!isFirstNameValid, "Tên chỉ được chứa chữ cái và không chứa số."),
+                  (!isLastNameValid,"Họ chỉ được chứa chữ cái và không chứa số."),
+                  (!isMiddleNameValid,"Tên đệm chỉ được chứa chữ cái và không chứa số .")
             };
                 foreach (var validation in validations)
                     {
@@ -283,18 +289,34 @@ namespace UserService.Services.StudentServices
         public async Task<APIResponse> UpdateStudent(UserDTO userDTO)
             {
             APIResponse aPIResponse = new APIResponse();
-            var users = await _userRepository.GetAllUser();
             var user = await _userRepository.GetUserById(userDTO.UserId);
             #region 1. Validation
-            var existEmail = users.FirstOrDefault(x => x.Email==userDTO.Email);
-            var existPhone = users.FirstOrDefault(x => x.PhoneNumber==userDTO.PhoneNumber);
+            // Kiểm tra số điện thoại: nếu số điện thoại mới khác với số hiện có, kiểm tra xem nó đã tồn tại trong DB hay chưa
+            bool existPhone = false;
+            if (user!=null&&userDTO.PhoneNumber!=user.PhoneNumber)
+                {
+                existPhone=await _userRepository.isPhonelExist(userDTO.PhoneNumber);
+                }
+            bool existEmail = false;
+            if (user!=null&&userDTO.PersonalEmail!=user.PersonalEmail)
+                {
+                existEmail=await _userRepository.isPersonalEmailExist(userDTO.PersonalEmail);
+                }
+            bool isFirstNameValid = !string.IsNullOrEmpty(userDTO.FirstName)&&userDTO.FirstName.All(c => char.IsLetter(c));
+            bool isLastNameValid = !string.IsNullOrEmpty(userDTO.LastName)&&userDTO.LastName.All(c => char.IsLetter(c));
+            bool isMiddleNameValid = string.IsNullOrEmpty(userDTO.MiddleName)||userDTO.MiddleName.All(c => char.IsLetter(c));
             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
             {
                   (!userDTO.PhoneNumber.All(char.IsDigit) || userDTO.PhoneNumber.Length != 10 || !userDTO.PhoneNumber.StartsWith("0"),
                   "Số điện thoại phải có 10 số và bắt đầu bằng một số từ 0 (ví dụ: 0901234567)."),
                   (!IsValidEmail(userDTO.PersonalEmail), "Vui lòng nhập địa chỉ email hợp lệ (ví dụ: example@example.com)."),
                   (userDTO.DateOfBirth > DateOnly.FromDateTime(DateTime.Now), "Ngày sinh không thể là ngày trong tương lai."),
-                  (user == null, "Không tìm thấy sinh viên viên cần cập nhật")
+                  (user == null, "Không tìm thấy sinh viên viên cần cập nhật"),
+                  (!isFirstNameValid, "Tên chỉ được chứa chữ cái và không chứa số."),
+                  (!isLastNameValid,"Họ chỉ được chứa chữ cái và không chứa số."),
+                  (!isMiddleNameValid,"Tên đệm chỉ được chứa chữ cái và không chứa số .") ,
+                  (existEmail, "Email này đã tồn tại trong hệ thống."),
+                  (existPhone,"Số điện thoại này đã tồn tại trong hệ thống.")
             };
             foreach (var validation in validations)
                 {
@@ -370,6 +392,11 @@ namespace UserService.Services.StudentServices
         #endregion
 
         #region Import from Excel
+        /// <summary>
+        /// Import file students information to add new student list
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
         public async Task<APIResponse> ImportStudentsFromExcel(IFormFile file)
             {
             try
@@ -446,17 +473,22 @@ namespace UserService.Services.StudentServices
                                 };
                             #region 1. Validation       
                             string stt = worksheet.Cells[row, 1].Text;
-                            var usersCheck = await _userRepository.GetAllUser();
-                            var existEmail = usersCheck.FirstOrDefault(x => x.Email==user.Email);
-                            var existPhone = usersCheck.FirstOrDefault(x => x.PhoneNumber==user.PhoneNumber);
+                            bool existEmail = await _userRepository.isPersonalEmailExist(user.PersonalEmail);
+                            bool existPhone = await _userRepository.isPhonelExist(user.PhoneNumber);
+                            bool isFirstNameValid = !string.IsNullOrEmpty(user.FirstName)&&user.FirstName.All(c => char.IsLetter(c));
+                            bool isLastNameValid = !string.IsNullOrEmpty(user.LastName)&&user.LastName.All(c => char.IsLetter(c));
+                            bool isMiddleNameValid = string.IsNullOrEmpty(user.MiddleName)||user.MiddleName.All(c => char.IsLetter(c));
                             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
                               {
                              (!user.PhoneNumber.All(char.IsDigit) || user.PhoneNumber.Length != 10 || !user.PhoneNumber.StartsWith("0"),
                              "Số điện thoại tại dòng số "+ stt +" phải có 10 số và bắt đầu bằng một số từ 0 (ví dụ: 0901234567)."),
                            (!IsValidEmail(user.PersonalEmail), "Vui lòng nhập địa chỉ email hợp lệ tại dòng số "+ stt +" (ví dụ: example@example.com)."),
                            (user.DateOfBirth > DateOnly.FromDateTime(DateTime.Now), "Ngày sinh tại dòng số "+ stt +" không thể là ngày trong tương lai."),
-                           (existEmail != null, "Email tại dòng số "+ stt +" đã tồn tại trong hệ thống."),
-                           (existPhone != null, "Số điện thoại tại dòng số "+ stt +" đã tồn tại trong hệ thống."),
+                           (existEmail, "Email tại dòng số "+ stt +" đã tồn tại trong hệ thống."),
+                           (existPhone, "Số điện thoại tại dòng số "+ stt +" đã tồn tại trong hệ thống."),
+                           (!isFirstNameValid, "Tên tại dòng số "+ stt +" chỉ được chứa chữ cái và không chứa số."),
+                           (!isLastNameValid,"Họ tại dòng số "+ stt +" chỉ được chứa chữ cái và không chứa số."),
+                           (!isMiddleNameValid,"Tên đệm tại dòng số "+ stt +" chỉ được chứa chữ cái và không chứa số .")
                               };
                             foreach (var validation in validations)
                                 {
@@ -594,11 +626,13 @@ namespace UserService.Services.StudentServices
         /// </summary>
         /// <param name="majorId"></param>
         /// <returns></returns>
-        public async Task<byte[]> ExportStudentsToExcel(string? majorId)
+        public async Task<byte[]> ExportStudentsToExcel(string? majorId, int? status)
             {
             var students = await _repository.GetAllStudent();
             if (!string.IsNullOrEmpty(majorId))
                 students=students.Where(s => s.MajorId==majorId).ToList();
+            if (status.HasValue)
+                students=students.Where(s => s.Status==status.Value).ToList();
             ExcelPackage.LicenseContext=LicenseContext.NonCommercial;
             using (var package = new ExcelPackage())
                 {

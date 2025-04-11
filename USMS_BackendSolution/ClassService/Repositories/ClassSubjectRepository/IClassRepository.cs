@@ -18,6 +18,7 @@ namespace Repositories.ClassSubjectRepository
         Task<bool> ChangeStatusClassSubject(int id);
         Task<ClassSubject> GetExistingClassSubject(string classId, string subjectId, string semesterId);
         Task<List<ClassSubject>> GetClassSubjectByMajorIdClassIdTerm(string majorId, string classId, int term);
+        Task<List<ClassSubject>> GetClassSubjectByMajorIdClassIdSemesterIdTerm(string majorId, string classId,string semesterId, int term);
         Task<List<string>> GetClassIdsByMajorId(string majorId);
         Task<List<ClassSubject>> GetSubjectInClassSubjectByMajorIdAndSemesterId(string majorId, string semesterId);
         Task<bool> ChangeClassStatusSelected(List<int> classIds, int status);

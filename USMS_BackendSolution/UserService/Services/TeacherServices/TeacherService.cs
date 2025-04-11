@@ -173,10 +173,14 @@ namespace UserService.Services.TeacherService
             try
                 {
                 APIResponse aPIResponse = new APIResponse();
-                var teachers = await _userRepository.GetAllUser();
                 #region 1. Validation
-                var existEmail = teachers.FirstOrDefault(x => x.Email==userDTO.Email);
-                var existPhone = teachers.FirstOrDefault(x => x.PhoneNumber==userDTO.PhoneNumber);
+                // Bắt tồn tại email cá nhân và số điện thoại
+                bool existEmail = await _userRepository.isPersonalEmailExist(userDTO.PersonalEmail);
+                bool existPhone = await _userRepository.isPhonelExist(userDTO.PhoneNumber);
+                // Bắt tên phải toàn là chữ và không được nhập số
+                bool isFirstNameValid = !string.IsNullOrEmpty(userDTO.FirstName)&&userDTO.FirstName.All(c => char.IsLetter(c));
+                bool isLastNameValid = !string.IsNullOrEmpty(userDTO.LastName)&&userDTO.LastName.All(c => char.IsLetter(c));
+                bool isMiddleNameValid = string.IsNullOrEmpty(userDTO.MiddleName)||userDTO.MiddleName.All(c => char.IsLetter(c));
                 List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
             {
                   (!userDTO.PhoneNumber.All(char.IsDigit) || userDTO.PhoneNumber.Length != 10 || !userDTO.PhoneNumber.StartsWith("0"),
@@ -184,8 +188,11 @@ namespace UserService.Services.TeacherService
                   (!IsValidEmail(userDTO.PersonalEmail), "Vui lòng nhập địa chỉ email hợp lệ (ví dụ: example@example.com)."),
                   (userDTO.PasswordHash.Length < 8 || userDTO.PasswordHash.Length > 36,"Độ dài mật khẩu phải từ 8 đến 20 ký tự."),
                   (userDTO.DateOfBirth > DateOnly.FromDateTime(DateTime.Now), "Ngày sinh không thể là ngày trong tương lai."),
-                  (existEmail != null, "Email này đã tồn tại trong hệ thống."),
-                  (existPhone != null, "Số điện thoại này đã tồn tại trong hệ thống."),
+                  (existEmail, "Email này đã tồn tại trong hệ thống."),
+                  (existPhone, "Số điện thoại này đã tồn tại trong hệ thống."),
+                  (!isFirstNameValid, "Tên chỉ được chứa chữ cái và không chứa số."),
+                  (!isLastNameValid,"Họ chỉ được chứa chữ cái và không chứa số."),
+                  (!isMiddleNameValid,"Tên đệm chỉ được chứa chữ cái và không chứa số .")
             };
                 foreach (var validation in validations)
                     {
@@ -198,36 +205,6 @@ namespace UserService.Services.TeacherService
                             };
                         }
                     }
-                #endregion
-
-                #region 2. Generate TeacherID
-                //// 1.  Viết hoa chữ cái đầu của họ, tên, và tên đệm ví dụ nguyen quoc hoang => Nguyen Quoc Hoang
-                //string firstName = RemoveDiacritics(
-                //    CultureInfo.CurrentCulture.TextInfo.ToTitleCase(userDTO.FirstName.ToLower())
-                //);
-                //string lastName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(userDTO.LastName.ToLower().Substring(0, 1).Replace("Đ", "D").Replace("đ", "d")); ;
-                //string middleName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(userDTO.MiddleName.ToLower().Replace("Đ", "D").Replace("đ", "d"));
-                //// 2. Lấy chữ cái đầu tiên của mỗi phần trong MiddleName
-                //string secondMidName = "";
-                //var middleNameParts = userDTO.MiddleName.Split(' ');
-                //foreach (var part in middleNameParts)
-                //    {
-                //    if (!string.IsNullOrEmpty(part))
-                //        {
-                //        secondMidName+=part.Substring(0, 1).ToUpper().Replace("Đ", "D").Replace("đ", "d"); // Lấy chữ cái đầu tiên của từng phần trong MiddleName
-                //        }
-                //    }
-                //// 3. Tạo UserId ví dụ Nguyen Quoc Hoang => HoangNQ
-                //userDTO.UserId=firstName+lastName+secondMidName;
-                //// 4. Kiểm tra xem TeacherId này đã tồn tại trong cơ sở dữ liệu chưa (Check viết hoa hay viết thường)
-                //string baseUserId = userDTO.UserId; // Giữ lại UserId gốc để append số
-                ////var count = teachers.Count(u => u.UserId.Equals(userDTO.UserId, StringComparison.OrdinalIgnoreCase));
-                //int count = 0;
-                //while (teachers.Any(x=> x.UserId.Equals(userDTO.UserId, StringComparison.OrdinalIgnoreCase)))
-                //    {
-                //    count++;
-                //    userDTO.UserId=$"{baseUserId}{count:D2}"; // Luôn nối vào UserId gốc
-                //    }
                 #endregion
 
                 userDTO.UserId=await GenerateUserId(userDTO.FirstName, userDTO.MiddleName, userDTO.LastName);
@@ -401,6 +378,21 @@ namespace UserService.Services.TeacherService
                         int rowCount = worksheet.Dimension.Rows;
                         for (int row = 2; row<=rowCount; row++)
                             {
+                            if (string.IsNullOrWhiteSpace(worksheet.Cells[row, 2].Text))
+                                {
+                                break;
+                                }
+                            DateOnly dob;
+                            if (worksheet.Cells[row, 8].Value is DateTime dt)
+                                {
+                                dob=DateOnly.FromDateTime(dt);
+                                }
+                            else
+                                {
+                                string dobText = worksheet.Cells[row, 8].Text.Trim();
+                                string[] acceptedFormats = { "d/M/yyyy", "dd/MM/yyyy", "d/MM/yyyy", "dd/M/yyyy" };
+                                bool isParsed = DateOnly.TryParseExact(dobText, acceptedFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out dob);
+                                }
                             var user = new User
                                 {
                                 FirstName=worksheet.Cells[row, 4].Text,
@@ -410,7 +402,7 @@ namespace UserService.Services.TeacherService
                                 PasswordHash=HashPassword("123456789"),
                                 PersonalEmail=worksheet.Cells[row, 6].Text,
                                 PhoneNumber=worksheet.Cells[row, 7].Text,
-                                DateOfBirth=DateOnly.ParseExact(worksheet.Cells[row, 8].Text, "dd/MM/yyyy", CultureInfo.InvariantCulture),
+                                DateOfBirth=dob,
                                 RoleId=4,
                                 MajorId=worksheet.Cells[row, 9].Text,
                                 Status=1,
@@ -420,17 +412,24 @@ namespace UserService.Services.TeacherService
                                 };
                                 string stt = worksheet.Cells[row, 1].Text;
                             #region 1. Validation                                      
-                            var teachersCheck = await _userRepository.GetAllUser();
-                            var existEmail = teachersCheck.FirstOrDefault(x => x.Email==user.Email);
-                            var existPhone = teachersCheck.FirstOrDefault(x => x.PhoneNumber==user.PhoneNumber);
+                            // Bắt tồn tại email cá nhân và số điện thoại
+                            bool existEmail = await _userRepository.isPersonalEmailExist(user.PersonalEmail);
+                            bool existPhone = await _userRepository.isPhonelExist(user.PhoneNumber);
+                            // Bắt tên phải toàn là chữ và không được nhập số
+                            bool isFirstNameValid = !string.IsNullOrEmpty(user.FirstName)&&user.FirstName.All(c => char.IsLetter(c));
+                            bool isLastNameValid = !string.IsNullOrEmpty(user.LastName)&&user.LastName.All(c => char.IsLetter(c));
+                            bool isMiddleNameValid = string.IsNullOrEmpty(user.MiddleName)||user.MiddleName.All(c => char.IsLetter(c));
                             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
                               {
-                             (!user.PhoneNumber.All(char.IsDigit) || user.PhoneNumber.Length != 10 || !user.PhoneNumber.StartsWith("0"),
+                            (!user.PhoneNumber.All(char.IsDigit) || user.PhoneNumber.Length != 10 || !user.PhoneNumber.StartsWith("0"),
                              "Số điện thoại tại dòng số "+ stt +" phải có 10 số và bắt đầu bằng một số từ 0 (ví dụ: 0901234567)."),
                            (!IsValidEmail(user.PersonalEmail), "Vui lòng nhập địa chỉ email hợp lệ tại dòng số "+ stt +" (ví dụ: example@example.com)."),
                            (user.DateOfBirth > DateOnly.FromDateTime(DateTime.Now), "Ngày sinh tại dòng số "+ stt +" không thể là ngày trong tương lai."),
-                           (existEmail != null, "Email tại dòng số "+ stt +" đã tồn tại trong hệ thống."),
-                           (existPhone != null, "Số điện thoại tại dòng số "+ stt +" đã tồn tại trong hệ thống."),
+                           (existEmail, "Email tại dòng số "+ stt +" đã tồn tại trong hệ thống."),
+                           (existPhone, "Số điện thoại tại dòng số "+ stt +" đã tồn tại trong hệ thống."),
+                           (!isFirstNameValid, "Tên tại dòng số "+ stt +" chỉ được chứa chữ cái và không chứa số."),
+                           (!isLastNameValid,"Họ tại dòng số "+ stt +" chỉ được chứa chữ cái và không chứa số."),
+                           (!isMiddleNameValid,"Tên đệm tại dòng số "+ stt +" chỉ được chứa chữ cái và không chứa số .")
                               };
                             foreach (var validation in validations)
                                 {
@@ -501,6 +500,118 @@ namespace UserService.Services.TeacherService
                     }
                 }
             return aPIResponse;
+            }
+        #endregion
+
+
+        #region Export Teacher Information
+        /// <summary>
+        /// Export Teacher Data to Excel by MajorId ( MajorId can null to export all Student in Database )
+        /// </summary>
+        /// <param name="majorId"></param>
+        /// <returns></returns>
+        public async Task<byte[]> ExportTeachersToExcel(string? majorId, int? status)
+            {
+            var students = await _repository.GetAllTeacher();
+            if (!string.IsNullOrEmpty(majorId))
+                students=students.Where(s => s.MajorId==majorId).ToList();
+            if (status.HasValue)
+                students=students.Where(s => s.Status==status.Value).ToList();
+            ExcelPackage.LicenseContext=LicenseContext.NonCommercial;
+            using (var package = new ExcelPackage())
+                {
+                var worksheet = package.Workbook.Worksheets.Add("Teachers");
+                // Header
+                worksheet.Cells[1, 1].Value="STT";
+                worksheet.Cells[1, 2].Value="Mã Giáo viên";
+                worksheet.Cells[1, 3].Value="Họ";
+                worksheet.Cells[1, 4].Value="Tên đệm";
+                worksheet.Cells[1, 5].Value="Tên";
+                worksheet.Cells[1, 6].Value="Giới tính";
+                worksheet.Cells[1, 7].Value="Email";
+                worksheet.Cells[1, 8].Value="SĐT";
+                worksheet.Cells[1, 9].Value="Ngày sinh";
+                worksheet.Cells[1, 10].Value="Ngành";
+                worksheet.Cells[1, 11].Value="Địa Chỉ";
+                worksheet.Cells[1, 12].Value="Trạng thái";
+                int row = 2;
+                int stt = 1;
+                foreach (var s in students)
+                    {
+                    worksheet.Cells[row, 1].Value=stt++;
+                    worksheet.Cells[row, 2].Value=s.UserId;
+                    worksheet.Cells[row, 3].Value=s.LastName;
+                    worksheet.Cells[row, 4].Value=s.MiddleName;
+                    worksheet.Cells[row, 5].Value=s.FirstName;
+                    worksheet.Cells[row, 6].Value=s.Gender ? "Nữ" : "Nam";
+                    worksheet.Cells[row, 7].Value=s.Email;
+                    worksheet.Cells[row, 8].Value=s.PhoneNumber;
+                    worksheet.Cells[row, 9].Value=s.DateOfBirth.ToString("dd/MM/yyyy");
+                    worksheet.Cells[row, 10].Value=s.MajorId;
+                    worksheet.Cells[row, 11].Value=s.Address;
+                    worksheet.Cells[row, 12].Value=s.Status==1 ? "Đang khả dụng" : "Vô hiệu hóa";
+                    row++;
+                    }
+                return package.GetAsByteArray();
+                }
+            }
+        #endregion
+
+        #region Export Form Add Teacher Information
+        /// <summary>
+        /// Export From Add Teacher
+        /// </summary>
+        /// <param name="majorId"></param>
+        /// <returns></returns>
+        public async Task<byte[]> ExportFormAddTeacher()
+            {
+            ExcelPackage.LicenseContext=LicenseContext.NonCommercial;
+
+            using (var package = new ExcelPackage())
+                {
+                var worksheet = package.Workbook.Worksheets.Add("Teachers");
+
+                // Header
+                worksheet.Cells[1, 1].Value="STT";
+                worksheet.Cells[1, 2].Value="Họ";
+                worksheet.Cells[1, 3].Value="Tên đệm";
+                worksheet.Cells[1, 4].Value="Tên";
+                worksheet.Cells[1, 5].Value="Giới tính";
+                worksheet.Cells[1, 6].Value="Email";
+                worksheet.Cells[1, 7].Value="SĐT";
+                worksheet.Cells[1, 8].Value="Ngày sinh";
+                worksheet.Cells[1, 9].Value="Chuyên Ngành";
+                worksheet.Cells[1, 10].Value="Địa Chỉ";
+                // Gán công thức tự động tăng STT từ dòng 2 đến 1000
+                for (int row = 2; row<=1000; row++)
+                    {
+                    worksheet.Cells[row, 1].Formula=$"=ROW()-1";
+                    }
+                // Định dạng các cột để bắt validation
+                var range = worksheet.Cells[2, 8, 1000, 8]; // Cột ngày sinh theo định dạng ngày/tháng/năm
+                range.Style.Numberformat.Format="dd/mm/yyyy";
+                var phoneRange = worksheet.Cells[2, 7, 1000, 7]; // Cột số điện thoại
+                phoneRange.Style.Numberformat.Format="@"; // Định dạng dạng text để giữ số 0 ở đầu tiên
+                // Tạo dropdown cho chọn iới tính: Nam / Nữ
+                var genderValidation = worksheet.DataValidations.AddListValidation("E2:E1000");
+                genderValidation.Formula.Values.Add("Nam");
+                genderValidation.Formula.Values.Add("Nữ");
+                genderValidation.ShowErrorMessage=true;
+                genderValidation.ErrorStyle=OfficeOpenXml.DataValidation.ExcelDataValidationWarningStyle.stop;
+                genderValidation.ErrorTitle="Giá trị không hợp lệ";
+                genderValidation.Error="Vui lòng chọn Nam hoặc Nữ";
+                // Tạo dropdown cho Chuyên ngành do chuyên ngành mặc định có 4 nên chỉ để 4, có thể dùng hàm getmajor nếu có CN mới
+                var majorValidation = worksheet.DataValidations.AddListValidation("I2:I1000");
+                majorValidation.Formula.Values.Add("SE");
+                majorValidation.Formula.Values.Add("BA");
+                majorValidation.Formula.Values.Add("LG");
+                majorValidation.Formula.Values.Add("CT");
+                majorValidation.ShowErrorMessage=true;
+                majorValidation.ErrorTitle="Sai chuyên ngành";
+                majorValidation.Error="Chuyên ngành chỉ có thể là SE, BA, LG hoặc CT";
+                worksheet.Cells.AutoFitColumns();
+                return package.GetAsByteArray();
+                }
             }
         #endregion
         }

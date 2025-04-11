@@ -76,6 +76,42 @@
             "UpstreamPathTemplate": "/api/Room/ChangeSelectStatus",
             "UpstreamHttpMethod": [ "PUT" ]
         },
+        {
+            "DownstreamPathTemplate": "/api/Room/export",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Room/export",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Room/exportEmpty",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Room/exportEmpty",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Room/import",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Room/import",
+            "UpstreamHttpMethod": [ "POST" ]
+        },
         /* Room API End */
 
         /* Slot API Start */
@@ -154,6 +190,54 @@
             "UpstreamPathTemplate": "/api/Semester/ChangeStatus/{id}/{status}",
             "UpstreamHttpMethod": [ "GET" ]
         },
+        {
+            "DownstreamPathTemplate": "/api/Semester/ChangeSelectStatus",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7286
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Semester/ChangeSelectStatus",
+            "UpstreamHttpMethod": [ "PUT" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Semester/export",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7286
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Semester/export",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Semester/exportEmpty",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7286
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Semester/exportEmpty",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Semester/import",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7286
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Semester/import",
+            "UpstreamHttpMethod": [ "POST" ]
+        },
         /* Semester API End */
 
         /* Subject API Start */
@@ -228,6 +312,42 @@
             ],
             "UpstreamPathTemplate": "/api/Subjects/ChangeSelectStatus",
             "UpstreamHttpMethod": [ "PUT" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Subjects/export",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7286
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Subjects/export",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Subjects/exportEmpty",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7286
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Subjects/exportEmpty",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Subjects/import",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7286
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Subjects/import",
+            "UpstreamHttpMethod": [ "POST" ]
         },
         /* Subject API End */
 
@@ -319,6 +439,30 @@
             "UpstreamPathTemplate": "/api/ClassSubject/ChangeSelectStatus",
             "UpstreamHttpMethod": [ "PUT" ]
         },
+        {
+            "DownstreamPathTemplate": "/api/ClassSubject/AutoCreateClass",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7286
+                }
+            ],
+            "UpstreamPathTemplate": "/api/ClassSubject/AutoCreateClass",
+            "UpstreamHttpMethod": [ "POST" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/ClassSubject/export",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7286
+                }
+            ],
+            "UpstreamPathTemplate": "/api/ClassSubject/export",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
         /* Class Subject API End */
 
         /* Schedule API Start */
@@ -406,6 +550,18 @@
             "UpstreamPathTemplate": "/api/Schedule/ChangeStatus/{majorId}/{classId}/{term}/{status}",
             "UpstreamHttpMethod": [ "PUT" ]
         },
+        {
+            "DownstreamPathTemplate": "/api/Schedule/autoSchedule",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7131
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Schedule/autoSchedule",
+            "UpstreamHttpMethod": [ "POST" ]
+        },
         /* Schedule API End */
 
         /* Student In Class API Start */
@@ -479,6 +635,18 @@
                 }
             ],
             "UpstreamPathTemplate": "/api/StudentInClass/AvailableStudent/{id}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/StudentInClass/export",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7286
+                }
+            ],
+            "UpstreamPathTemplate": "/api/StudentInClass/export",
             "UpstreamHttpMethod": [ "GET" ]
         },
         /* Student In Class API End */
@@ -657,6 +825,30 @@
             ],
             "UpstreamPathTemplate": "/api/Teacher/ChangeStatus",
             "UpstreamHttpMethod": [ "PUT" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Teacher/export",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7179
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Teacher/export",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/Teacher/exportEmpty",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7179
+                }
+            ],
+            "UpstreamPathTemplate": "/api/Teacher/exportEmpty",
+            "UpstreamHttpMethod": [ "GET" ]
         },
         /* Teacher API End */
 

@@ -316,5 +316,60 @@ namespace UserService.Repository.UserRepository
                 }
             }
         #endregion
+
+
+        #region Check exist personal email
+        /// <summary>
+        ///  Check exist personal email
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<bool> isPersonalEmailExist(string email)
+            {
+            try
+                {
+                using (var _db = new MyDbContext())
+                    {
+                    var user = await _db.User.FirstOrDefaultAsync(x => x.PersonalEmail==email);
+                    if (user!=null)
+                        {
+                        return true;
+                        }
+                    return false;
+                    }
+                }
+            catch (Exception)
+                {
+                throw;
+                }
+            }
+        #endregion
+
+        #region Check exist phone
+        /// <summary>
+        ///  Check exist phone
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<bool> isPhonelExist(string phoneNum)
+            {
+            try
+                {
+                using (var _db = new MyDbContext())
+                    {
+                    var user = await _db.User.FirstOrDefaultAsync(x => x.PhoneNumber==phoneNum);
+                    if (user!=null)
+                        {
+                        return true;
+                        }
+                    return false;
+                    }
+                }
+            catch (Exception)
+                {
+                throw;
+                }
+            }
+        #endregion
         }
     }

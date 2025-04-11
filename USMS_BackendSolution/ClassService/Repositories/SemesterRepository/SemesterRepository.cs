@@ -162,5 +162,62 @@ namespace Repositories.SemesterRepository
                 throw new Exception(ex.Message, ex);
                 }
             }
+
+        #region Add list Semester 
+        /// <summary>
+        /// Add a list of Semesters from Excel
+        /// </summary>
+        /// <param name="models"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<bool> AddSemestersAsyncs(List<Semester> models)
+            {
+            try
+                {
+                using (var _db = new MyDbContext())
+                    {
+                    await _db.Semester.AddRangeAsync(models);
+                    await _db.SaveChangesAsync();
+                    return true;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
+        #region Change Semester selected Status 
+        /// <summary>
+        /// Change Semester selected Status 
+        /// </summary>
+        /// <param name="userIds"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<bool> ChangeSemesterStatusSelected(List<string> semesterId, int status)
+            {
+            try
+                {
+                using (var _db = new MyDbContext())
+                    {
+                    var Ids = await _db.Semester.Where(x => semesterId.Contains(x.SemesterId)).ToListAsync();
+                    if (!Ids.Any())
+                        return false;
+                    foreach (var item in Ids)
+                        {
+                        item.Status=status;
+                        }
+                    await _db.SaveChangesAsync();
+                    return true;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
         }
     }

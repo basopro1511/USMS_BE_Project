@@ -169,7 +169,7 @@ namespace Repositories.SubjectRepository
             }
         #endregion
 
-        #region
+        #region Change Subject selected Status 
         /// <summary>
         /// Change Subject selected Status 
         /// </summary>
@@ -190,6 +190,31 @@ namespace Repositories.SubjectRepository
                         {
                         item.Status=status;
                         }
+                    await _db.SaveChangesAsync();
+                    return true;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
+        #region Add list Subject 
+        /// <summary>
+        /// Add a list of subjects from Excel
+        /// </summary>
+        /// <param name="models"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<bool> AddSubjectsAsyncs(List<Subject> models)
+            {
+            try
+                {
+                using (var _db = new MyDbContext())
+                    {
+                    await _db.Subject.AddRangeAsync(models);
                     await _db.SaveChangesAsync();
                     return true;
                     }

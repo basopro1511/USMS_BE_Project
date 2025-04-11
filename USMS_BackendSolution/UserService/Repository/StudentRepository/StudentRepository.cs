@@ -111,6 +111,11 @@ namespace UserService.Repository.StudentRepository
         #endregion
 
         #region Add List User ( use for Import Excel )
+        /// <summary>
+        /// Add A list of user 
+        /// </summary>
+        /// <param name="users"></param>
+        /// <returns></returns>
         public async Task<bool> AddStudentAsync(List<User> users)
             {
             try
@@ -122,9 +127,9 @@ namespace UserService.Repository.StudentRepository
                     return true;
                     }
                 }
-            catch (Exception)
+            catch (Exception ex)
                 {
-                throw;
+                throw new Exception(ex.Message);
                 }
             }
         #endregion
@@ -159,6 +164,11 @@ namespace UserService.Repository.StudentRepository
         #endregion
 
         #region Get Student by Id 
+        /// <summary>
+        ///  Get Student Data by UserId
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public async Task<User> GetStudentById(string userId)
             {
             try
@@ -175,5 +185,6 @@ namespace UserService.Repository.StudentRepository
                 }
             }
         #endregion
+
         }
     }

@@ -254,6 +254,34 @@ namespace Repositories.ClassSubjectRepository
             }
         #endregion
 
+        #region Get ClassSubject by MajorId, ClassId,SemesterId , Term
+        /// <summary>
+        /// Get ClassSubject by MajorId, ClassId, SemesterId, and Term
+        /// </summary>
+        /// <param name="majorId"></param>
+        /// <param name="classId"></param>
+        /// <param name="term"></param>
+        /// <returns>A list of ClassSubject matching the criteria</returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<List<ClassSubject>> GetClassSubjectByMajorIdClassIdSemesterIdTerm(string majorId, string classId,string semesterId, int term)
+            {
+            try
+                {
+                using (var dbContext = new MyDbContext())
+                    {
+                    List<ClassSubject> classSubjects = await dbContext.ClassSubject
+                        .Where(cs => cs.MajorId==majorId&&cs.ClassId==classId&&cs.SemesterId == semesterId &&cs.Term==term)
+                        .ToListAsync();
+                    return classSubjects;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception($"Error while fetching ClassSubjects: {ex.Message}", ex);
+                }
+            }
+        #endregion
+
         #region Get ClassIds by MajorId
         /// <summary>
         /// Lấy danh sách ClassId (phân biệt) dựa vào MajorId

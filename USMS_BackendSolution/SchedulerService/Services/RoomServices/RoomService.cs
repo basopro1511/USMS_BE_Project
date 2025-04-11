@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Repositories.ScheduleRepository;
 using SchedulerBusinessObject.SchedulerModels;
 using ISUZU_NEXT.Server.Core.Extentions;
+using OfficeOpenXml;
 
 namespace Services.RoomServices
     {
@@ -354,6 +355,147 @@ namespace Services.RoomServices
                     }
                 }
             return aPIResponse;
+            }
+        #endregion
+
+        #region Export Form Add Room
+        /// <summary>
+        /// Export empty form for add model
+        /// </summary>
+        /// <returns></returns>
+        public Task<byte[]> ExportFormAddRoom()
+            {
+            ExcelPackage.LicenseContext=LicenseContext.NonCommercial;
+            using (var package = new ExcelPackage())
+                {
+                var worksheet = package.Workbook.Worksheets.Add("Rooms");
+                // Header
+                worksheet.Cells[1, 1].Value="STT";
+                worksheet.Cells[1, 2].Value="Mã phòng học";
+                worksheet.Cells[1, 3].Value="Vị trí";
+                // Gán công thức tự động tăng STT từ dòng 2 đến 1000
+                for (int row = 2; row<=1000; row++)
+                    {
+                    worksheet.Cells[row, 1].Formula=$"=ROW()-1";
+                    }
+                worksheet.Cells.AutoFitColumns();
+                return Task.FromResult(package.GetAsByteArray());
+                }
+            }
+        #endregion
+
+        #region Export Room Information
+        /// <summary>
+        /// Export Room Information
+        /// </summary>
+        /// <param name="majorId"></param>
+        /// <returns></returns>
+        public async Task<byte[]> ExportRoomsToExcel(int? status)
+            {
+            var models = await _roomRepository.GetAllRooms();
+            if (status.HasValue)
+                models=models.Where(s => s.Status==status.Value).ToList();
+            ExcelPackage.LicenseContext=OfficeOpenXml.LicenseContext.NonCommercial;
+            using (var package = new ExcelPackage())
+                {
+                var worksheet = package.Workbook.Worksheets.Add("Students");
+                // Header
+                worksheet.Cells[1, 1].Value="STT";
+                worksheet.Cells[1, 2].Value="Mã phòng học";
+                worksheet.Cells[1, 3].Value="Vị trí";
+                worksheet.Cells[1, 4].Value="Trạng thái";
+                worksheet.Cells[1, 5].Value="Thời gian tạo";
+                worksheet.Cells[1, 6].Value="Thời gian cập nhật";
+                int row = 2;
+                int stt = 1;
+                foreach (var s in models)
+                    {
+                    worksheet.Cells[row, 1].Value=stt++;
+                    worksheet.Cells[row, 2].Value=s.RoomId;
+                    worksheet.Cells[row, 3].Value=s.Location;
+                    worksheet.Cells[row, 4].Value=s.Status==1 ? "Đang khả dụng" : s.Status==0 ? "Vô hiệu hóa" : "Đang bảo trì";
+                    worksheet.Cells[row, 5].Value=s.CreateAt.ToString("dd/MM/yyyy");
+                    worksheet.Cells[row, 6].Value=s.UpdateAt.ToString("dd/MM/yyyy");
+                    row++;
+                    }
+                return package.GetAsByteArray();
+                }
+            }
+        #endregion
+
+        #region Import Rooms from Excels
+        /// <summary>
+        /// Import Rooms Form Excel
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public async Task<APIResponse> ImportRoomsFromExcel(IFormFile file)
+            {
+            try
+                {
+                if (file==null||file.Length==0)
+                    {
+                    return new APIResponse { IsSuccess=false, Message="File không hợp lệ." };
+                    }
+                var models = new List<Room>();
+                ExcelPackage.LicenseContext=OfficeOpenXml.LicenseContext.NonCommercial;
+                using (var stream = new MemoryStream())
+                    {
+                    await file.CopyToAsync(stream);
+                    using (var package = new ExcelPackage(stream))
+                        {
+                        ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                        int rowCount = worksheet.Dimension.Rows;
+                        for (int row = 2; row<=rowCount; row++)
+                            {
+                            if (string.IsNullOrWhiteSpace(worksheet.Cells[row, 2].Text))
+                                {
+                                break;
+                                }
+                            var model = new Room
+                                {
+                                RoomId=worksheet.Cells[row, 2].Text,
+                                Location=worksheet.Cells[row, 3].Text,
+                                Status=1,
+                                CreateAt=DateTime.Now,
+                                UpdateAt=DateTime.Now
+                                };
+                            #region 1. Validation       
+                            string stt = worksheet.Cells[row, 1].Text;
+                            var existingSubject = await _roomRepository.GetRoomById(model.RoomId);
+                            List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
+                              {
+                                 (existingSubject != null,"Mã phòng học đã tồn tại!"),
+                                 (model.RoomId.Length>6,"Mã phòng học tại ô số "+ stt + " không thể dài hơn 6 ký tự!"),
+                                 (model.Location.Length>300,"Vị trí tại ô số "+ stt + " không thể dài hơn 300 ký tự!"),
+                              };
+                            foreach (var validation in validations)
+                                {
+                                if (validation.condition)
+                                    {
+                                    return new APIResponse
+                                        {
+                                        IsSuccess=false,
+                                        Message=validation.errorMessage
+                                        };
+                                    }
+                                }
+                            #endregion
+                            models.Add(model);
+                            }
+                        }
+                    }
+                bool isSuccess = await _roomRepository.AddRoomsAsyncs(models);
+                if (isSuccess)
+                    {
+                    return new APIResponse { IsSuccess=true, Message="Import môn học thành công." };
+                    }
+                return new APIResponse { IsSuccess=false, Message="Import môn học thất bại." };
+                }
+            catch (Exception ex)
+                {
+                return new APIResponse { IsSuccess=false, Message=ex.Message };
+                }
             }
         #endregion
         }

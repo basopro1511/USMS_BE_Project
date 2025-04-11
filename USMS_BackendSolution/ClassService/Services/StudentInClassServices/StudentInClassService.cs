@@ -3,6 +3,7 @@ using ClassBusinessObject.ModelDTOs;
 using ClassBusinessObject.Models;
 using ClassService.Repositories.StudentInClassRepository;
 using ISUZU_NEXT.Server.Core.Extentions;
+using OfficeOpenXml;
 using Repositories.SubjectRepository;
 using System.Net.Http;
 using System.Text.Json;
@@ -387,6 +388,48 @@ namespace ClassService.Services.StudentInClassServices
         public async Task<int> GetStudentCountByClassSubjectId(int classSubjectId)
             {
             return await _repository.GetStudentCountByClassSubjectId(classSubjectId);
+            }
+        #endregion
+
+        #region Export Room Information
+        /// <summary>
+        /// Export Student in Class Information
+        /// </summary>
+        /// <param name="majorId"></param>
+        /// <returns></returns>
+        public async Task<byte[]> ExportStudentInClassToExcel(int id)
+            {
+            APIResponse aPIResponse  = await GetStudentInClassByClassIdWithStudentData(id);
+            List<StudentDTO>? models = aPIResponse.Result as List<StudentDTO>;
+            if (models==null)
+                {
+                models=new List<StudentDTO>();
+                }
+            ExcelPackage.LicenseContext=OfficeOpenXml.LicenseContext.NonCommercial;
+            using (var package = new ExcelPackage())
+                {
+                var worksheet = package.Workbook.Worksheets.Add("StudentInClass");
+                // Header
+                worksheet.Cells[1, 1].Value="STT";
+                worksheet.Cells[1, 2].Value="Mã sinh viên";
+                worksheet.Cells[1, 3].Value="Tên sinh viên";
+                worksheet.Cells[1, 4].Value="Email";
+                worksheet.Cells[1, 5].Value="Số điện thoại";
+                worksheet.Cells[1, 6].Value="Chuyên ngành";
+                int row = 2;
+                int stt = 1;
+                foreach (var s in models)
+                    {
+                    worksheet.Cells[row, 1].Value=stt++;
+                    worksheet.Cells[row, 2].Value=s.UserId;
+                    worksheet.Cells[row, 3].Value=s.LastName+" "+s.MiddleName+" "+s.LastName;
+                    worksheet.Cells[row, 4].Value=s.Email;
+                    worksheet.Cells[row, 5].Value=s.PhoneNumber;
+                    worksheet.Cells[row, 6].Value=s.MajorId;
+                    row++;
+                    }
+                return package.GetAsByteArray();
+                }
             }
         #endregion
 

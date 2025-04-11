@@ -15,5 +15,7 @@ namespace Repositories.SemesterRepository
         public Task<bool> AddNewSemester(Semester semesterDTO);
         public Task<bool> UpdateSemester(Semester updateSemesterDTO);
         public Task<bool> ChangeStatusSemester(string semesterId, int status);
+        public Task<bool> AddSemestersAsyncs(List<Semester> models);
+        public Task<bool> ChangeSemesterStatusSelected(List<string> semesterId, int status);
     }
-}
+    }
