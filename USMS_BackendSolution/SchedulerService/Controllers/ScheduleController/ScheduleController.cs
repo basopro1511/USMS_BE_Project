@@ -95,19 +95,32 @@ namespace SchedulerService.Controllers.Schedule
             aPIResponse=await _scheduleService.ChangeScheduleStatus(majorId, classId, term, status);
             return Ok(aPIResponse);
             }
-        /// <summary>
-        /// Endpoint tự động sắp lịch học cho các lớp theo khoảng thời gian và ngày học được chọn.
-        /// Ví dụ, với input: từ 2025-05-01 đến 2025-05-31, chỉ sắp lịch vào thứ Hai và thứ Tư.
-        /// </summary>
-        /// <param name="input">Thông tin input: ngày bắt đầu, kết thúc, các ngày trong tuần cho phép sắp lịch</param>
-        /// <returns>APIResponse với kết quả sắp lịch</returns>
         [HttpPost("autoSchedule")]
         public async Task<IActionResult> AutoSchedule([FromQuery] string majorId, [FromQuery] string classId, [FromQuery] string semesterId, [FromQuery] int term, [FromBody] List<DayOfWeek> scheduledDays)
             {
             var result = await _scheduleService.AutoScheduleClasses(majorId, classId, semesterId, term, scheduledDays);
-            if (result.IsSuccess)
                 return Ok(result);
-            return BadRequest(result);
+            }
+        [HttpGet("ClassScheduleId/{id}")]
+        public async Task<IActionResult> GetClassSubjectIdByTeacherSchedule(string id)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=await _scheduleService.GetClassSubjectIdByTeacherSchedule(id);
+            return Ok(aPIResponse);
+            }
+        [HttpGet("SlotNoInSubject/{id}")]
+        public async Task<IActionResult> GetSlotNoInSubjectByClassSubjectId(int id)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=await _scheduleService.GetSlotNoInSubjectByClassSubjectId(id);
+            return Ok(aPIResponse);
+            }
+        [HttpGet("GetScheduleByIdAndSlotInSubject/{id}/{slot}")]
+        public async Task<IActionResult> GetScheduleDataByScheduleIdandSlotInSubject(int id, int slot)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=await _scheduleService.GetScheduleDataByScheduleIdandSlotInSubject(id, slot);
+            return Ok(aPIResponse);
             }
         }
  }

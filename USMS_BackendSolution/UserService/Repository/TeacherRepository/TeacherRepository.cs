@@ -46,7 +46,7 @@ namespace UserService.Repository.TeacherRepository
                 {
                 using (var dbcontext = new MyDbContext())
                     {
-                    var user = await dbcontext.User.Where(x => x.Status==1&&x.MajorId==majorId).ToListAsync();
+                    var user = await dbcontext.User.Where(x => x.Status==1&&x.MajorId==majorId&&x.RoleId==4).ToListAsync();
                     return user;
                     }
                 }

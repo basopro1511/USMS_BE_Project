@@ -356,5 +356,72 @@ namespace Repositories.ScheduleRepository
             }
         #endregion
 
+        #region Get ClassSubjectId by Teacher Schedule ( for Request )   
+        public async Task<List<int>> GetClassSubjcetIdByTeacherSchedule(string teacherId)
+            {
+            try
+                {
+                using (var dbcontext = new MyDbContext())
+                    {
+                    var schedules = await dbcontext.Schedule.Where(s => s.TeacherId==teacherId&& s.Status ==1).GroupBy(s => s.ClassSubjectId)
+                .Select(g => g.FirstOrDefault())
+                .ToListAsync();
+                    List<int> ints = new List<int>();
+                    foreach (var item in schedules)
+                        {
+                        int classSubjectId = item.ClassSubjectId;
+                        ints.Add(classSubjectId);
+                        }
+                    return ints;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+        #region Get ClassSubjectId by Teacher Schedule ( for Request )   
+        public async Task<List<int>> GetSlotNoInSubjectByClassSubjectId(int classSubjectId)
+            {
+            try
+                {
+                using (var dbcontext = new MyDbContext())
+                    {
+                    var schedules = await dbcontext.Schedule.Where(s => s.ClassSubjectId==classSubjectId&&s.Status==1).GroupBy(s => s.SlotNoInSubject)
+                        .Select(g => g.FirstOrDefault()).ToListAsync();
+                    List<int> ints = new List<int>();
+                    foreach (var item in schedules)
+                        {
+                        int slotNoInSubject = item.SlotNoInSubject;
+                        ints.Add(slotNoInSubject);
+                        }
+                    return ints;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
+        #region Get ClassSubjectId by Teacher Schedule ( for Request )   
+        public async Task<List<Schedule>> GetScheduleDataByScheduleIdandSlotInSubject(int classSubjectId,int slotInSubject)
+            {
+            try
+                {
+                using (var dbcontext = new MyDbContext())
+                    {
+                    var schedules = await dbcontext.Schedule.Where(s => s.ClassSubjectId==classSubjectId&& s.SlotNoInSubject==slotInSubject &&s.Status==1).ToListAsync();
+                    return schedules;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
         }
     }

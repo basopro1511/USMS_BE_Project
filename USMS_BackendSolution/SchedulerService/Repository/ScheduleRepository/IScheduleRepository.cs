@@ -16,5 +16,9 @@ namespace Repositories.ScheduleRepository
         public Task<List<Schedule>> GetClassSchedulesForStaff(List<int> classSubjectIds,DateTime startDay, DateTime endDay);
         public Task<List<Schedule>> GetScheduleForTeacher(string teacherId, DateTime startDay, DateTime endDay);
         public Task<bool> ChangeScheduleStatus(List<int> classSubjectIds, int status);
+        public Task<List<int>> GetClassSubjcetIdByTeacherSchedule(string teacherId);
+        public Task<List<int>> GetSlotNoInSubjectByClassSubjectId(int classSubjectId);
+        public Task<List<Schedule>> GetScheduleDataByScheduleIdandSlotInSubject(int classSubjectId, int slotInSubject);
+
             }
     }
