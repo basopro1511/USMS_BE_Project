@@ -180,9 +180,12 @@ namespace UserService.Services.TeacherService
                 // Bắt tên phải toàn là chữ và không được nhập số
                 bool isFirstNameValid = !string.IsNullOrEmpty(userDTO.FirstName)&&userDTO.FirstName.All(c => char.IsLetter(c));
                 bool isLastNameValid = !string.IsNullOrEmpty(userDTO.LastName)&&userDTO.LastName.All(c => char.IsLetter(c));
-                bool isMiddleNameValid = string.IsNullOrEmpty(userDTO.MiddleName)||userDTO.MiddleName.All(c => char.IsLetter(c));
+                bool isMiddleNameValid = string.IsNullOrEmpty(userDTO.MiddleName)||userDTO.MiddleName.All(c => char.IsLetter(c)||char.IsWhiteSpace(c));
                 List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
             {
+                  (userDTO.FirstName == null, "Tên không thể để trống" ),
+                  (userDTO.LastName == null, "Họ không thể để trống" ),
+                  (userDTO.MiddleName == null, "Tên đệm không thể để trống" ),
                   (!userDTO.PhoneNumber.All(char.IsDigit) || userDTO.PhoneNumber.Length != 10 || !userDTO.PhoneNumber.StartsWith("0"),
                   "Số điện thoại phải có 10 số và bắt đầu bằng một số từ 0 (ví dụ: 0901234567)."),
                   (!IsValidEmail(userDTO.PersonalEmail), "Vui lòng nhập địa chỉ email hợp lệ (ví dụ: example@example.com)."),
@@ -190,9 +193,9 @@ namespace UserService.Services.TeacherService
                   (userDTO.DateOfBirth > DateOnly.FromDateTime(DateTime.Now), "Ngày sinh không thể là ngày trong tương lai."),
                   (existEmail, "Email này đã tồn tại trong hệ thống."),
                   (existPhone, "Số điện thoại này đã tồn tại trong hệ thống."),
-                  (!isFirstNameValid, "Tên chỉ được chứa chữ cái và không chứa số."),
-                  (!isLastNameValid,"Họ chỉ được chứa chữ cái và không chứa số."),
-                  (!isMiddleNameValid,"Tên đệm chỉ được chứa chữ cái và không chứa số .")
+                  (!isFirstNameValid, "Tên chỉ được chứa chữ cái và không chứa số và khoảng trắng."),
+                  (!isLastNameValid,"Họ chỉ được chứa chữ cái và không chứa số và khoảng trắng."),
+                  (!isMiddleNameValid,"Tên đệm chỉ được chứa chữ cái và không chứa số ."),
             };
                 foreach (var validation in validations)
                     {
@@ -255,18 +258,38 @@ namespace UserService.Services.TeacherService
         public async Task<APIResponse> UpdateTeacher(UserDTO userDTO)
             {
             APIResponse aPIResponse = new APIResponse();
-            var teachers = await _userRepository.GetAllUser();
-            var teacher = teachers.FirstOrDefault(x => x.UserId==userDTO.UserId);
+            var user = await _userRepository.GetUserById(userDTO.UserId);
             #region 1. Validation
-            var existEmail = teachers.FirstOrDefault(x => x.Email==userDTO.Email);
-            var existPhone = teachers.FirstOrDefault(x => x.PhoneNumber==userDTO.PhoneNumber);
+            bool existPhone = false;
+            if (user!=null&&userDTO.PhoneNumber!=user.PhoneNumber)
+                {
+                existPhone=await _userRepository.isPhonelExist(user.PhoneNumber);
+                }
+            bool existEmail = false;
+            if (user!=null&&userDTO.PersonalEmail!=user.PersonalEmail)
+                {
+                existEmail=await _userRepository.isPersonalEmailExist(user.PersonalEmail);
+                }
+            // Bắt tên phải toàn là chữ và không được nhập số
+            bool isFirstNameValid = !string.IsNullOrEmpty(userDTO.FirstName)&&userDTO.FirstName.All(c => char.IsLetter(c));
+            bool isLastNameValid = !string.IsNullOrEmpty(userDTO.LastName)&&userDTO.LastName.All(c => char.IsLetter(c));
+            bool isMiddleNameValid = string.IsNullOrEmpty(userDTO.MiddleName)||userDTO.MiddleName.All(c => char.IsLetter(c)||char.IsWhiteSpace(c));
             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
-            {
+            {                              
+                  (userDTO.FirstName == null, "Tên không thể để trống" ),
+                  (userDTO.LastName == null, "Họ không thể để trống" ),
+                  (userDTO.MiddleName == null, "Tên đệm không thể để trống" ),
+                  (userDTO.PersonalEmail.Length>100, "Độ dài email không thể vượt quá 100 ký tự"),
                   (!userDTO.PhoneNumber.All(char.IsDigit) || userDTO.PhoneNumber.Length != 10 || !userDTO.PhoneNumber.StartsWith("0"),
                   "Số điện thoại phải có 10 số và bắt đầu bằng một số từ 0 (ví dụ: 0901234567)."),
                   (!IsValidEmail(userDTO.PersonalEmail), "Vui lòng nhập địa chỉ email hợp lệ (ví dụ: example@example.com)."),
                   (userDTO.DateOfBirth > DateOnly.FromDateTime(DateTime.Now), "Ngày sinh không thể là ngày trong tương lai."),
-                  (teacher == null, "Không tìm thấy giáo viên cần cập nhật")
+                  (user == null, "Không tìm thấy giáo viên cần cập nhật")                     ,
+                   (!isFirstNameValid, "Tên chỉ được chứa chữ cái và không chứa số và khoảng trắng."),
+                  (!isLastNameValid,"Họ chỉ được chứa chữ cái và không chứa số và khoảng trắng."),
+                  (!isMiddleNameValid,"Tên đệm chỉ được chứa chữ cái và không chứa số ."),
+                     (existEmail, "Email này đã tồn tại trong hệ thống."),
+                  (existPhone,"Số điện thoại này đã tồn tại trong hệ thống.")
             };
             foreach (var validation in validations)
                 {
@@ -289,12 +312,12 @@ namespace UserService.Services.TeacherService
                 }
             else
                 {
-                userDTO.UserAvartar=teacher.UserAvartar;
+                userDTO.UserAvartar=user.UserAvartar;
                 }
             #endregion                             
-            User user = new User();
-            user.CopyProperties(userDTO);
-            bool isSuccess = await _repository.UpdateTeacher(user);
+            User user1 = new User();
+            user1.CopyProperties(userDTO);
+            bool isSuccess = await _repository.UpdateTeacher(user1);
             if (isSuccess)
                 {
                 return new APIResponse
@@ -421,7 +444,7 @@ namespace UserService.Services.TeacherService
                             bool isMiddleNameValid = string.IsNullOrEmpty(user.MiddleName)||user.MiddleName.All(c => char.IsLetter(c));
                             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
                               {
-                            (!user.PhoneNumber.All(char.IsDigit) || user.PhoneNumber.Length != 10 || !user.PhoneNumber.StartsWith("0"),
+                           (!user.PhoneNumber.All(char.IsDigit) || user.PhoneNumber.Length != 10 || !user.PhoneNumber.StartsWith("0"),
                              "Số điện thoại tại dòng số "+ stt +" phải có 10 số và bắt đầu bằng một số từ 0 (ví dụ: 0901234567)."),
                            (!IsValidEmail(user.PersonalEmail), "Vui lòng nhập địa chỉ email hợp lệ tại dòng số "+ stt +" (ví dụ: example@example.com)."),
                            (user.DateOfBirth > DateOnly.FromDateTime(DateTime.Now), "Ngày sinh tại dòng số "+ stt +" không thể là ngày trong tương lai."),

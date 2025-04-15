@@ -174,19 +174,23 @@ namespace UserService.Services.StaffServices
                 // Bắt tên phải toàn là chữ và không được nhập số
                 bool isFirstNameValid = !string.IsNullOrEmpty(userDTO.FirstName)&&userDTO.FirstName.All(c => char.IsLetter(c));
                 bool isLastNameValid = !string.IsNullOrEmpty(userDTO.LastName)&&userDTO.LastName.All(c => char.IsLetter(c));
-                bool isMiddleNameValid = string.IsNullOrEmpty(userDTO.MiddleName)||userDTO.MiddleName.All(c => char.IsLetter(c));
+                bool isMiddleNameValid = string.IsNullOrEmpty(userDTO.MiddleName)||userDTO.MiddleName.All(c => char.IsLetter(c)||char.IsWhiteSpace(c));
                 List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
             {
+                        (userDTO.FirstName == null, "Tên không thể để trống" ),
+                  (userDTO.LastName == null, "Họ không thể để trống" ),
+                  (userDTO.MiddleName == null, "Tên đệm không thể để trống" ),
                   (!userDTO.PhoneNumber.All(char.IsDigit) || userDTO.PhoneNumber.Length != 10 || !userDTO.PhoneNumber.StartsWith("0"),
                   "Số điện thoại phải có 10 số và bắt đầu bằng một số từ 0 (ví dụ: 0901234567)."),
                   (!IsValidEmail(userDTO.PersonalEmail), "Vui lòng nhập địa chỉ email hợp lệ (ví dụ: example@example.com)."),
+                  (userDTO.PersonalEmail.Length>100, "Độ dài email không thể vượt quá 100 ký tự"),
                   (userDTO.PasswordHash.Length < 8 || userDTO.PasswordHash.Length > 36,"Độ dài mật khẩu phải từ 8 đến 20 ký tự."),
                   (userDTO.DateOfBirth > DateOnly.FromDateTime(DateTime.Now), "Ngày sinh không thể là ngày trong tương lai."),
                   (existEmail, "Email này đã tồn tại trong hệ thống."),
                   (existPhone, "Số điện thoại này đã tồn tại trong hệ thống."),
-                  (!isFirstNameValid, "Tên chỉ được chứa chữ cái và không chứa số."),
-                  (!isLastNameValid,"Họ chỉ được chứa chữ cái và không chứa số."),
-                  (!isMiddleNameValid,"Tên đệm chỉ được chứa chữ cái và không chứa số .")
+                 (!isFirstNameValid, "Tên chỉ được chứa chữ cái và không chứa số và khoảng trắng."),
+                  (!isLastNameValid,"Họ chỉ được chứa chữ cái và không chứa số và khoảng trắng."),
+                  (!isMiddleNameValid,"Tên đệm chỉ được chứa chữ cái và không chứa số ."),
             };
                 foreach (var validation in validations)
                     {
@@ -263,17 +267,21 @@ namespace UserService.Services.StaffServices
                 }
             bool isFirstNameValid = !string.IsNullOrEmpty(userDTO.FirstName)&&userDTO.FirstName.All(c => char.IsLetter(c));
             bool isLastNameValid = !string.IsNullOrEmpty(userDTO.LastName)&&userDTO.LastName.All(c => char.IsLetter(c));
-            bool isMiddleNameValid = string.IsNullOrEmpty(userDTO.MiddleName)||userDTO.MiddleName.All(c => char.IsLetter(c));
+            bool isMiddleNameValid = string.IsNullOrEmpty(userDTO.MiddleName)||userDTO.MiddleName.All(c => char.IsLetter(c)||char.IsWhiteSpace(c));
             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
             {
+                  (userDTO.FirstName == null, "Tên không thể để trống" ),
+                  (userDTO.LastName == null, "Họ không thể để trống" ),
+                  (userDTO.MiddleName == null, "Tên đệm không thể để trống" ),
                   (!userDTO.PhoneNumber.All(char.IsDigit) || userDTO.PhoneNumber.Length != 10 || !userDTO.PhoneNumber.StartsWith("0"),
                   "Số điện thoại phải có 10 số và bắt đầu bằng một số từ 0 (ví dụ: 0901234567)."),
+                  (userDTO.PersonalEmail.Length>100, "Độ dài email không thể vượt quá 100 ký tự"),
                   (!IsValidEmail(userDTO.PersonalEmail), "Vui lòng nhập địa chỉ email hợp lệ (ví dụ: example@example.com)."),
                   (userDTO.DateOfBirth > DateOnly.FromDateTime(DateTime.Now), "Ngày sinh không thể là ngày trong tương lai."),
                   (staff == null, "Không tìm thấy nhân viên cần cập nhật") ,
-                   (!isFirstNameValid, "Tên chỉ được chứa chữ cái và không chứa số."),
-                  (!isLastNameValid,"Họ chỉ được chứa chữ cái và không chứa số."),
-                  (!isMiddleNameValid,"Tên đệm chỉ được chứa chữ cái và không chứa số .") ,
+                  (!isFirstNameValid, "Tên chỉ được chứa chữ cái và không chứa số và khoảng trắng."),
+                  (!isLastNameValid,"Họ chỉ được chứa chữ cái và không chứa số và khoảng trắng."),
+                  (!isMiddleNameValid,"Tên đệm chỉ được chứa chữ cái và không chứa số ."),
                   (existEmail, "Email này đã tồn tại trong hệ thống."),
                   (existPhone,"Số điện thoại này đã tồn tại trong hệ thống.")
             };

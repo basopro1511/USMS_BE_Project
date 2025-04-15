@@ -140,7 +140,7 @@ namespace Services.ClassServices
             if (model==null)
                 {
                 aPIResponse.IsSuccess=false;
-                aPIResponse.Message="ClassSubject with Id: "+id+" is not found";
+                aPIResponse.Message="Lớp với mã :"+id+" Không tìm thấy !";
                 }
             else
                 {

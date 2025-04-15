@@ -26,6 +26,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
             _slotService=new SlotService();
             _httpClient=httpClient;
             }
+
         #region Get All Schedule
         /// <summary>
         /// Get All Schedule in database
@@ -43,7 +44,26 @@ namespace SchedulerDataAccess.Services.SchedulerServices
             aPIResponse.Result=schedule;
             return aPIResponse;
             }
-        #endregion
+        #endregion       
+
+        //#region Get All Schedule
+        ///// <summary>
+        ///// Get All Schedule in database
+        ///// </summary>
+        ///// <returns></returns>
+        //public async Task<APIResponse> GetAllSchedule()
+        //    {
+        //    APIResponse aPIResponse = new APIResponse();
+        //    var schedule = await _scheduleRepository.getAllSchedule();
+        //    if (schedule==null)
+        //        {
+        //        aPIResponse.IsSuccess=false;
+        //        aPIResponse.Message="Không có bất kì lịch học nào tồn tại!";
+        //        }
+        //    aPIResponse.Result=schedule;
+        //    return aPIResponse;
+        //    }
+        //#endregion
 
         #region Get Schedule by Id  
         /// <summary>
@@ -208,16 +228,20 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                      subjectRes.Result.ToString()
                 );
                 int maxSlot = subjectDto.NumberOfSlot; // Số tiết tối đa của môn
-                // 4. Kiểm tra schedule.SlotNoInSubject với subjectDto.NumberOfSlot
-                //    (SlotNoInSubject là trường mới bạn thêm trong ClassScheduleDTO)
-                var schedulesOfThisClassSubject =await _scheduleRepository.GetSchedulesByClassSubjectId(schedule.ClassSubjectId);
-                int nextSlotNoInSubject = 1;
-                if (schedulesOfThisClassSubject.Any())
+                                                       // 4. Lấy danh sách lịch học của ClassSubject
+                var schedulesOfThisClassSubject = await _scheduleRepository.GetSchedulesByClassSubjectId(schedule.ClassSubjectId);
+                // Tìm slot trống nhỏ nhất từ 1 đến maxSlot
+                var usedSlots = schedulesOfThisClassSubject.Select(x => x.SlotNoInSubject).ToList();
+                int nextSlotNoInSubject = Enumerable.Range(1, subjectDto.NumberOfSlot)
+                    .FirstOrDefault(slot => !usedSlots.Contains(slot));
+
+                if (nextSlotNoInSubject==0)
                     {
-                    // Lấy max
-                    int currentMax = schedulesOfThisClassSubject.Max(x => x.SlotNoInSubject);
-                    nextSlotNoInSubject=currentMax+1;
+                    aPIResponse.IsSuccess=false;
+                    aPIResponse.Message=$"Môn học này chỉ có tối đa {subjectDto.NumberOfSlot} slot học. Không thể thêm lịch mới.";
+                    return aPIResponse;
                     }
+
                 // 5. Lấy danh sách tất cả ClassSubject cùng ClassId (ví dụ SE1702) => để check conflict
                 var classSubjectOfClass = classSubjectList
                     .Where(x => x.ClassId==classSubject.ClassId)
@@ -233,7 +257,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                     return aPIResponse;
                     }
                 // 8. Kiểm tra tính hợp lệ phòng học
-                var room =await _roomService.GetRoomById(schedule.RoomId);
+                var room = await _roomService.GetRoomById(schedule.RoomId);
                 if (!room.IsSuccess||room.Result==null)
                     {
                     aPIResponse.IsSuccess=false;
@@ -350,8 +374,8 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                 // 10. Nếu không có bất kỳ thay đổi nào về thời gian, có thể báo lỗi và nhắc nhở người dùng nhấn "Hủy" nếu muốn giữ nguyên lịch học.
                 bool noChange = existingSchedule.Date==scheduleDto.Date&&
                                 existingSchedule.SlotId==scheduleDto.SlotId&&
-                                existingSchedule.RoomId==scheduleDto.RoomId &&
-                                existingSchedule.TeacherId == scheduleDto.TeacherId;
+                                existingSchedule.RoomId==scheduleDto.RoomId&&
+                                existingSchedule.TeacherId==scheduleDto.TeacherId;
                 if (noChange)
                     {
                     return new APIResponse
@@ -383,7 +407,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
             APIResponse response = new APIResponse();
             try
                 {
-                var result =await _scheduleRepository.DeleteScheduleById(scheduleId);
+                var result = await _scheduleRepository.DeleteScheduleById(scheduleId);
                 if (!result)
                     {
                     response.IsSuccess=false;
@@ -463,7 +487,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
         #endregion
 
         #region Get Class SubjectIds by MajorId, ClassId, SemesterId, Term ( Gọi qua API Class Subject )
-        private List<ClassSubjectDTO> getClassSubjectIdsByMajorIdClassIdSemesterIdAndTerm(string majorId, string classId,string semesterId, int term)
+        private List<ClassSubjectDTO> getClassSubjectIdsByMajorIdClassIdSemesterIdAndTerm(string majorId, string classId, string semesterId, int term)
             {
             try
                 {
@@ -573,7 +597,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                 aPIResponse.Message="Không tìm thấy lớp học của sinh viên có Id = "+studentId+"!";
                 return aPIResponse;
                 }
-            List<Schedule>? schedules =await _scheduleRepository.GetClassSchedulesForStaff(classSubjectIds, startDay, endDay);
+            List<Schedule>? schedules = await _scheduleRepository.GetClassSchedulesForStaff(classSubjectIds, startDay, endDay);
             List<ViewScheduleDTO> viewScheduleDTOs = new List<ViewScheduleDTO>();
             foreach (var item in schedules)
                 {
@@ -616,7 +640,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                     };
                 List<int> classSubjectIds = classSubjects.Select(s => s.ClassSubjectId).ToList();
                 Dictionary<int, string> subjectMap = classSubjects.ToDictionary(s => s.ClassSubjectId, s => s.SubjectId);
-                List<Schedule>? schedules =await _scheduleRepository.GetClassSchedulesForStaff(classSubjectIds, startDay, endDay);
+                List<Schedule>? schedules = await _scheduleRepository.GetClassSchedulesForStaff(classSubjectIds, startDay, endDay);
                 List<ViewScheduleDTO> viewScheduleDTOs = new List<ViewScheduleDTO>();
                 foreach (var schedule in schedules)
                     {
@@ -651,7 +675,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
             APIResponse aPIResponse = new APIResponse();
             try
                 {
-                var schedules =await _scheduleRepository.GetScheduleForTeacher(teacherId, startDay, endDay);
+                var schedules = await _scheduleRepository.GetScheduleForTeacher(teacherId, startDay, endDay);
                 List<ViewScheduleDTO> viewScheduleDTOs = new List<ViewScheduleDTO>();
                 foreach (var item in schedules)
                     {
@@ -733,7 +757,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
         public async Task<APIResponse> GetAllTeacherAvailableForAddSchedule(string majorId, DateOnly date, int slot)
             {
             APIResponse aPIResponse = new APIResponse();
-            List<TeacherDTO> teachers =  GetAvailableTeachersByMajorId(majorId);
+            List<TeacherDTO> teachers = GetAvailableTeachersByMajorId(majorId);
             #region validation 
             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
             {
@@ -752,7 +776,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                 }
             #endregion       
             // 2. Lấy các schedule có date & slotId
-            var schedules =  _scheduleRepository.GetSchedulesByDateAndSlot(date, slot);
+            var schedules = _scheduleRepository.GetSchedulesByDateAndSlot(date, slot);
             // 3. Lấy danh sách teacherId đã bị chiếm
             var usedTeacherIds = schedules.Select(sch => sch.TeacherId).Distinct().ToHashSet();
             // 4. Lọc ra các giáo viên còn trống
@@ -1176,10 +1200,10 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                                     {
                                     continue;
                                     }
-                                } 
-                            } 
-                        } 
-                    } 
+                                }
+                            }
+                        }
+                    }
                 response.IsSuccess=true;
                 response.Message=$"Sắp lịch tự động cho lớp {classId} học kỳ {semesterId} kỳ học số {term} thành công. Thời gian từ {semesterDate.StartDate} đến {semesterDate.EndDate}";
                 }
@@ -1244,7 +1268,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
             APIResponse aPIResponse = new APIResponse();
             try
                 {
-                var schedules = await _scheduleRepository.GetScheduleDataByScheduleIdandSlotInSubject(classSubjectId,slotInSubject);
+                var schedules = await _scheduleRepository.GetScheduleDataByScheduleIdandSlotInSubject(classSubjectId, slotInSubject);
                 aPIResponse.Result=schedules;
                 return aPIResponse;
                 }
