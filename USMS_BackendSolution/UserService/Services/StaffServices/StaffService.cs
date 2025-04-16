@@ -121,7 +121,7 @@ namespace UserService.Services.StaffServices
         /// <param name="middleName"></param>
         /// <param name="lastName"></param>
         /// <returns></returns>
-        private async Task<string> GenerateUserId(string firstName, string middleName, string lastName)
+        private async Task<string> GenerateUserId(string firstName, string? middleName, string lastName)
             {
             var teachers = await _repository.GetAllStaff();
             // 1.  Viết hoa chữ cái đầu của họ, tên, và tên đệm ví dụ nguyen quoc hoang => Nguyen Quoc Hoang
@@ -129,7 +129,7 @@ namespace UserService.Services.StaffServices
                 CultureInfo.CurrentCulture.TextInfo.ToTitleCase(firstName.ToLower())
             );
             string lastNameGenerate = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(lastName.ToLower()).Substring(0, 1).Replace("Đ", "D").Replace("đ", "d");
-            string middleNameGenerate = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(middleName.ToLower().Replace("Đ", "D").Replace("đ", "d"));
+            string? middleNameGenerate = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(middleName.ToLower().Replace("Đ", "D").Replace("đ", "d"));
             // 2. Lấy chữ cái đầu tiên của mỗi phần trong MiddleName
             string secondMidName = "";
             var middleNameParts = middleName.Split(' ');
@@ -386,7 +386,7 @@ namespace UserService.Services.StaffServices
                            (user.DateOfBirth > DateOnly.FromDateTime(DateTime.Now), "Ngày sinh tại dòng số "+ stt +" không thể là ngày trong tương lai."),
                            (existEmail, "Email tại dòng số "+ stt +" đã tồn tại trong hệ thống."),
                            (existPhone, "Số điện thoại tại dòng số "+ stt +" đã tồn tại trong hệ thống."),
-                               (!isFirstNameValid, "Tên tại dòng số "+ stt +" chỉ được chứa chữ cái và không chứa số."),
+                           (!isFirstNameValid, "Tên tại dòng số "+ stt +" chỉ được chứa chữ cái và không chứa số."),
                            (!isLastNameValid,"Họ tại dòng số "+ stt +" chỉ được chứa chữ cái và không chứa số."),
                            (!isMiddleNameValid,"Tên đệm tại dòng số "+ stt +" chỉ được chứa chữ cái và không chứa số .")
                               };

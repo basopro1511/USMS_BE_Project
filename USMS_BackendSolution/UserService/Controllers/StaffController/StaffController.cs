@@ -58,7 +58,7 @@ namespace UserService.Controllers.StaffController
 
         #region Update Status
         [HttpPut("ChangeStatus")]
-        public async Task<IActionResult> ChangeStudentStatus(List<string> userIds, int status)
+        public async Task<IActionResult> ChangeStaffStatus(List<string> userIds, int status)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _service.ChangeUsersStatusSelected(userIds, status);

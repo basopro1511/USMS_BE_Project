@@ -113,17 +113,17 @@ namespace SchedulerService.Controllers.RoomController
                 aPIResponse.Message="Đã xảy ra lỗi khi tạo tệp Excel.";
                 return StatusCode(500, aPIResponse);
                 }
-            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "DanhSachSinhVien.xlsx");
+            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "DanhSachPhongHoc.xlsx");
             }
         #endregion
 
         #region
         /// <summary>
-        /// Export Empty form to add teacher
+        /// Export Empty form to add room
         /// </summary>
         /// <returns></returns>
         [HttpGet("exportEmpty")]
-        public async Task<IActionResult> ExportFormAddTeacher()
+        public async Task<IActionResult> ExportFormAddRoom()
             {
             APIResponse aPIResponse = new APIResponse();
             var export = await _roomService.ExportFormAddRoom();
@@ -141,13 +141,13 @@ namespace SchedulerService.Controllers.RoomController
                 aPIResponse.Message="Đã xảy ra lỗi khi tạo tệp Excel.";
                 return StatusCode(500, aPIResponse);
                 }
-            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "DanhSachSinhVien.xlsx");
+            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "DanhSachPhongHoc.xlsx");
             }
         #endregion
 
         #region Import From Excel
         [HttpPost("import")]
-        public async Task<IActionResult> ImportStudents(IFormFile file)
+        public async Task<IActionResult> ImportRooms(IFormFile file)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _roomService.ImportRoomsFromExcel(file);

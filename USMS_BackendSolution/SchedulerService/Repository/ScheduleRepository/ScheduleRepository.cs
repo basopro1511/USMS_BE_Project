@@ -221,13 +221,13 @@ namespace Repositories.ScheduleRepository
             }
         #endregion
 
-        #region Get Schedules For Academic Staff
+        #region Get Schedules For Academic Staff By Week
         /// <summary>
         /// Lấy danh sách lịch (Schedule) theo ClassSubjectId
         /// </summary>
         /// <param name="classSubjectId">Id của ClassSubject</param>
         /// <returns>Danh sách Schedule</returns>
-        public async Task<List<Schedule>> GetClassSchedulesForStaff(List<int> classSubjectIds, DateTime startDay, DateTime endDay)
+        public async Task<List<Schedule>> GetClassSchedulesForStaffByWeek(List<int> classSubjectIds, DateTime startDay, DateTime endDay)
             {
             try
                 {
@@ -237,6 +237,43 @@ namespace Repositories.ScheduleRepository
                              .Where(s => classSubjectIds.Contains(s.ClassSubjectId)
                                       &&s.Date>=DateOnly.FromDateTime(startDay)
                                       &&s.Date<=DateOnly.FromDateTime(endDay))
+                             .Select(s => new Schedule
+                                 {
+                                 ScheduleId=s.ScheduleId,
+                                 ClassSubjectId=s.ClassSubjectId,
+                                 SlotId=s.SlotId,
+                                 TeacherId=s.TeacherId,
+                                 Date=s.Date,
+                                 Status=s.Status,
+                                 RoomId=s.RoomId,
+                                 SlotNoInSubject=s.SlotNoInSubject
+                                 })
+                             .ToListAsync();
+                    return schedules;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
+        #region Get Schedules For Academic Staff By Day
+        /// <summary>
+        /// Lấy danh sách lịch (Schedule) theo ClassSubjectId
+        /// </summary>
+        /// <param name="classSubjectId">Id của ClassSubject</param>
+        /// <returns>Danh sách Schedule</returns>
+        public async Task<List<Schedule>> GetClassSchedulesForStaffByDay(List<int> classSubjectIds, DateTime day)
+            {
+            try
+                {
+                using (var _dbContext = new MyDbContext())
+                    {
+                    var schedules = await _dbContext.Schedule
+                             .Where(s => classSubjectIds.Contains(s.ClassSubjectId)
+                                      &&s.Date==DateOnly.FromDateTime(day))
                              .Select(s => new Schedule
                                  {
                                  ScheduleId=s.ScheduleId,

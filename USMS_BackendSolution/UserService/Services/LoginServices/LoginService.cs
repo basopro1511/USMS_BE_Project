@@ -11,12 +11,12 @@ namespace UserService.Services.LoginServices
     {
     public class LoginService
         {
-        private readonly UserRepository _userRepository; // Directly using repository
+        private readonly IUserRepository _userRepository; 
         private readonly IConfiguration _config;
 
         public LoginService(IConfiguration config)
             {
-            _userRepository=new UserRepository(); // Direct instantiation
+            _userRepository=new UserRepository(); 
             _config=config;
             }
 

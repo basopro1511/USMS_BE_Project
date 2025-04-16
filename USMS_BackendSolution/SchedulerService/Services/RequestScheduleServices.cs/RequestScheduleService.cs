@@ -116,20 +116,28 @@ namespace SchedulerService.Services.RequestScheduleServices.cs
             bool isSuccess = await _requestRepository.ChangeRequestStatus(id, newStatus);
             if (isSuccess)
                 {
-                if (newStatus==0)
+                //if (newStatus==0)
+                //    {
+                //    return new APIResponse
+                //        {
+                //        IsSuccess=true,
+                //        Message=$"Mã yêu cầu: {id} đã được đổi thành 'Chưa xử lý'."
+                //        };
+                //    }
+                //else if (newStatus==1)
+                //    {
+                //    return new APIResponse
+                //        {
+                //        IsSuccess=true,
+                //        Message=$"Mã yêu cầu: {id} đã được đổi thành 'Đã xử lý'."
+                //        };
+                //    }
+                 if (newStatus==2)
                     {
                     return new APIResponse
                         {
                         IsSuccess=true,
-                        Message=$"Mã yêu cầu: {id} đã được đổi thành 'Chưa xử lý'."
-                        };
-                    }
-                else if (newStatus==1)
-                    {
-                    return new APIResponse
-                        {
-                        IsSuccess=true,
-                        Message=$"Mã yêu cầu: {id} đã được đổi thành 'Đã xử lý'."
+                        Message=$"Đơn yêu cầu vỡi mã: {id} đã được đổi thành 'Đã hủy'."
                         };
                     }
                 }

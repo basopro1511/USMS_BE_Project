@@ -13,7 +13,8 @@ namespace Repositories.ScheduleRepository
         public Task<List<Schedule>> GetSchedulesByClassSubjectId(int classSubjectId);
         public Task<bool> UpdateSchedule(Schedule scheduleDto);
         public Task<bool> DeleteScheduleById(int scheduleId);
-        public Task<List<Schedule>> GetClassSchedulesForStaff(List<int> classSubjectIds,DateTime startDay, DateTime endDay);
+        public Task<List<Schedule>> GetClassSchedulesForStaffByWeek(List<int> classSubjectIds,DateTime startDay, DateTime endDay);
+        public Task<List<Schedule>> GetClassSchedulesForStaffByDay(List<int> classSubjectIds, DateTime day);
         public Task<List<Schedule>> GetScheduleForTeacher(string teacherId, DateTime startDay, DateTime endDay);
         public Task<bool> ChangeScheduleStatus(List<int> classSubjectIds, int status);
         public Task<List<int>> GetClassSubjcetIdByTeacherSchedule(string teacherId);

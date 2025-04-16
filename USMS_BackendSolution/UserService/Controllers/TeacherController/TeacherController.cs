@@ -70,7 +70,7 @@ namespace UserService.Controllers.TeacherController
 
         #region Update Status
         [HttpPut("ChangeStatus")]
-        public async Task<IActionResult> ChangeStudentStatus(List<string> userIds, int status)
+        public async Task<IActionResult> ChangeTeacherStatus(List<string> userIds, int status)
             {
             APIResponse aPIResponse = new APIResponse();
             aPIResponse=await _service.ChangeUsersStatusSelected(userIds, status);
@@ -98,7 +98,7 @@ namespace UserService.Controllers.TeacherController
                 aPIResponse.Message="Đã xảy ra lỗi khi tạo tệp Excel.";
                 return StatusCode(500, aPIResponse);
                 }
-            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "DanhSachSinhVien.xlsx");
+            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "DanhSachGiaoVien.xlsx");
             }
         #endregion
 
@@ -126,7 +126,7 @@ namespace UserService.Controllers.TeacherController
                 aPIResponse.Message="Đã xảy ra lỗi khi tạo tệp Excel.";
                 return StatusCode(500, aPIResponse);
                 }
-            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "DanhSachSinhVien.xlsx");
+            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "DanhSachGiaoVien.xlsx");
             }
         #endregion
         }

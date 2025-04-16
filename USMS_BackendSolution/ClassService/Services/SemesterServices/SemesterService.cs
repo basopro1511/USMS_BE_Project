@@ -289,7 +289,7 @@ namespace Services.SemesterServices
             }
         #endregion
 
-        #region Export Room Information
+        #region Export Semester Information
         /// <summary>
         /// Export Room Information
         /// </summary>
@@ -328,9 +328,9 @@ namespace Services.SemesterServices
             }
         #endregion
 
-        #region Import Rooms from Excels
+        #region Import Semester from Excels
         /// <summary>
-        /// Import Rooms Form Excel
+        /// Import Semester Form Excel
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>

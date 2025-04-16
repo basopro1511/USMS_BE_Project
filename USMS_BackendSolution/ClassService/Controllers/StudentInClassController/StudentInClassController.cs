@@ -89,7 +89,7 @@ namespace ClassService.Controllers.StudentInClassController
 
         #region Export Data
         [HttpGet("export")]
-        public async Task<IActionResult> ExportSubjectsToExcel([FromQuery] int id)
+        public async Task<IActionResult> ExportStudentsInClassToExcel([FromQuery] int id)
             {
             APIResponse aPIResponse = new APIResponse();
             var export = await _service.ExportStudentInClassToExcel(id);
@@ -107,9 +107,10 @@ namespace ClassService.Controllers.StudentInClassController
                 aPIResponse.Message="Đã xảy ra lỗi khi tạo tệp Excel.";
                 return StatusCode(500, aPIResponse);
                 }
-            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "DanhSachSinhVien.xlsx");
+            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "DanhSachSinhVienTrongLopp.xlsx");
             }
         #endregion
+
         }
     }
 

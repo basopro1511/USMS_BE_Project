@@ -66,10 +66,17 @@ namespace SchedulerService.Controllers.Schedule
             }
 
         [HttpGet("{majorId}/{classId}/{term}/{startDay}/{endDay}")]
-        public async Task<IActionResult> GetClassSchedule(string majorId, string classId, int term, DateTime startDay, DateTime endDay)
+        public async Task<IActionResult> GetClassScheduleByWeek(string majorId, string classId, int term, DateTime startDay, DateTime endDay)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse=await _scheduleService.GetClassSchedulesForStaff(majorId, classId, term, startDay, endDay);
+            aPIResponse=await _scheduleService.GetClassSchedulesForStaffByWeek(majorId, classId, term, startDay, endDay);
+            return Ok(aPIResponse);
+            }
+        [HttpGet("{majorId}/{classId}/{term}/{day}")]
+        public async Task<IActionResult> GetClassScheduleByDay(string majorId, string classId, int term,  DateTime day)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=await _scheduleService.GetClassSchedulesForStaffByDay(majorId, classId, term, day);
             return Ok(aPIResponse);
             }
 

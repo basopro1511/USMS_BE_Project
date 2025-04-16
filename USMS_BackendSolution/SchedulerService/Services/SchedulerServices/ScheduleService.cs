@@ -597,7 +597,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                 aPIResponse.Message="Không tìm thấy lớp học của sinh viên có Id = "+studentId+"!";
                 return aPIResponse;
                 }
-            List<Schedule>? schedules = await _scheduleRepository.GetClassSchedulesForStaff(classSubjectIds, startDay, endDay);
+            List<Schedule>? schedules = await _scheduleRepository.GetClassSchedulesForStaffByWeek(classSubjectIds, startDay, endDay);
             List<ViewScheduleDTO> viewScheduleDTOs = new List<ViewScheduleDTO>();
             foreach (var item in schedules)
                 {
@@ -615,7 +615,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
             }
         #endregion
 
-        #region Get Schedule for Class (Academic Staff)
+        #region Get Schedule for Class By Week (Academic Staff)
         /// <summary>
         /// Get ScheduleForStaff
         /// </summary>
@@ -626,7 +626,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
         /// <param name="endDay"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<APIResponse> GetClassSchedulesForStaff(string majorId, string classId, int term, DateTime startDay, DateTime endDay)
+        public async Task<APIResponse> GetClassSchedulesForStaffByWeek(string majorId, string classId, int term, DateTime startDay, DateTime endDay)
             {
             APIResponse aPIResponse = new APIResponse();
             try
@@ -640,7 +640,53 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                     };
                 List<int> classSubjectIds = classSubjects.Select(s => s.ClassSubjectId).ToList();
                 Dictionary<int, string> subjectMap = classSubjects.ToDictionary(s => s.ClassSubjectId, s => s.SubjectId);
-                List<Schedule>? schedules = await _scheduleRepository.GetClassSchedulesForStaff(classSubjectIds, startDay, endDay);
+                List<Schedule>? schedules = await _scheduleRepository.GetClassSchedulesForStaffByWeek(classSubjectIds, startDay, endDay);
+                List<ViewScheduleDTO> viewScheduleDTOs = new List<ViewScheduleDTO>();
+                foreach (var schedule in schedules)
+                    {
+                    var dto = new ViewScheduleDTO();
+                    dto.CopyProperties(schedule);
+                    dto.MajorId=majorId;
+                    dto.ClassId=classId;
+                    dto.SubjectId=subjectMap.ContainsKey(schedule.ClassSubjectId) ? subjectMap[schedule.ClassSubjectId] : null; // Lấy SubjectId theo ClassSubjectId
+                    viewScheduleDTOs.Add(dto);
+                    }
+                aPIResponse.Result=viewScheduleDTOs;
+                return aPIResponse;
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
+        #region Get Schedule for Class By Day (Academic Staff)
+        /// <summary>
+        /// Get Schedule For Staff  By Day 
+        /// </summary>
+        /// <param name="majorId"></param>
+        /// <param name="classId"></param>
+        /// <param name="term"></param>
+        /// <param name="startDay"></param>
+        /// <param name="endDay"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<APIResponse> GetClassSchedulesForStaffByDay(string majorId, string classId, int term, DateTime day)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            try
+                {
+                List<ClassSubjectDTO>? classSubjects = getClassSubjectIdsByMajorIdClassIdAndTerm(majorId, classId, term);
+                if (classSubjects==null)
+                    {
+                    aPIResponse.IsSuccess=false;
+                    aPIResponse.Message="Không tìm thấy bất kỳ lớp nào!";
+                    return aPIResponse;
+                    };
+                List<int> classSubjectIds = classSubjects.Select(s => s.ClassSubjectId).ToList();
+                Dictionary<int, string> subjectMap = classSubjects.ToDictionary(s => s.ClassSubjectId, s => s.SubjectId);
+                List<Schedule>? schedules = await _scheduleRepository.GetClassSchedulesForStaffByDay(classSubjectIds,day);
                 List<ViewScheduleDTO> viewScheduleDTOs = new List<ViewScheduleDTO>();
                 foreach (var schedule in schedules)
                     {
@@ -1278,5 +1324,6 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                 }
             }
         #endregion
+
         }
     }
