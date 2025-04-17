@@ -360,7 +360,7 @@ namespace SchedulerDataAccess.Services.SchedulerServices
                     return new APIResponse
                         {
                         IsSuccess=false,
-                        Message="Lớp học khác đã có tiết vào thời gian này!"
+                        Message="Lớp học đã có tiết vào thời gian này!"
                         };
                     }
                 if (roomConflict)

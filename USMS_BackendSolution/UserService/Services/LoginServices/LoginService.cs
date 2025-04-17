@@ -46,13 +46,20 @@ namespace UserService.Services.LoginServices
         public async Task<APIResponse> Login(LoginDTO loginDTO)
             {
             var user =await _userRepository.GetUserByEmail(loginDTO.Email);
-
             if (user==null)
                 {
                 return new APIResponse
                     {
                     IsSuccess=false,
                     Message="Không tìm thấy người dùng."
+                    };
+                }
+            if (user.Status!=1)
+                {
+                return new APIResponse
+                    {
+                    IsSuccess=false,
+                    Message="Tài khoản của bạn không được phép đăng nhập vào hệ thống!."
                     };
                 }
             // Verify password

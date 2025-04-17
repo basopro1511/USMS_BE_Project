@@ -55,5 +55,13 @@ namespace UserService.Controllers.User
             aPIResponse=await _userService.ForgotPassword(email);
             return Ok(aPIResponse);
             }
+
+        [HttpGet("Email/{email}")]
+        public async Task<IActionResult> GetUserByEmail(string email)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            aPIResponse=await _userService.GetUserByEmail(email);
+            return Ok(aPIResponse);
+            }
         }
 }

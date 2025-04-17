@@ -371,12 +371,12 @@ namespace Services.ClassServices
                 if (classIds==null||classIds.Count==0)
                     {
                     aPIResponse.IsSuccess=false;
-                    aPIResponse.Message=$"Không tìm thấy bất kỳ ClassId nào cho MajorId = {majorId}.";
+                    aPIResponse.Message=$"Không tìm thấy bất kỳ mã lớp học nào cho chuyên ngành : {majorId}.";
                     }
                 else
                     {
                     aPIResponse.IsSuccess=true;
-                    aPIResponse.Message="Lấy danh sách ClassId thành công.";
+                    aPIResponse.Message="Lấy danh sách mã lớp học thành công.";
                     }
                 aPIResponse.Result=classIds;
                 }
@@ -471,6 +471,10 @@ namespace Services.ClassServices
                 if (totalStudents==0)
                     {
                     return new APIResponse { IsSuccess=false, Message="Không có sinh viên nào được import." };
+                    }
+                if (classCapacity <= 20 || classCapacity > 40)
+                    {
+                    return new APIResponse { IsSuccess=false, Message="Số sinh viên tối đa mỗi lớp không được nhỏ hơn 20 và lớn hơn 40." };
                     }
                 // Tính số lớp cần tạo: theo yêu cầu chia đều, số lớp là số tối thiểu sao cho không vượt quá classCapacity
                 int numClasses = (int)Math.Ceiling((double)totalStudents/classCapacity);

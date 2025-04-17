@@ -234,7 +234,7 @@ namespace Services.SemesterServices
             if (Ids==null||!Ids.Any())
                 {
                 aPIResponse.IsSuccess=false;
-                aPIResponse.Message="Danh sách lớp học không hợp lệ.";
+                aPIResponse.Message="Danh sách học kỳ không hợp lệ.";
                 return aPIResponse;
                 }
             bool isSuccess = await _semesterRepository.ChangeSemesterStatusSelected(Ids, status);
@@ -393,7 +393,7 @@ namespace Services.SemesterServices
                             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
                               {
                                  (existingData != null,"Mã học kỳ tại ô số "+ stt +" đã tồn tại!"),
-                                 (model.StartDate < model.EndDate ,"Thời gian bắt đầu tại ô số "+ stt +" không thể diễn ra trước thời gian kết thúc!"),
+                                 (model.StartDate > model.EndDate ,"Thời gian bắt đầu tại ô số "+ stt +" không thể diễn ra trước thời gian kết thúc!"),
                               };
                             foreach (var validation in validations)
                                 {

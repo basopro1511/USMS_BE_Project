@@ -70,6 +70,30 @@ namespace UserService.Services.UserServices
             }
         #endregion
 
+        #region Get User By Email
+        /// <summary>
+        /// Get User by Id
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<APIResponse> GetUserByEmail(string email)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            UserDTO user = await _userRepository.GetUserByEmail(email);
+            if (user==null)
+                {
+                aPIResponse.IsSuccess=false;
+                aPIResponse.Message="Không tìm thấy người dùng với Email: "+email;
+                }
+            else
+                {
+                aPIResponse.IsSuccess=true;
+                aPIResponse.Result=user;
+                }
+            return aPIResponse;
+            }
+        #endregion
+
         #region HashPassword
         /// <summary>
         /// Hashing password
@@ -252,5 +276,6 @@ namespace UserService.Services.UserServices
                 };
             }
         #endregion
+
         }
     }

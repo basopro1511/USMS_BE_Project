@@ -788,6 +788,18 @@
             "UpstreamHttpMethod": [ "GET" ]
         },
         {
+            "DownstreamPathTemplate": "/api/User/Email/{email}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 7179
+                }
+            ],
+            "UpstreamPathTemplate": "/api/User/Email/{email}",
+            "UpstreamHttpMethod": [ "GET" ]
+        },
+        {
             "DownstreamPathTemplate": "/api/User/ResetPassword",
             "DownstreamScheme": "https",
             "DownstreamHostAndPorts": [
