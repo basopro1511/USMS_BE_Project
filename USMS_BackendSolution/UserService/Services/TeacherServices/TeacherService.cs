@@ -185,7 +185,6 @@ namespace UserService.Services.TeacherService
             {
                   (userDTO.FirstName == null, "Tên không thể để trống" ),
                   (userDTO.LastName == null, "Họ không thể để trống" ),
-                  (userDTO.MiddleName == null, "Tên đệm không thể để trống" ),
                   (!userDTO.PhoneNumber.All(char.IsDigit) || userDTO.PhoneNumber.Length != 10 || !userDTO.PhoneNumber.StartsWith("0"),
                   "Số điện thoại phải có 10 số và bắt đầu bằng một số từ 0 (ví dụ: 0901234567)."),
                   (!IsValidEmail(userDTO.PersonalEmail), "Vui lòng nhập địa chỉ email hợp lệ (ví dụ: example@example.com)."),

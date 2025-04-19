@@ -47,6 +47,7 @@ namespace Services.SubjectServices
         public async Task<APIResponse> CreateSubject(SubjectDTO subjectDTO)
             {
             APIResponse aPIResponse = new APIResponse();
+            subjectDTO.SubjectId=subjectDTO.SubjectId?.Trim();
             var existingSubject = await _subjectRepository.GetSubjectsById(subjectDTO.SubjectId);
             #region validation cua Add
             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
@@ -101,6 +102,7 @@ namespace Services.SubjectServices
         public async Task<APIResponse> UpdateSubject(SubjectDTO subjectDTO)
             {
             APIResponse aPIResponse = new APIResponse();
+            subjectDTO.SubjectId=subjectDTO.SubjectId?.Trim();
             var existingSubject = await _subjectRepository.GetSubjectsById(subjectDTO.SubjectId);
             #region validation cua Update
             var validations = new List<(bool condition, string errorMessage)>
@@ -442,6 +444,7 @@ namespace Services.SubjectServices
                                 };
                             #region 1. Validation       
                             string stt = worksheet.Cells[row, 1].Text;
+                            subjcet.SubjectId=subjcet.SubjectId?.Trim();
                             var existingSubject = await _subjectRepository.GetSubjectsById(subjcet.SubjectId);
                             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
                               {

@@ -85,6 +85,7 @@ namespace Services.RoomServices
         public async Task<APIResponse> AddNewRoom(RoomDTO room)
             {
             APIResponse aPIResponse = new APIResponse();
+            room.RoomId=room.RoomId?.Trim();
             Room existingRoom = await _roomRepository.GetRoomById(room.RoomId);
             if (existingRoom!=null)
                 {
@@ -133,6 +134,7 @@ namespace Services.RoomServices
         public async Task<APIResponse> UpdateRoom(RoomDTO room)
             {
             APIResponse aPIResponse = new APIResponse();
+            room.RoomId=room.RoomId?.Trim();
             Room existingRoom = await _roomRepository.GetRoomById(room.RoomId);
             if (existingRoom==null)
                 {
@@ -398,7 +400,7 @@ namespace Services.RoomServices
             ExcelPackage.LicenseContext=OfficeOpenXml.LicenseContext.NonCommercial;
             using (var package = new ExcelPackage())
                 {
-                var worksheet = package.Workbook.Worksheets.Add("Students");
+                var worksheet = package.Workbook.Worksheets.Add("Rooms");
                 // Header
                 worksheet.Cells[1, 1].Value="STT";
                 worksheet.Cells[1, 2].Value="Mã phòng học";
@@ -462,6 +464,7 @@ namespace Services.RoomServices
                                 };
                             #region 1. Validation       
                             string stt = worksheet.Cells[row, 1].Text;
+                            model.RoomId=model.RoomId?.Trim();
                             var existingSubject = await _roomRepository.GetRoomById(model.RoomId);
                             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
                               {
@@ -488,9 +491,9 @@ namespace Services.RoomServices
                 bool isSuccess = await _roomRepository.AddRoomsAsyncs(models);
                 if (isSuccess)
                     {
-                    return new APIResponse { IsSuccess=true, Message="Import môn học thành công." };
+                    return new APIResponse { IsSuccess=true, Message="Import phòng học thành công." };
                     }
-                return new APIResponse { IsSuccess=false, Message="Import môn học thất bại." };
+                return new APIResponse { IsSuccess=false, Message="Import phòng học thất bại." };
                 }
             catch (Exception ex)
                 {

@@ -78,6 +78,14 @@ namespace SchedulerService.Services.SlotServices
         public async Task<APIResponse> AddNewSlot(TimeSlotDTO slot)
             {
             APIResponse aPIResponse = new APIResponse();
+            if (slot.StartTime > slot.EndTime)
+                {
+                return new APIResponse
+                    {
+                    IsSuccess=false,
+                    Message="Thời gian bắt đầu không thể diễn ra sau thời gian kết thúc!"
+                    };
+                }
             // Kiểm tra xem Slot với SlotId đã tồn tại hay chưa
             TimeSlot existingModel = await _slotRepository.GetTimeSlotById(slot.SlotId);
             if (existingModel!=null)
@@ -115,6 +123,14 @@ namespace SchedulerService.Services.SlotServices
         /// <param name="slot">TimeSlotDTO object</param>
         public async Task<APIResponse> UpdateTimeSlot(TimeSlotDTO slot)
             {
+            if (slot.StartTime>slot.EndTime)
+                {
+                return new APIResponse
+                    {
+                    IsSuccess=false,
+                    Message="Thời gian bắt đầu không thể diễn ra sau thời gian kết thúc!"
+                    };
+                }
             APIResponse aPIResponse = new APIResponse();
             // Kiểm tra xem Slot cần cập nhật có tồn tại không
             TimeSlot existingModel = await _slotRepository.GetTimeSlotById(slot.SlotId);

@@ -517,8 +517,7 @@ namespace Services.ClassServices
                             break;
                             }
                         StudentInClassDTO sic = new StudentInClassDTO
-                            {
-                            // ClassSubjectId của lớp vừa tạo
+                            {                            
                             ClassSubjectId=createdDto.ClassSubjectId,
                             StudentId=studentIds[studentIndex]
                             };

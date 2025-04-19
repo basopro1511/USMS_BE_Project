@@ -68,6 +68,7 @@ namespace Services.SemesterServices
         public async Task<APIResponse> AddSemester(SemesterDTO semesterDto)
         {
             APIResponse response = new APIResponse();
+            semesterDto.SemesterId=semesterDto.SemesterId?.Trim();
             Semester existingSemester =await _semesterRepository.GetSemesterById(semesterDto.SemesterId);
             if (existingSemester != null)
             {
@@ -102,6 +103,7 @@ namespace Services.SemesterServices
         public async Task<APIResponse> UpdateSemester(SemesterDTO semesterDto)
         {
             APIResponse response = new APIResponse();
+            semesterDto.SemesterId=semesterDto.SemesterId?.Trim();
             Semester existingSemester =await _semesterRepository.GetSemesterById(semesterDto.SemesterId);
             if (existingSemester == null)
             {
@@ -389,6 +391,7 @@ namespace Services.SemesterServices
                                 };
                             #region 1. Validation       
                             string stt = worksheet.Cells[row, 1].Text;
+                            model.SemesterId=model.SemesterId?.Trim();
                             var existingData = await _semesterRepository.GetSemesterById(model.SemesterId);
                             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
                               {
