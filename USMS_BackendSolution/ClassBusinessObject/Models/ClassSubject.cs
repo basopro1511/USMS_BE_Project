@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace ClassBusinessObject.Models
@@ -41,6 +42,8 @@ namespace ClassBusinessObject.Models
 
         [ForeignKey("SemesterId")]
         public virtual Semester? Semester { get; set; }
-
-    }
+        [JsonIgnore]
+        public virtual ICollection<StudentInClass>? StudentInClasses { get; set; }
+       = new List<StudentInClass>();
+        }               
 }

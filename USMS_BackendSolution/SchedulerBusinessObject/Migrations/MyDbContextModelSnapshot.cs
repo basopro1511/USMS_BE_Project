@@ -22,57 +22,6 @@ namespace SchedulerBusinessObject.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.ExamSchedule", b =>
-                {
-                    b.Property<int>("ExamScheduleId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ExamScheduleId"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("DATETIME");
-
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("DATE");
-
-                    b.Property<TimeOnly>("EndTime")
-                        .HasColumnType("TIME(7)");
-
-                    b.Property<string>("MajorId")
-                        .HasColumnType("NVARCHAR(4)");
-
-                    b.Property<string>("RoomId")
-                        .HasColumnType("NVARCHAR(6)");
-
-                    b.Property<string>("SemesterId")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR(4)");
-
-                    b.Property<TimeOnly>("StartTime")
-                        .HasColumnType("TIME(7)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SubjectId")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR(10)");
-
-                    b.Property<string>("TeacherId")
-                        .HasColumnType("NVARCHAR(16)");
-
-                    b.Property<int>("Turn")
-                        .HasColumnType("INT");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("INT");
-
-                    b.HasKey("ExamScheduleId");
-
-                    b.ToTable("ExamSchedule");
-                });
-
             modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.RequestSchedule", b =>
                 {
                     b.Property<int>("RequestId")
@@ -127,6 +76,8 @@ namespace SchedulerBusinessObject.Migrations
 
                     b.HasKey("RequestId");
 
+                    b.HasIndex("ScheduleId");
+
                     b.ToTable("RequestSchedule");
                 });
 
@@ -155,82 +106,82 @@ namespace SchedulerBusinessObject.Migrations
                         new
                         {
                             RoomId = "G201",
-                            CreateAt = new DateTime(2025, 4, 11, 20, 40, 24, 146, DateTimeKind.Local).AddTicks(4394),
+                            CreateAt = new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4632),
                             Location = "Grammar Room 201",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 4, 11, 20, 40, 24, 146, DateTimeKind.Local).AddTicks(4408)
+                            UpdateAt = new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4644)
                         },
                         new
                         {
                             RoomId = "G202",
-                            CreateAt = new DateTime(2025, 4, 11, 20, 40, 24, 146, DateTimeKind.Local).AddTicks(4410),
+                            CreateAt = new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4647),
                             Location = "Grammar Room 202",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 4, 11, 20, 40, 24, 146, DateTimeKind.Local).AddTicks(4411)
+                            UpdateAt = new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4648)
                         },
                         new
                         {
                             RoomId = "G203",
-                            CreateAt = new DateTime(2025, 4, 11, 20, 40, 24, 146, DateTimeKind.Local).AddTicks(4412),
+                            CreateAt = new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4650),
                             Location = "Grammar Room 203",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 4, 11, 20, 40, 24, 146, DateTimeKind.Local).AddTicks(4413)
+                            UpdateAt = new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4651)
                         },
                         new
                         {
                             RoomId = "G204",
-                            CreateAt = new DateTime(2025, 4, 11, 20, 40, 24, 146, DateTimeKind.Local).AddTicks(4414),
+                            CreateAt = new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4653),
                             Location = "Grammar Room 204",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 4, 11, 20, 40, 24, 146, DateTimeKind.Local).AddTicks(4415)
+                            UpdateAt = new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4653)
                         },
                         new
                         {
                             RoomId = "G205",
-                            CreateAt = new DateTime(2025, 4, 11, 20, 40, 24, 146, DateTimeKind.Local).AddTicks(4416),
+                            CreateAt = new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4655),
                             Location = "Grammar Room 205",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 4, 11, 20, 40, 24, 146, DateTimeKind.Local).AddTicks(4416)
+                            UpdateAt = new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4656)
                         },
                         new
                         {
                             RoomId = "G301",
-                            CreateAt = new DateTime(2025, 4, 11, 20, 40, 24, 146, DateTimeKind.Local).AddTicks(4417),
+                            CreateAt = new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4658),
                             Location = "Grammar Room 301",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 4, 11, 20, 40, 24, 146, DateTimeKind.Local).AddTicks(4418)
+                            UpdateAt = new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4658)
                         },
                         new
                         {
                             RoomId = "G302",
-                            CreateAt = new DateTime(2025, 4, 11, 20, 40, 24, 146, DateTimeKind.Local).AddTicks(4419),
+                            CreateAt = new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4660),
                             Location = "Grammar Room 302",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 4, 11, 20, 40, 24, 146, DateTimeKind.Local).AddTicks(4419)
+                            UpdateAt = new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4661)
                         },
                         new
                         {
                             RoomId = "G303",
-                            CreateAt = new DateTime(2025, 4, 11, 20, 40, 24, 146, DateTimeKind.Local).AddTicks(4421),
+                            CreateAt = new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4662),
                             Location = "Grammar Room 303",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 4, 11, 20, 40, 24, 146, DateTimeKind.Local).AddTicks(4421)
+                            UpdateAt = new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4663)
                         },
                         new
                         {
                             RoomId = "G304",
-                            CreateAt = new DateTime(2025, 4, 11, 20, 40, 24, 146, DateTimeKind.Local).AddTicks(4422),
+                            CreateAt = new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4664),
                             Location = "Grammar Room 304",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 4, 11, 20, 40, 24, 146, DateTimeKind.Local).AddTicks(4423)
+                            UpdateAt = new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4665)
                         },
                         new
                         {
                             RoomId = "G305",
-                            CreateAt = new DateTime(2025, 4, 11, 20, 40, 24, 146, DateTimeKind.Local).AddTicks(4424),
+                            CreateAt = new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4666),
                             Location = "Grammar Room 305",
                             Status = 1,
-                            UpdateAt = new DateTime(2025, 4, 11, 20, 40, 24, 146, DateTimeKind.Local).AddTicks(4424)
+                            UpdateAt = new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4667)
                         });
                 });
 
@@ -271,28 +222,6 @@ namespace SchedulerBusinessObject.Migrations
                     b.HasIndex("SlotId");
 
                     b.ToTable("Schedule");
-                });
-
-            modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.StudentInExamSchedule", b =>
-                {
-                    b.Property<int>("StudentExamId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INT");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentExamId"));
-
-                    b.Property<int>("ExamScheduleId")
-                        .HasColumnType("INT");
-
-                    b.Property<string>("StudentId")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR(16)");
-
-                    b.HasKey("StudentExamId");
-
-                    b.HasIndex("ExamScheduleId");
-
-                    b.ToTable("StudentInExamSchedule");
                 });
 
             modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.TimeSlot", b =>
@@ -351,6 +280,17 @@ namespace SchedulerBusinessObject.Migrations
                         });
                 });
 
+            modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.RequestSchedule", b =>
+                {
+                    b.HasOne("SchedulerBusinessObject.SchedulerModels.Schedule", "Schedule")
+                        .WithMany("RequestSchedules")
+                        .HasForeignKey("ScheduleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Schedule");
+                });
+
             modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.Schedule", b =>
                 {
                     b.HasOne("SchedulerBusinessObject.SchedulerModels.Room", "Room")
@@ -370,23 +310,14 @@ namespace SchedulerBusinessObject.Migrations
                     b.Navigation("Slot");
                 });
 
-            modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.StudentInExamSchedule", b =>
-                {
-                    b.HasOne("SchedulerBusinessObject.SchedulerModels.ExamSchedule", null)
-                        .WithMany("StudentInExamSchedules")
-                        .HasForeignKey("ExamScheduleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.ExamSchedule", b =>
-                {
-                    b.Navigation("StudentInExamSchedules");
-                });
-
             modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.Room", b =>
                 {
                     b.Navigation("Schedules");
+                });
+
+            modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.Schedule", b =>
+                {
+                    b.Navigation("RequestSchedules");
                 });
 
             modelBuilder.Entity("SchedulerBusinessObject.SchedulerModels.TimeSlot", b =>

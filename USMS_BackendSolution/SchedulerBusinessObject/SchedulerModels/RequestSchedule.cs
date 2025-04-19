@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace SchedulerBusinessObject.SchedulerModels
@@ -41,7 +42,9 @@ namespace SchedulerBusinessObject.SchedulerModels
         [Column(TypeName = "NVARCHAR(MAX)")]
         public string? ReplyResponse { get; set; }
         public int Status { get; set; }
-
         public DateTime RequestDate { get; set; } = DateTime.Now;
+        [ForeignKey(nameof(ScheduleId))]
+        [JsonIgnore]
+        public virtual Schedule? Schedule { get; set; }
         }
     }

@@ -19,5 +19,8 @@ namespace ClassBusinessObject.Models
         [Column(TypeName = "NVARCHAR(16)")]
         public string? StudentId { get; set; }
 
+        [JsonIgnore]
+        [ForeignKey(nameof(ClassSubjectId))]
+        public virtual ClassSubject? ClassSubject { get; set; }
         }
-}
+    }

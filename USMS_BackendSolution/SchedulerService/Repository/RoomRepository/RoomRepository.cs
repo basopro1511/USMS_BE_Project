@@ -160,36 +160,6 @@ namespace Repositories.RoomRepository
                 }
             }
 
-        #region Get Available Rooms to Add Exam Schedule
-        /// <summary>
-        /// Lấy tất cả các phòng còn trống trong khoảng thời gian
-        /// </summary>
-        /// <param name="date"></param>
-        /// <param name="startTime"></param>
-        /// <param name="endTime"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public async Task<List<Room>> GetAvailableRooms(DateOnly date, TimeOnly startTime, TimeOnly endTime)
-            {
-            try
-                {
-                using (var dbContext = new MyDbContext())
-                    {
-                    return await dbContext.Room
-                        .Where(r => r.Status==1&&
-                                    !dbContext.ExamSchedule.Any(es => es.RoomId==r.RoomId&&
-                                                                       es.Date==date&&
-                                                                       es.StartTime<endTime&&
-                                                                       es.EndTime>startTime))
-                        .ToListAsync();
-                    }
-                }
-            catch (Exception ex)
-                {
-                throw new Exception(ex.Message);
-                }
-            }
-        #endregion
         #region
         /// <summary>
         /// Change Room selected Status 

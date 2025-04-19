@@ -2,13 +2,9 @@
 using Repositories.RoomRepository;
 using Repositories.ScheduleRepository;
 using SchedulerDataAccess.Services.SchedulerServices;
-using SchedulerService.Repository.ExamScheduleRepository;
 using SchedulerService.Repository.SlotRepository;
-using SchedulerService.Repository.StudentInExamScheduleRepository;
-using SchedulerService.Services.ExamScheduleServices;
 using SchedulerService.Services.RequestScheduleServices.cs;
 using SchedulerService.Services.SlotServices;
-using SchedulerService.Services.StudentInExamScheduleServices;
 using Services.RoomServices;
 
 namespace SchedulerDataAccess.Core
@@ -20,9 +16,7 @@ namespace SchedulerDataAccess.Core
             #region Register the repository
             services.AddScoped<IScheduleRepository, ScheduleRepository>();
             services.AddScoped<IRoomRepository, RoomRepository>();
-            services.AddScoped<IExamScheduleRepository, ExamScheduleRepository>();
             services.AddScoped<ISlotRepository, SlotRepository>();
-            services.AddScoped<IStudentInExamScheduleRepository, StudentInExamScheduleRepository>();
             services.AddScoped<IRequestRepository, RequestRepository>();
             #endregion
 
@@ -30,9 +24,7 @@ namespace SchedulerDataAccess.Core
             services.AddHttpClient();
             services.AddScoped<ScheduleService>();
             services.AddScoped<RoomService>();
-            services.AddScoped<ExamScheduleService>();
             services.AddScoped<SlotService>();
-            services.AddScoped<StudentInExamScheduleService>();
             services.AddScoped<RequestScheduleService>();
             #endregion
             }
