@@ -36,5 +36,5 @@ namespace SchedulerBusinessObject.SchedulerModels
         public virtual TimeSlot? Slot { get; set; }
         public virtual Room? Room { get; set; }
 
+        }
     }
-}

@@ -11,103 +11,100 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Repositories.SemesterRepository
-{
-    public class SemesterRepository : ISemesterRepository
     {
+    public class SemesterRepository : ISemesterRepository
+        {
         /// <summary>
         /// Get all semesters asynchronously
         /// </summary>
         /// <returns>List of SemesterDTO</returns>
-        public List<SemesterDTO> GetAllSemesters()
-        {
-            try
+        public async Task<List<Semester>> GetAllSemesters()
             {
-                using (var dbContext = new MyDbContext())
+            try
                 {
-                    List<Semester> semesters = dbContext.Semester.ToList();
-                    List<SemesterDTO> semesterDTOs = new List<SemesterDTO>();
-                    foreach (var semester in semesters)
+                using (var dbContext = new MyDbContext())
                     {
-                        SemesterDTO SemesterDTO = new SemesterDTO();
-                        SemesterDTO.CopyProperties(semester);
-                        semesterDTOs.Add(SemesterDTO);
+                    List<Semester> semesters = await dbContext.Semester.ToListAsync();
+                    return semesters;
                     }
-                    return semesterDTOs;
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message, ex);
                 }
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message, ex);
-            }
-        }
         /// <summary>
         /// Get semester by ID asynchronously
         /// </summary>
         /// <param name="semesterId"></param>
         /// <returns>SemesterDTO with the given ID</returns>
-        public SemesterDTO GetSemesterById(string semesterId)
-        {
+        public async Task<Semester?> GetSemesterById(string semesterId)
+            {
             try
-            {
-                var semesters = GetAllSemesters();
-                SemesterDTO semesterDTO = semesters.FirstOrDefault(x => x.SemesterId == semesterId);
-                return semesterDTO;
-            }
+                {
+                using (var dbContext = new MyDbContext())
+                    {
+                    Semester semester = await dbContext.Semester.FirstOrDefaultAsync(x => x.SemesterId==semesterId);
+                    if (semester==null)
+                        {
+                        return null; // Không tìm thấy học kỳ
+                        }
+                    return semester;
+                    }
+                }
             catch (Exception ex)
-            {
+                {
                 throw new Exception(ex.Message);
+                }
             }
-        }
         /// <summary>
         /// Add a new semester asynchronously
         /// </summary>
         /// <param name="semesterDto"></param>
-        public bool AddNewSemester(SemesterDTO semesterDTO)
-        {
-            try
+        public async Task<bool> AddNewSemester(Semester semester)
             {
-                using (var dbContext = new MyDbContext())
+            try
                 {
-                    var semester = new Semester();
-                    semester.CopyProperties(semesterDTO);
-                    dbContext.Semester.Add(semester);
-                    dbContext.SaveChanges();
+                using (var dbContext = new MyDbContext())
+                    {
+                    await dbContext.Semester.AddAsync(semester);
+                    await dbContext.SaveChangesAsync();
                     return true;
+                    }
+                }
+            catch (Exception)
+                {
+                return false;
                 }
             }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
         /// <summary>
         /// Update an existing semester asynchronously
         /// </summary>
-        /// <param name="semesterDto"></param>
-        public bool UpdateSemester(SemesterDTO updateSemesterDTO)
-        {
-            try
+        /// <param name="updateSemester">Semester object with updated data</param>
+        /// <returns>Boolean indicating success</returns>
+        public async Task<bool> UpdateSemester(Semester updateSemester)
             {
-                using (var dbContext = new MyDbContext())
+            try
                 {
-                    var existingSemester = GetSemesterById(updateSemesterDTO.SemesterId);
-                    Semester semester = new Semester();
-                    semester.CopyProperties(updateSemesterDTO);
-                    if (existingSemester == null)
+                using (var dbContext = new MyDbContext())
                     {
-                        return false;
-                    }
-                    existingSemester.CopyProperties(updateSemesterDTO);
-                    dbContext.Entry(semester).State = EntityState.Modified;
-                    dbContext.SaveChanges();
+                    var existingSemester = await dbContext.Semester.FirstOrDefaultAsync(s => s.SemesterId==updateSemester.SemesterId);
+                    if (existingSemester==null)
+                        {
+                        return false; // Không tìm thấy học kỳ
+                        }
+                    existingSemester.CopyProperties(updateSemester);
+                    await dbContext.SaveChangesAsync();
                     return true;
+                    }
+                }
+            catch (Exception ex)
+                {
+                Console.WriteLine($"Lỗi cập nhật học kỳ: {ex.Message}");
+                return false;
                 }
             }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
+
         #region Delete Semester
         /// <summary>
         /// Delete a semester by ID asynchronously
@@ -139,34 +136,88 @@ namespace Repositories.SemesterRepository
         /// </summary>
         /// <returns>List of active SemesterDTO</returns>
         #endregion
-        public bool ChangeStatusSemester(string semesterId, int status)
-        {
-            try
-            {
-                var existingSemesterDTO = GetSemesterById(semesterId);
-                if (existingSemesterDTO != null)
-                {
-                    using (var dbContext = new MyDbContext())
-                    {
-                        // Tìm đối tượng Semester trong dbContext để ánh xạ vào
-                        var existingSemester = dbContext.Semester.Find(semesterId);
-                        if (existingSemester == null) return false;
-                        // Sử dụng phương thức CopyProperties để copy từ DTO sang entity
-                        existingSemester.CopyProperties(existingSemesterDTO);
-                        // Cập nhật giá trị Status sau khi ánh xạ
-                        existingSemester.Status = status;
-                        dbContext.Entry(existingSemester).State = EntityState.Modified;
-                        dbContext.SaveChanges();
-                    }
-                    return true;
-                }
-                return false;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message, ex);
-            }
-        }
 
+        public async Task<bool> ChangeStatusSemester(string semesterId, int status)
+            {
+            try
+                {
+                var existingSemesterDTO = await GetSemesterById(semesterId);
+                if (existingSemesterDTO!=null)
+                    {
+                    using (var dbContext = new MyDbContext())
+                        {
+                        var existingSemester = dbContext.Semester.Find(semesterId);
+                        if (existingSemester==null) return false;
+                        existingSemester.CopyProperties(existingSemesterDTO);
+                        existingSemester.Status=status;
+                        dbContext.Entry(existingSemester).State=EntityState.Modified;
+                        await dbContext.SaveChangesAsync();
+                        }
+                    return true;
+                    }
+                return false;
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message, ex);
+                }
+            }
+
+        #region Add list Semester 
+        /// <summary>
+        /// Add a list of Semesters from Excel
+        /// </summary>
+        /// <param name="models"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<bool> AddSemestersAsyncs(List<Semester> models)
+            {
+            try
+                {
+                using (var _db = new MyDbContext())
+                    {
+                    await _db.Semester.AddRangeAsync(models);
+                    await _db.SaveChangesAsync();
+                    return true;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
+        #region Change Semester selected Status 
+        /// <summary>
+        /// Change Semester selected Status 
+        /// </summary>
+        /// <param name="userIds"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<bool> ChangeSemesterStatusSelected(List<string> semesterId, int status)
+            {
+            try
+                {
+                using (var _db = new MyDbContext())
+                    {
+                    var Ids = await _db.Semester.Where(x => semesterId.Contains(x.SemesterId)).ToListAsync();
+                    if (!Ids.Any())
+                        return false;
+                    foreach (var item in Ids)
+                        {
+                        item.Status=status;
+                        }
+                    await _db.SaveChangesAsync();
+                    return true;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+        }
     }
-}

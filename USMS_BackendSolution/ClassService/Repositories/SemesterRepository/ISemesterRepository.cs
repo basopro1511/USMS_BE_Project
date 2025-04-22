@@ -1,4 +1,5 @@
-﻿using SchedulerBusinessObject.ModelDTOs;
+﻿using ClassBusinessObject.Models;
+using SchedulerBusinessObject.ModelDTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,12 @@ namespace Repositories.SemesterRepository
 {
     public interface ISemesterRepository
     {
-        public List<SemesterDTO> GetAllSemesters();
-        public SemesterDTO GetSemesterById(string semesterId);
-        public bool AddNewSemester(SemesterDTO semesterDTO);
-        public bool UpdateSemester(SemesterDTO updateSemesterDTO);
-        public bool ChangeStatusSemester(string semesterId, int status);
+        public Task<List<Semester>> GetAllSemesters();
+        public Task<Semester> GetSemesterById(string semesterId);
+        public Task<bool> AddNewSemester(Semester semesterDTO);
+        public Task<bool> UpdateSemester(Semester updateSemesterDTO);
+        public Task<bool> ChangeStatusSemester(string semesterId, int status);
+        public Task<bool> AddSemestersAsyncs(List<Semester> models);
+        public Task<bool> ChangeSemesterStatusSelected(List<string> semesterId, int status);
     }
-}
+    }

@@ -5,12 +5,12 @@ namespace UserService.Repository.StudentRepository
 {
     public interface IStudentRepository
     {
-        public Task<List<UserDTO>> GetAllStudent();
-        public Task<bool> AddNewStudent(UserDTO userDTO);
-        public Task<bool> UpdateStudent(UserDTO userDTO);
+        public Task<List<User>> GetAllStudent();
+        public Task<bool> AddNewStudent(User userDTO);
+        public Task<bool> UpdateStudent(User userDTO);
         public Task<bool> AddStudentAsync(List<User> users);
-        public Task<bool> AddNewStudentForStudentTable(StudentTableDTO userDTO);
+        public Task<bool> AddNewStudentForStudentTable(Student userDTO);
         public Task<bool> UpdateStudentTerm(string userId, int newTerm);
-        public Task<UserDTO> GetStudentById(string userId);
+        public Task<User> GetStudentById(string userId);
         }
     }

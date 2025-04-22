@@ -20,8 +20,8 @@ namespace SchedulerBusinessObject.AppDBContext
         public virtual DbSet<Schedule> Schedule { get; set; }
         public virtual DbSet<Room> Room { get; set; }
         public virtual DbSet<TimeSlot> TimeSlot { get; set; }
-        public virtual DbSet<ExamSchedule> ExamSchedule { get; set; }
-        public virtual DbSet<StudentInExamSchedule> StudentInExamSchedule { get; set; }
+        public virtual DbSet<RequestSchedule> RequestSchedule { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
             //Create Default Time Slots
@@ -46,10 +46,7 @@ namespace SchedulerBusinessObject.AppDBContext
                new Room { RoomId="G305", Location="Grammar Room 305", Status=1, CreateAt=DateTime.Now, UpdateAt=DateTime.Now }
             );
 
-            //modelBuilder.Entity<ExamSchedule>().HasData(
-            //  new ExamSchedule { ExamScheduleId = 1, SemesterId = "FA25", MajorId = "IT", SubjectId = "PRN231", RoomId = "G304", Date = DateOnly.Parse("02-07-2025"),
-            //  StartTime = TimeOnly.FromTimeSpan(new TimeSpan(7,0,0)), EndTime = TimeOnly.FromTimeSpan(new TimeSpan(9, 15, 0)),TeacherId="HNT", Status = 1, CreatedAt = DateTime.Now }    
-            //);
+        
             }
         }
     }

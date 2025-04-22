@@ -2,6 +2,8 @@
 using BusinessObject.AppDBContext;
 using BusinessObject.ModelDTOs;
 using BusinessObject.Models;
+using ISUZU_NEXT.Server.Core.Extentions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using System.Globalization;
@@ -10,6 +12,7 @@ using System.Text;
 using UserService.Repository.StudentRepository;
 using UserService.Repository.UserRepository;
 using UserService.Services.CloudService;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 namespace UserService.Services.StudentServices
     {
@@ -23,7 +26,6 @@ namespace UserService.Services.StudentServices
             _userRepository=new UserRepository();
             }
 
-
         #region Get All Student
         /// <summary>
         /// Get All Student from Database
@@ -33,14 +35,18 @@ namespace UserService.Services.StudentServices
         public async Task<APIResponse> GetAllStudent()
             {
             APIResponse aPIResponse = new APIResponse();
-            List<UserDTO> users = await _repository.GetAllStudent();
-            foreach (var userDTO in users)
+            List<User> users = await _repository.GetAllStudent();
+            List<UserDTO> usersDTOs = new List<UserDTO>();
+            foreach (var item in users)
                 {
                 using (var _db = new MyDbContext())
                     {
-                    var student = _db.Student.FirstOrDefault(x => x.StudentId==userDTO.UserId);      
-                    if (student !=null) 
-                    userDTO.Term=student.Term;
+                    UserDTO userDTO = new UserDTO();
+                    userDTO.CopyProperties(item);
+                    Student? student = await _db.Student.FirstOrDefaultAsync(x => x.StudentId==userDTO.UserId);
+                    if (student!=null)
+                        userDTO.Term=student.Term;
+                    usersDTOs.Add(userDTO);
                     }
                 };
             #region validation 
@@ -60,7 +66,7 @@ namespace UserService.Services.StudentServices
                     }
                 }
             #endregion
-            aPIResponse.Result=users;
+            aPIResponse.Result=usersDTOs;
             return aPIResponse;
             }
         #endregion
@@ -195,19 +201,30 @@ namespace UserService.Services.StudentServices
             try
                 {
                 APIResponse aPIResponse = new APIResponse();
-                var users = await _userRepository.GetAllUser();
                 #region 1. Validation
-                var existEmail = users.FirstOrDefault(x => x.Email==userDTO.Email);
-                var existPhone = users.FirstOrDefault(x => x.PhoneNumber==userDTO.PhoneNumber);
+                // Bắt tồn tại email cá nhân và số điện thoại
+                bool existEmail = await _userRepository.isPersonalEmailExist(userDTO.PersonalEmail);
+                bool existPhone = await _userRepository.isPhonelExist(userDTO.PhoneNumber);
+                // Bắt tên phải toàn là chữ và không được nhập số
+                bool isFirstNameValid = !string.IsNullOrEmpty(userDTO.FirstName)&&userDTO.FirstName.All(c => char.IsLetter(c));
+                bool isLastNameValid = !string.IsNullOrEmpty(userDTO.LastName)&&userDTO.LastName.All(c => char.IsLetter(c));
+                bool isMiddleNameValid = string.IsNullOrEmpty(userDTO.MiddleName)||userDTO.MiddleName.All(c => char.IsLetter(c)||char.IsWhiteSpace(c));
+
                 List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
             {
+                  (userDTO.FirstName == null, "Tên không thể để trống" ),
+                  (userDTO.LastName == null, "Họ không thể để trống" ),
+                  (userDTO.PersonalEmail.Length>100, "Độ dài email không thể vượt quá 100 ký tự"),
                   (!userDTO.PhoneNumber.All(char.IsDigit) || userDTO.PhoneNumber.Length != 10 || !userDTO.PhoneNumber.StartsWith("0"),
                   "Số điện thoại phải có 10 số và bắt đầu bằng một số từ 0 (ví dụ: 0901234567)."),
                   (!IsValidEmail(userDTO.PersonalEmail), "Vui lòng nhập địa chỉ email hợp lệ (ví dụ: example@example.com)."),
                   (userDTO.PasswordHash.Length < 8 || userDTO.PasswordHash.Length > 36,"Độ dài mật khẩu phải từ 8 đến 20 ký tự."),
                   (userDTO.DateOfBirth > DateOnly.FromDateTime(DateTime.Now), "Ngày sinh không thể là ngày trong tương lai."),
-                  (existEmail != null, "Email này đã tồn tại trong hệ thống."),
-                  (existPhone != null, "Số điện thoại này đã tồn tại trong hệ thống."),
+                  (existEmail, "Email này đã tồn tại trong hệ thống."),
+                  (existPhone, "Số điện thoại này đã tồn tại trong hệ thống."),
+                  (!isFirstNameValid, "Tên chỉ được chứa chữ cái và không chứa số và khoảng trắng."),
+                  (!isLastNameValid,"Họ chỉ được chứa chữ cái và không chứa số và khoảng trắng."),
+                  (!isMiddleNameValid,"Tên đệm chỉ được chứa chữ cái và không chứa số .")
             };
                 foreach (var validation in validations)
                     {
@@ -229,19 +246,21 @@ namespace UserService.Services.StudentServices
                 #endregion
                 #region 3. Save Image vào Cloud
                 CloudinaryService _cloudService = new CloudinaryService();
-                userDTO.UserAvartar = await _cloudService.UploadImageFromBase64(userDTO.UserAvartar);
+                userDTO.UserAvartar=await _cloudService.UploadImageFromBase64(userDTO.UserAvartar);
                 #endregion
                 userDTO.RoleId=5; //Id Student là 5
                 userDTO.PasswordHash=HashPassword(userDTO.PasswordHash);
                 userDTO.Status=1; // 1 là đang hoạt động
-                bool isSuccess = await _repository.AddNewStudent(userDTO);
+                User user = new User();
+                user.CopyProperties(userDTO);
+                bool isSuccess = await _repository.AddNewStudent(user);
                 if (isSuccess)
                     {
-                    StudentTableDTO studentDTO = new StudentTableDTO();
-                    studentDTO.StudentId=userDTO.UserId;
-                    studentDTO.MajorId=userDTO.MajorId;
-                    studentDTO.Term=1;
-                    bool isAdded = await _repository.AddNewStudentForStudentTable(studentDTO);
+                    Student student = new Student();
+                    student.StudentId=userDTO.UserId;
+                    student.MajorId=userDTO.MajorId;
+                    student.Term=1;
+                    bool isAdded = await _repository.AddNewStudentForStudentTable(student);
                     return new APIResponse
                         {
                         IsSuccess=true,
@@ -274,18 +293,37 @@ namespace UserService.Services.StudentServices
         public async Task<APIResponse> UpdateStudent(UserDTO userDTO)
             {
             APIResponse aPIResponse = new APIResponse();
-            var users = await _userRepository.GetAllUser();
             var user = await _userRepository.GetUserById(userDTO.UserId);
             #region 1. Validation
-            var existEmail = users.FirstOrDefault(x => x.Email==userDTO.Email);
-            var existPhone = users.FirstOrDefault(x => x.PhoneNumber==userDTO.PhoneNumber);
+            // Kiểm tra số điện thoại: nếu số điện thoại mới khác với số hiện có, kiểm tra xem nó đã tồn tại trong DB hay chưa
+            bool existPhone = false;
+            if (user!=null&&userDTO.PhoneNumber!=user.PhoneNumber)
+                {
+                existPhone=await _userRepository.isPhonelExist(userDTO.PhoneNumber);
+                }
+            bool existEmail = false;
+            if (user!=null&&userDTO.PersonalEmail!=user.PersonalEmail)
+                {
+                existEmail=await _userRepository.isPersonalEmailExist(userDTO.PersonalEmail);
+                }
+            bool isFirstNameValid = !string.IsNullOrEmpty(userDTO.FirstName)&&userDTO.FirstName.All(c => char.IsLetter(c));
+            bool isLastNameValid = !string.IsNullOrEmpty(userDTO.LastName)&&userDTO.LastName.All(c => char.IsLetter(c));
+            bool isMiddleNameValid = string.IsNullOrEmpty(userDTO.MiddleName)||userDTO.MiddleName.All(c => char.IsLetter(c)||char.IsWhiteSpace(c));
             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
             {
+                    (userDTO.FirstName == null, "Tên không thể để trống" ),
+                  (userDTO.LastName == null, "Họ không thể để trống" ),
                   (!userDTO.PhoneNumber.All(char.IsDigit) || userDTO.PhoneNumber.Length != 10 || !userDTO.PhoneNumber.StartsWith("0"),
                   "Số điện thoại phải có 10 số và bắt đầu bằng một số từ 0 (ví dụ: 0901234567)."),
                   (!IsValidEmail(userDTO.PersonalEmail), "Vui lòng nhập địa chỉ email hợp lệ (ví dụ: example@example.com)."),
+                  (!IsValidEmail(userDTO.Email), "Vui lòng nhập địa chỉ email hợp lệ (ví dụ: example@example.com)."),
                   (userDTO.DateOfBirth > DateOnly.FromDateTime(DateTime.Now), "Ngày sinh không thể là ngày trong tương lai."),
-                  (user == null, "Không tìm thấy sinh viên viên cần cập nhật")
+                  (user == null, "Không tìm thấy sinh viên viên cần cập nhật"),
+                   (!isFirstNameValid, "Tên chỉ được chứa chữ cái và không chứa số và khoảng trắng."),
+                  (!isLastNameValid,"Họ chỉ được chứa chữ cái và không chứa số và khoảng trắng."),
+                  (!isMiddleNameValid,"Tên đệm chỉ được chứa chữ cái và không chứa số ."),
+                  (existEmail, "Email này đã tồn tại trong hệ thống."),
+                  (existPhone,"Số điện thoại này đã tồn tại trong hệ thống.")
             };
             foreach (var validation in validations)
                 {
@@ -310,8 +348,10 @@ namespace UserService.Services.StudentServices
                 {
                 userDTO.UserAvartar=user.UserAvartar;
                 }
-            #endregion
-            bool isSuccess = await _repository.UpdateStudent(userDTO);
+            #endregion             
+            User userModel = new User();
+            userModel.CopyProperties(userDTO);
+            bool isSuccess = await _repository.UpdateStudent(userModel);
             if (isSuccess)
                 {
                 await _repository.UpdateStudentTerm(userDTO.UserId, userDTO.Term); // Update Term trong bảng student
@@ -359,6 +399,11 @@ namespace UserService.Services.StudentServices
         #endregion
 
         #region Import from Excel
+        /// <summary>
+        /// Import file students information to add new student list
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
         public async Task<APIResponse> ImportStudentsFromExcel(IFormFile file)
             {
             try
@@ -390,6 +435,10 @@ namespace UserService.Services.StudentServices
                         int rowCount = worksheet.Dimension.Rows;
                         for (int row = 2; row<=rowCount; row++)
                             {
+                            if (string.IsNullOrWhiteSpace(worksheet.Cells[row, 2].Text))
+                                {
+                                break;
+                                }
                             string majorId = worksheet.Cells[row, 9].Text;
                             // Tạo prefix: majorId + currentYearSuffix, ví dụ: "SE25"
                             string prefix = majorId+currentYearSuffix;
@@ -399,17 +448,28 @@ namespace UserService.Services.StudentServices
                                 }
                             studentIdMap[prefix]++;
                             string nextUserId = prefix+studentIdMap[prefix].ToString("D4");
+                            DateOnly dob;
+                            if (worksheet.Cells[row, 8].Value is DateTime dt)
+                                {
+                                dob=DateOnly.FromDateTime(dt);
+                                }
+                            else
+                                {
+                                string dobText = worksheet.Cells[row, 8].Text.Trim();
+                                string[] acceptedFormats = { "d/M/yyyy", "dd/MM/yyyy", "d/MM/yyyy", "dd/M/yyyy" };
+                                bool isParsed = DateOnly.TryParseExact(dobText, acceptedFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out dob);
+                                }
                             var user = new User
                                 {
 
                                 FirstName=worksheet.Cells[row, 4].Text,
                                 MiddleName=worksheet.Cells[row, 3].Text,
                                 LastName=worksheet.Cells[row, 2].Text,
-                                Gender=worksheet.Cells[row, 5].Text.ToLower()=="female",  // nếu female là true, male sẽ là false
+                                Gender=worksheet.Cells[row, 5].Text.ToLower()=="Nữ",  // nếu female là true, male sẽ là false
                                 PasswordHash=HashPassword("123456789"),
                                 PersonalEmail=worksheet.Cells[row, 6].Text,
                                 PhoneNumber=worksheet.Cells[row, 7].Text,
-                                DateOfBirth=DateOnly.ParseExact(worksheet.Cells[row, 8].Text, "dd/MM/yyyy", CultureInfo.InvariantCulture),
+                                DateOfBirth=dob,
                                 RoleId=5,
                                 MajorId=worksheet.Cells[row, 9].Text,
                                 Status=1,
@@ -420,17 +480,22 @@ namespace UserService.Services.StudentServices
                                 };
                             #region 1. Validation       
                             string stt = worksheet.Cells[row, 1].Text;
-                            var usersCheck = await _userRepository.GetAllUser();
-                            var existEmail = usersCheck.FirstOrDefault(x => x.Email==user.Email);
-                            var existPhone = usersCheck.FirstOrDefault(x => x.PhoneNumber==user.PhoneNumber);
+                            bool existEmail = await _userRepository.isPersonalEmailExist(user.PersonalEmail);
+                            bool existPhone = await _userRepository.isPhonelExist(user.PhoneNumber);
+                            bool isFirstNameValid = !string.IsNullOrEmpty(user.FirstName)&&user.FirstName.All(c => char.IsLetter(c));
+                            bool isLastNameValid = !string.IsNullOrEmpty(user.LastName)&&user.LastName.All(c => char.IsLetter(c));
+                            bool isMiddleNameValid = string.IsNullOrEmpty(user.MiddleName)||user.MiddleName.All(c => char.IsLetter(c));
                             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
                               {
                              (!user.PhoneNumber.All(char.IsDigit) || user.PhoneNumber.Length != 10 || !user.PhoneNumber.StartsWith("0"),
                              "Số điện thoại tại dòng số "+ stt +" phải có 10 số và bắt đầu bằng một số từ 0 (ví dụ: 0901234567)."),
                            (!IsValidEmail(user.PersonalEmail), "Vui lòng nhập địa chỉ email hợp lệ tại dòng số "+ stt +" (ví dụ: example@example.com)."),
                            (user.DateOfBirth > DateOnly.FromDateTime(DateTime.Now), "Ngày sinh tại dòng số "+ stt +" không thể là ngày trong tương lai."),
-                           (existEmail != null, "Email tại dòng số "+ stt +" đã tồn tại trong hệ thống."),
-                           (existPhone != null, "Số điện thoại tại dòng số "+ stt +" đã tồn tại trong hệ thống."),
+                           (existEmail, "Email tại dòng số "+ stt +" đã tồn tại trong hệ thống."),
+                           (existPhone, "Số điện thoại tại dòng số "+ stt +" đã tồn tại trong hệ thống."),
+                           (!isFirstNameValid, "Tên tại dòng số "+ stt +" chỉ được chứa chữ cái và không chứa số."),
+                           (!isLastNameValid,"Họ tại dòng số "+ stt +" chỉ được chứa chữ cái và không chứa số."),
+                           (!isMiddleNameValid,"Tên đệm tại dòng số "+ stt +" chỉ được chứa chữ cái và không chứa số .")
                               };
                             foreach (var validation in validations)
                                 {
@@ -455,11 +520,11 @@ namespace UserService.Services.StudentServices
                     {
                     foreach (var item in teachers)
                         {
-                        StudentTableDTO studentDTO = new StudentTableDTO();
-                        studentDTO.StudentId=item.UserId;
-                        studentDTO.MajorId=item.MajorId;
-                        studentDTO.Term=1;
-                        await _repository.AddNewStudentForStudentTable(studentDTO);
+                        Student student = new Student();
+                        student.StudentId=item.UserId;
+                        student.MajorId=item.MajorId;
+                        student.Term=1;
+                        await _repository.AddNewStudentForStudentTable(student);
                         }
                     return new APIResponse { IsSuccess=true, Message="Import sinh viên thành công." };
                     }
@@ -473,8 +538,6 @@ namespace UserService.Services.StudentServices
         #endregion
 
         #region Get Student By ID
-
-        #endregion
         /// <summary>
         /// Get All Student from Database
         /// </summary>
@@ -483,11 +546,21 @@ namespace UserService.Services.StudentServices
         public async Task<APIResponse> GetUserById(string userId)
             {
             APIResponse aPIResponse = new APIResponse();
-           UserDTO user = await _repository.GetStudentById(userId);
-            using (var _db= new MyDbContext())
+            User user = await _repository.GetStudentById(userId);
+            UserDTO userDTO = new UserDTO();
+            userDTO.CopyProperties(user);
+            using (var _db = new MyDbContext())
                 {
                 var student = await _db.Student.FirstOrDefaultAsync(x => x.StudentId==userId);
-                user.Term=student.Term;
+                if (student==null)
+                    {
+                    return new APIResponse
+                        {
+                        IsSuccess=false,
+                        Message="Không tìm thấy sinh viên"
+                        };
+                    }
+                userDTO.Term=student.Term;
                 }
             #region validation 
             List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
@@ -506,9 +579,165 @@ namespace UserService.Services.StudentServices
                     }
                 }
             #endregion
-            aPIResponse.Result=user;
+            aPIResponse.Result=userDTO;
             return aPIResponse;
             }
+        #endregion
+
+        #region Change Users Status Selected 
+        /// <summary>
+        /// Change user status
+        /// </summary>
+        /// <param name="userIds"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        public async Task<APIResponse> ChangeUsersStatusSelected(List<string> userIds, int status)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            if (userIds==null||!userIds.Any())
+                {
+                aPIResponse.IsSuccess=false;
+                aPIResponse.Message="Danh sách sinh viên không hợp lệ.";
+                return aPIResponse;
+                }
+            bool isSuccess = await _userRepository.ChangeUserStatusSelected(userIds, status);
+            if (isSuccess)
+                {
+                aPIResponse.IsSuccess=true;
+                switch (status)
+                    {
+                    case 0:
+                        aPIResponse.Message="Đã thay đổi trạng thái các sinh viên thành 'Vô hiệu hóa'.";
+                        break;
+                    case 1:
+                        aPIResponse.Message="Các sinh viên đã được kích hoạt.";
+                        break;
+                    case 2:
+                        aPIResponse.Message="Các sinh viên đã hoãn tạm thời.";
+                        break;
+                    case 3:
+                        aPIResponse.Message="Các sinh viên đã tốt nghiệp.";
+                        break;
+                    default:
+                        aPIResponse.Message="Trạng thái không hợp lệ.";
+                        break;
+                    }
+                }
+            return aPIResponse;
+            }
+        #endregion
+
+        #region Export Student Information
+        /// <summary>
+        /// Export Student Data to Excel by MajorId ( MajorId can null to export all Student in Database )
+        /// </summary>
+        /// <param name="majorId"></param>
+        /// <returns></returns>
+        public async Task<byte[]> ExportStudentsToExcel(string? majorId, int? status)
+            {
+            var students = await _repository.GetAllStudent();
+            if (!string.IsNullOrEmpty(majorId))
+                students=students.Where(s => s.MajorId==majorId).ToList();
+            if (status.HasValue)
+                students=students.Where(s => s.Status==status.Value).ToList();
+            ExcelPackage.LicenseContext=LicenseContext.NonCommercial;
+            using (var package = new ExcelPackage())
+                {
+                var worksheet = package.Workbook.Worksheets.Add("Students");
+                // Header
+                worksheet.Cells[1, 1].Value="STT";
+                worksheet.Cells[1, 2].Value="Mã sinh viên";
+                worksheet.Cells[1, 3].Value="Họ";
+                worksheet.Cells[1, 4].Value="Tên đệm";
+                worksheet.Cells[1, 5].Value="Tên";
+                worksheet.Cells[1, 6].Value="Giới tính";
+                worksheet.Cells[1, 7].Value="Email";
+                worksheet.Cells[1, 8].Value="SĐT";
+                worksheet.Cells[1, 9].Value="Ngày sinh";
+                worksheet.Cells[1, 10].Value="Ngành";
+                worksheet.Cells[1, 11].Value="Địa Chỉ";
+                worksheet.Cells[1, 12].Value="Trạng thái";
+                int row = 2;
+                int stt = 1;
+                foreach (var s in students)
+                    {
+                    worksheet.Cells[row, 1].Value=stt++;
+                    worksheet.Cells[row, 2].Value=s.UserId;
+                    worksheet.Cells[row, 3].Value=s.LastName;
+                    worksheet.Cells[row, 4].Value=s.MiddleName;
+                    worksheet.Cells[row, 5].Value=s.FirstName;
+                    worksheet.Cells[row, 6].Value=s.Gender ? "Nữ" : "Nam";
+                    worksheet.Cells[row, 7].Value=s.Email;
+                    worksheet.Cells[row, 8].Value=s.PhoneNumber;
+                    worksheet.Cells[row, 9].Value=s.DateOfBirth.ToString("dd/MM/yyyy");
+                    worksheet.Cells[row, 10].Value=s.MajorId;
+                    worksheet.Cells[row, 11].Value=s.Address;
+                    worksheet.Cells[row, 12].Value=s.Status==1 ? "Đang học" : "Ngừng học";
+                    row++;
+                    }
+                return package.GetAsByteArray();
+                }
+            }
+        #endregion
+
+        #region Export Form Add Student Information
+        /// <summary>
+        /// Export From Add Student
+        /// </summary>
+        /// <param name="majorId"></param>
+        /// <returns></returns>
+        public async Task<byte[]> ExportFormAddStudent()
+            {
+            ExcelPackage.LicenseContext=LicenseContext.NonCommercial;
+
+            using (var package = new ExcelPackage())
+                {
+                var worksheet = package.Workbook.Worksheets.Add("Students");
+
+                // Header
+                worksheet.Cells[1, 1].Value="STT";
+                worksheet.Cells[1, 2].Value="Họ";
+                worksheet.Cells[1, 3].Value="Tên đệm";
+                worksheet.Cells[1, 4].Value="Tên";
+                worksheet.Cells[1, 5].Value="Giới tính";
+                worksheet.Cells[1, 6].Value="Email";
+                worksheet.Cells[1, 7].Value="SĐT";
+                worksheet.Cells[1, 8].Value="Ngày sinh";
+                worksheet.Cells[1, 9].Value="Chuyên Ngành";
+                worksheet.Cells[1, 10].Value="Địa Chỉ";
+                // Gán công thức tự động tăng STT từ dòng 2 đến 1000
+                for (int row = 2; row<=1000; row++)
+                    {
+                    worksheet.Cells[row, 1].Formula=$"=ROW()-1";
+                    }
+                // Định dạng các cột để bắt validation
+                var range = worksheet.Cells[2, 8, 1000, 8]; // Cột ngày sinh theo định dạng ngày/tháng/năm
+                range.Style.Numberformat.Format="dd/mm/yyyy";
+                var phoneRange = worksheet.Cells[2, 7, 1000, 7]; // Cột số điện thoại
+                phoneRange.Style.Numberformat.Format="@"; // Định dạng dạng text để giữ số 0 ở đầu tiên
+                // Tạo dropdown cho chọn iới tính: Nam / Nữ
+                var genderValidation = worksheet.DataValidations.AddListValidation("E2:E1000");
+                genderValidation.Formula.Values.Add("Nam");
+                genderValidation.Formula.Values.Add("Nữ");
+                genderValidation.ShowErrorMessage=true;
+                genderValidation.ErrorStyle=OfficeOpenXml.DataValidation.ExcelDataValidationWarningStyle.stop;
+                genderValidation.ErrorTitle="Giá trị không hợp lệ";
+                genderValidation.Error="Vui lòng chọn Nam hoặc Nữ";
+                // Tạo dropdown cho Chuyên ngành do chuyên ngành mặc định có 4 nên chỉ để 4, có thể dùng hàm getmajor nếu có CN mới
+                var majorValidation = worksheet.DataValidations.AddListValidation("I2:I1000");
+                majorValidation.Formula.Values.Add("SE");
+                majorValidation.Formula.Values.Add("BA");
+                majorValidation.Formula.Values.Add("LG");
+                majorValidation.Formula.Values.Add("CT");
+                majorValidation.ShowErrorMessage=true;
+                majorValidation.ErrorTitle="Sai chuyên ngành";
+                majorValidation.Error="Chuyên ngành chỉ có thể là SE, BA, LG hoặc CT";
+                worksheet.Cells.AutoFitColumns();
+                return package.GetAsByteArray();
+                }
+            }
+        #endregion
+
         }
     }
 

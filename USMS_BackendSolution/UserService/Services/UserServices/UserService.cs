@@ -1,6 +1,15 @@
 ﻿using BusinessObject;
 using BusinessObject.ModelDTOs;
+using BusinessObject.Models;
+using System.Net.Mail;
+using System.Net;
+using System.Reflection;
+using System.Resources;
+using System.Security.Cryptography;
+using System.Text;
 using UserService.Repository.UserRepository;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 
 namespace UserService.Services.UserServices
     {
@@ -12,6 +21,8 @@ namespace UserService.Services.UserServices
             {
             _userRepository=new UserRepository();
             }
+
+        #region Get All User
         /// <summary>
         /// Get all user
         /// </summary>
@@ -33,6 +44,9 @@ namespace UserService.Services.UserServices
             return aPIResponse;
             }
 
+        #endregion
+
+        #region Get User By Id
         /// <summary>
         /// Get User by Id
         /// </summary>
@@ -54,6 +68,214 @@ namespace UserService.Services.UserServices
                 }
             return aPIResponse;
             }
+        #endregion
+
+        #region Get User By Email
+        /// <summary>
+        /// Get User by Id
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<APIResponse> GetUserByEmail(string email)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            UserDTO user = await _userRepository.GetUserByEmail(email);
+            if (user==null)
+                {
+                aPIResponse.IsSuccess=false;
+                aPIResponse.Message="Không tìm thấy người dùng với Email: "+email;
+                }
+            else
+                {
+                aPIResponse.IsSuccess=true;
+                aPIResponse.Result=user;
+                }
+            return aPIResponse;
+            }
+        #endregion
+
+        #region HashPassword
+        /// <summary>
+        /// Hashing password
+        /// </summary>
+        /// <param name="plainPassword"></param>
+        /// <returns></returns>
+        public string HashPassword(string plainPassword)
+            {
+            using (SHA256 sha256 = SHA256.Create())
+                {
+                byte[] bytes = Encoding.UTF8.GetBytes(plainPassword);
+                byte[] hashBytes = sha256.ComputeHash(bytes);
+                return Convert.ToBase64String(hashBytes);
+                }
+            }
+        #endregion
+
+        #region Reset Password
+        /// <summary>
+        /// Reset password
+        /// </summary>
+        /// <param name="resetPassword"></param>
+        /// <returns></returns>
+        public async Task<APIResponse> ResetPassword ( ResetPasswordDTO resetPassword)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            UserDTO user = await _userRepository.GetUserById(resetPassword.UserId);
+            if (user==null)
+                {
+                return new APIResponse
+                    {
+                    IsSuccess=false,
+                    Message="Không tìm thấy người dùng khả dụng!."
+                    };
+                }
+            resetPassword.oldPassword = HashPassword(resetPassword.oldPassword);
+            #region 1. Validation
+            List<(bool condition, string errorMessage)>? validations = new List<(bool condition, string errorMessage)>
+            {
+                  (resetPassword.oldPassword != user.PasswordHash, "Mật khẩu cũ không hợp lệ, vui lòng thử lại!"),
+                  (resetPassword.newPassword.Length < 8 || resetPassword.newPassword.Length > 36,"Độ dài mật khẩu mới phải từ 8 đến 36 ký tự."),
+            };
+            foreach (var validation in validations)
+                {
+                if (validation.condition)
+                    {
+                    return new APIResponse
+                        {
+                        IsSuccess=false,
+                        Message=validation.errorMessage
+                        };
+                    }
+                }
+            #endregion
+            resetPassword.newPassword = HashPassword(resetPassword.newPassword);
+            bool isSuccess = await _userRepository.ResetPassword(resetPassword);
+            if (isSuccess) {
+                return new APIResponse
+                    {
+                    IsSuccess=true,
+                    Message="Cập nhật mật khẩu thành công!"
+                    };
+                }
+            else
+                {
+                return new APIResponse
+                    {
+                    IsSuccess=false,
+                    Message="Cập nhật mật khẩu thất bại!"
+                    };
+                };
+            }
+        #endregion
+
+        #region Generate OTP
+        /// <summary>
+        /// Generate OTP to reset password
+        /// </summary>
+        /// <returns></returns>
+        private string GenerateOTP()
+            {
+            Random random = new Random();
+            return random.Next(0, 999999).ToString("D6");
+            }
+        #endregion
+
+        #region Forgot Password
+        /// <summary>
+        /// Forgot password send OTP
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        public async Task<APIResponse> ForgotPassword(string email)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            var isExist = await _userRepository.GetUserByEmail(email);
+            if (isExist == null)
+                {
+                aPIResponse.IsSuccess=false;
+                aPIResponse.Message="Email này không tồn tại trong hệ thống!";
+                return aPIResponse;
+                }
+            try
+                {
+                string fromEmail = "thainam26903@gmail.com";
+                string appPassword = "rzsd encn mqbj dwfy";
+                ResourceManager rm = new ResourceManager("UserService.Resources.OTP", Assembly.GetExecutingAssembly());
+                string template = rm.GetString("OTPTemplate");
+                string otp = GenerateOTP();
+                string emailBody = template.Replace("@paramOTP", otp);
+                MailMessage mail = new MailMessage();
+                mail.From=new MailAddress(fromEmail);
+                mail.To.Add(isExist.PersonalEmail);
+                mail.Subject=$"Mã OTP của bạn là: {otp}";
+                mail.Body=emailBody;
+                mail.IsBodyHtml=true;
+                SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587);
+                smtp.Credentials=new NetworkCredential(fromEmail, appPassword);
+                smtp.EnableSsl=true;
+                smtp.Send(mail);
+                return new APIResponse
+                    {
+                    IsSuccess=true,
+                    Message="Đã gửi mã OTP đến email cá nhân : "+isExist.PersonalEmail,
+                    Result=otp
+                    };
+                }
+            catch (Exception ex)
+                {
+                aPIResponse.IsSuccess=false;
+                aPIResponse.Message="Lỗi khi gửi OTP: "+ex.Message;
+                }
+            return aPIResponse;
+            }
+        #endregion
+
+        #region Reset Password
+        /// <summary>
+        /// Reset password
+        /// </summary>
+        /// <param name="resetPassword"></param>
+        /// <returns></returns>
+        public async Task<APIResponse> ResetPasswordByEmail(ResetPasswordByEmailDTO resetPasswordByEmailDTO)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            UserDTO user = await _userRepository.GetUserByEmail(resetPasswordByEmailDTO.Email);
+            if (user==null)
+                {
+                return new APIResponse
+                    {
+                    IsSuccess=false,
+                    Message="Không tìm thấy người dùng khả dụng!."
+                };
+            }
+            if (resetPasswordByEmailDTO.newPassword.Length<8||resetPasswordByEmailDTO.newPassword.Length>36)
+                {
+                return new APIResponse
+                    {
+                    IsSuccess=false,
+                    Message="Độ dài mật khẩu mới phải từ 8 đến 36 ký tự."
+                    };
+                }
+            resetPasswordByEmailDTO.newPassword=HashPassword(resetPasswordByEmailDTO.newPassword);
+            bool isSuccess = await _userRepository.ResetPasswordByEmail(resetPasswordByEmailDTO);
+            if (isSuccess)
+                {
+                return new APIResponse
+                    {
+                    IsSuccess=true,
+                    Message="Cập nhật mật khẩu thành công!"
+                    };
+                }
+            else
+                {
+                return new APIResponse
+                    {
+                    IsSuccess=false,
+                    Message="Cập nhật mật khẩu thất bại!"
+                    };
+                };
+            }
+        #endregion
 
         }
     }

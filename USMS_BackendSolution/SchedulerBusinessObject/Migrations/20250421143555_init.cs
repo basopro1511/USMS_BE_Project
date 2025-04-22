@@ -14,27 +14,29 @@ namespace SchedulerBusinessObject.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ExamSchedule",
+                name: "RequestSchedule",
                 columns: table => new
                 {
-                    ExamScheduleId = table.Column<int>(type: "int", nullable: false)
+                    RequestId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    SemesterId = table.Column<string>(type: "NVARCHAR(4)", nullable: false),
-                    MajorId = table.Column<string>(type: "NVARCHAR(4)", nullable: true),
-                    SubjectId = table.Column<string>(type: "NVARCHAR(10)", nullable: false),
-                    RoomId = table.Column<string>(type: "NVARCHAR(6)", nullable: true),
-                    Date = table.Column<DateOnly>(type: "DATE", nullable: false),
-                    StartTime = table.Column<TimeOnly>(type: "TIME(7)", nullable: false),
-                    EndTime = table.Column<TimeOnly>(type: "TIME(7)", nullable: false),
-                    Type = table.Column<int>(type: "INT", nullable: false),
-                    Turn = table.Column<int>(type: "INT", nullable: false),
-                    TeacherId = table.Column<string>(type: "NVARCHAR(16)", nullable: true),
+                    UserId = table.Column<string>(type: "NVARCHAR(16)", nullable: false),
+                    RequestType = table.Column<int>(type: "int", nullable: false),
+                    ScheduleId = table.Column<int>(type: "int", nullable: false),
+                    AlternativeTeacher = table.Column<string>(type: "NVARCHAR(16)", nullable: true),
+                    OriginalDate = table.Column<DateOnly>(type: "DATE", nullable: false),
+                    OriginalSlotId = table.Column<int>(type: "int", nullable: false),
+                    OriginalRoomId = table.Column<string>(type: "NVARCHAR(6)", nullable: false),
+                    NewDate = table.Column<DateOnly>(type: "DATE", nullable: true),
+                    NewSlotId = table.Column<int>(type: "int", nullable: true),
+                    NewRoomId = table.Column<string>(type: "NVARCHAR(6)", nullable: true),
+                    Reason = table.Column<string>(type: "NVARCHAR(MAX)", nullable: true),
+                    ReplyResponse = table.Column<string>(type: "NVARCHAR(MAX)", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "DATETIME", nullable: false)
+                    RequestDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ExamSchedule", x => x.ExamScheduleId);
+                    table.PrimaryKey("PK_RequestSchedule", x => x.RequestId);
                 });
 
             migrationBuilder.CreateTable(
@@ -56,8 +58,7 @@ namespace SchedulerBusinessObject.Migrations
                 name: "TimeSlot",
                 columns: table => new
                 {
-                    SlotId = table.Column<int>(type: "INT", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SlotId = table.Column<int>(type: "INT", nullable: false),
                     StartTime = table.Column<TimeOnly>(type: "TIME(0)", nullable: false),
                     EndTime = table.Column<TimeOnly>(type: "TIME(0)", nullable: false),
                     Status = table.Column<int>(type: "INT", nullable: false)
@@ -65,26 +66,6 @@ namespace SchedulerBusinessObject.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TimeSlot", x => x.SlotId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "StudentInExamSchedule",
-                columns: table => new
-                {
-                    StudentExamId = table.Column<int>(type: "INT", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ExamScheduleId = table.Column<int>(type: "INT", nullable: false),
-                    StudentId = table.Column<string>(type: "NVARCHAR(16)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_StudentInExamSchedule", x => x.StudentExamId);
-                    table.ForeignKey(
-                        name: "FK_StudentInExamSchedule_ExamSchedule_ExamScheduleId",
-                        column: x => x.ExamScheduleId,
-                        principalTable: "ExamSchedule",
-                        principalColumn: "ExamScheduleId",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -123,16 +104,16 @@ namespace SchedulerBusinessObject.Migrations
                 columns: new[] { "RoomId", "CreateAt", "Location", "Status", "UpdateAt" },
                 values: new object[,]
                 {
-                    { "G201", new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7533), "Grammar Room 201", 1, new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7545) },
-                    { "G202", new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7547), "Grammar Room 202", 1, new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7547) },
-                    { "G203", new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7549), "Grammar Room 203", 1, new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7549) },
-                    { "G204", new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7551), "Grammar Room 204", 1, new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7551) },
-                    { "G205", new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7552), "Grammar Room 205", 1, new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7553) },
-                    { "G301", new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7554), "Grammar Room 301", 1, new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7555) },
-                    { "G302", new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7556), "Grammar Room 302", 1, new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7556) },
-                    { "G303", new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7557), "Grammar Room 303", 1, new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7558) },
-                    { "G304", new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7559), "Grammar Room 304", 1, new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7560) },
-                    { "G305", new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7561), "Grammar Room 305", 1, new DateTime(2025, 2, 28, 15, 1, 6, 115, DateTimeKind.Local).AddTicks(7561) }
+                    { "G201", new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6127), "Grammar Room 201", 1, new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6136) },
+                    { "G202", new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6138), "Grammar Room 202", 1, new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6138) },
+                    { "G203", new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6139), "Grammar Room 203", 1, new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6140) },
+                    { "G204", new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6141), "Grammar Room 204", 1, new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6141) },
+                    { "G205", new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6143), "Grammar Room 205", 1, new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6143) },
+                    { "G301", new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6144), "Grammar Room 301", 1, new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6145) },
+                    { "G302", new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6175), "Grammar Room 302", 1, new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6176) },
+                    { "G303", new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6177), "Grammar Room 303", 1, new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6177) },
+                    { "G304", new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6178), "Grammar Room 304", 1, new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6179) },
+                    { "G305", new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6180), "Grammar Room 305", 1, new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6181) }
                 });
 
             migrationBuilder.InsertData(
@@ -156,30 +137,22 @@ namespace SchedulerBusinessObject.Migrations
                 name: "IX_Schedule_SlotId",
                 table: "Schedule",
                 column: "SlotId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_StudentInExamSchedule_ExamScheduleId",
-                table: "StudentInExamSchedule",
-                column: "ExamScheduleId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Schedule");
+                name: "RequestSchedule");
 
             migrationBuilder.DropTable(
-                name: "StudentInExamSchedule");
+                name: "Schedule");
 
             migrationBuilder.DropTable(
                 name: "Room");
 
             migrationBuilder.DropTable(
                 name: "TimeSlot");
-
-            migrationBuilder.DropTable(
-                name: "ExamSchedule");
         }
     }
 }

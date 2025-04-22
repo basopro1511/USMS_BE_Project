@@ -15,25 +15,17 @@ namespace ClassService.Repositories.StudentInClassRepository
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public List<StudentInClassDTO> GetAllStudentInClass()
+        public async Task<List<StudentInClass>> GetAllStudentInClass()
             {
             try
                 {
-                using(var _dbContext = new MyDbContext())
+                using (var _dbContext = new MyDbContext())
                     {
-                    List<StudentInClass> studentInClasses = _dbContext.StudentInClass.ToList();
-                    List<StudentInClassDTO> studentInClassDTOs = new List<StudentInClassDTO>();
-                    foreach(var student in studentInClasses)
-                        {
-                        StudentInClassDTO studentInClass = new StudentInClassDTO();
-                        studentInClass.CopyProperties(student);
-                        studentInClassDTOs.Add(studentInClass);
-                        _dbContext.SaveChanges();
-                        }
-                    return studentInClassDTOs;
+                    List<StudentInClass> studentInClasses = await _dbContext.StudentInClass.ToListAsync();
+                    return studentInClasses;
                     }
                 }
-            catch(Exception ex)
+            catch (Exception ex)
                 {
                 throw new Exception(ex.Message);
                 }
@@ -46,17 +38,17 @@ namespace ClassService.Repositories.StudentInClassRepository
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public StudentInClassDTO GetStudentInClassByStudentId(string studentId)
+        public async Task<StudentInClass> GetStudentInClassByStudentId(string studentId)
             {
             try
                 {
-                using(var _dbContext = new MyDbContext())
+                using (var _dbContext = new MyDbContext())
                     {
-                    StudentInClassDTO studentInClassDTO = GetAllStudentInClass().FirstOrDefault(sic => sic.StudentId==studentId);
+                    StudentInClass studentInClassDTO = await _dbContext.StudentInClass.FirstOrDefaultAsync(sic => sic.StudentId==studentId);
                     return studentInClassDTO;
                     }
                 }
-            catch(Exception ex)
+            catch (Exception ex)
                 {
                 throw new Exception(ex.Message);
                 }
@@ -69,14 +61,18 @@ namespace ClassService.Repositories.StudentInClassRepository
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public List<StudentInClassDTO> GetStudentInClassByClassId(int classSubjectId) {
-            try {
-                using(var _dbContext = new MyDbContext()) {
-                    List<StudentInClassDTO> studentInClassDTOs = GetAllStudentInClass().Where(sic => sic.ClassSubjectId==classSubjectId).ToList(); ;
-                    return studentInClassDTOs;
+        public async Task<List<StudentInClass>> GetStudentInClassByClassId(int classSubjectId)
+            {
+            try
+                {
+                using (var _dbContext = new MyDbContext())
+                    {
+                    var studentInClass = await _dbContext.StudentInClass.Where(c => c.ClassSubjectId==classSubjectId).ToListAsync();
+                    return studentInClass;
                     }
                 }
-            catch(Exception ex) {
+            catch (Exception ex)
+                {
                 throw new Exception(ex.Message);
                 }
             }
@@ -88,17 +84,17 @@ namespace ClassService.Repositories.StudentInClassRepository
         /// </summary>
         /// <param name="studentId">Student ID</param>
         /// <returns>List of ClassSubjectIds</returns>
-        public List<int> GetClassSubjectId(string studentId)
-                {
+        public async Task<List<int>> GetClassSubjectId(string studentId)
+            {
             try
                 {
-                using(var _dbContext = new MyDbContext())
+                using (var _dbContext = new MyDbContext())
                     {
-                    var classSubjectIds = _dbContext.StudentInClass.Where(sic => sic.StudentId == studentId).Select(sic => sic.ClassSubjectId).ToList();
+                    var classSubjectIds = await _dbContext.StudentInClass.Where(sic => sic.StudentId==studentId).Select(sic => sic.ClassSubjectId).ToListAsync();
                     return classSubjectIds;
                     }
                 }
-            catch(Exception ex)
+            catch (Exception ex)
                 {
                 throw new Exception(ex.Message);
                 }
@@ -111,22 +107,20 @@ namespace ClassService.Repositories.StudentInClassRepository
         /// </summary>
         /// <param name="studentInClassDTO">StudentInClassDTO object</param>
         /// <returns>Boolean indicating success</returns>
-        public bool AddStudentToClass(StudentInClassDTO studentInClassDTO)
+        public async Task<bool> AddStudentToClass(StudentInClass studentInClass)
             {
             try
                 {
-                using(var dbContext = new MyDbContext())
+                using (var dbContext = new MyDbContext())
                     {
-                    var studentInClass = new StudentInClass();
-                    studentInClass.CopyProperties(studentInClassDTO);
-                    dbContext.StudentInClass.Add(studentInClass);
-                    dbContext.SaveChanges();
+                    await dbContext.StudentInClass.AddAsync(studentInClass);
+                    await dbContext.SaveChangesAsync();
                     }
                 return true;
                 }
-            catch(Exception ex)
+            catch (Exception ex)
                 {
-                throw new Exception (ex.Message);
+                throw new Exception(ex.Message);
                 }
             }
         #endregion
@@ -137,11 +131,11 @@ namespace ClassService.Repositories.StudentInClassRepository
         /// </summary>
         /// <param name="studentsInClassDTO"></param>
         /// <returns>Boolean indicating success</returns>
-        public bool AddMultipleStudentsToClass(List<StudentInClassDTO> studentsInClassDTO)
+        public async Task<bool> AddMultipleStudentsToClass(List<StudentInClass> studentsInClassDTO)
             {
             try
                 {
-                using(var dbContext = new MyDbContext())
+                using (var dbContext = new MyDbContext())
                     {
                     List<StudentInClass> students = studentsInClassDTO.Select(dto =>
                     {
@@ -149,12 +143,12 @@ namespace ClassService.Repositories.StudentInClassRepository
                         studentInClass.CopyProperties(dto);
                         return studentInClass;
                     }).ToList();
-                    dbContext.StudentInClass.AddRange(students);
-                    dbContext.SaveChanges();
+                    await dbContext.StudentInClass.AddRangeAsync(students);
+                    await dbContext.SaveChangesAsync();
                     }
                 return true;
                 }
-            catch(Exception ex)
+            catch (Exception ex)
                 {
                 throw new Exception(ex.Message);
                 }
@@ -165,27 +159,26 @@ namespace ClassService.Repositories.StudentInClassRepository
         /// <summary>
         /// Updates student information in a class.
         /// </summary>
-        /// <param name="studentInClassDTO">StudentInClassDTO object</param>
+        /// <param name="studentInClass">studentInClass object</param>
         /// <returns>Boolean indicating success</returns>
-        public bool UpdateStudentInClass(StudentInClassDTO studentInClassDTO)
+        public async Task<bool> UpdateStudentInClass(StudentInClass studentInClass)
             {
             try
                 {
-                using(var dbContext = new MyDbContext())
+                using (var dbContext = new MyDbContext())
                     {
-                    var studentInClass = dbContext.StudentInClass.FirstOrDefault(sic => sic.StudentClassId == studentInClassDTO.StudentClassId);
-                    studentInClass.CopyProperties(studentInClassDTO);
-                    if(studentInClass ==null)
+                    var existingStudent = await dbContext.StudentInClass
+                                 .FirstOrDefaultAsync(sic => sic.StudentClassId==studentInClass.StudentClassId);
+                    if (studentInClass==null)
                         {
                         return false;
                         }
-                    studentInClass.CopyProperties(studentInClassDTO);
                     dbContext.Entry(studentInClass).State=EntityState.Modified;
-                    dbContext.SaveChanges();
+                    await dbContext.SaveChangesAsync();
                     }
                 return true;
                 }
-            catch(Exception ex)
+            catch (Exception ex)
                 {
                 throw new Exception(ex.Message);
                 }
@@ -198,21 +191,21 @@ namespace ClassService.Repositories.StudentInClassRepository
         /// </summary>
         /// <param name="studentClassId">ID of the student-class association</param>
         /// <returns>Boolean indicating success</returns>
-        public bool DeleteStudentFromClass(int studentClassId)
+        public async Task<bool> DeleteStudentFromClass(int studentClassId)
             {
             try
                 {
-                using(var dbContext = new MyDbContext())
+                using (var dbContext = new MyDbContext())
                     {
-                    var studentInClass = dbContext.StudentInClass.FirstOrDefault(sic => sic.StudentClassId==studentClassId);
-                    if(studentInClass==null)
+                    var studentInClass = await dbContext.StudentInClass.FirstOrDefaultAsync(sic => sic.StudentClassId==studentClassId);
+                    if (studentInClass==null)
                         return false;
                     dbContext.StudentInClass.Remove(studentInClass);
-                    dbContext.SaveChanges();
+                    await dbContext.SaveChangesAsync();
                     }
                 return true;
                 }
-            catch(Exception ex)
+            catch (Exception ex)
                 {
                 throw new Exception(ex.Message);
                 }
@@ -226,39 +219,35 @@ namespace ClassService.Repositories.StudentInClassRepository
         /// <param name="studentId"></param>
         /// <param name="classSubjectId"></param>
         /// <returns>StudentInClassDTO if exists, otherwise null</returns>
-        public StudentInClassDTO GetStudentInClassByStudentIdAndClass(string studentId, int classSubjectId)
+        public async Task<StudentInClass> GetStudentInClassByStudentIdAndClass(string studentId, int classSubjectId)
             {
             try
                 {
                 using (var dbContext = new MyDbContext())
                     {
-                    var studentInClass= dbContext.StudentInClass.FirstOrDefault(s => s.StudentId==studentId&&s.ClassSubjectId==classSubjectId);
+                    var studentInClass =await dbContext.StudentInClass.FirstOrDefaultAsync(s => s.StudentId==studentId&&s.ClassSubjectId==classSubjectId);
                     if (studentInClass==null)
                         {
                         return null;
                         }
-                    StudentInClassDTO studentInClassDTO = new StudentInClassDTO();
-                    studentInClassDTO.CopyProperties(studentInClass);
-                    return studentInClassDTO;
+                    return studentInClass;
                     }
                 }
             catch (Exception ex)
                 {
                 throw new Exception(ex.Message);
-                } 
-           }
+                }
+            }
         #endregion
 
-        #region GetStudentCountByClassSubjectId
-        public int GetStudentCountByClassSubjectId(int classSubjectId)
+        #region Get Student Count By Class SubjectId
+        public async Task<int> GetStudentCountByClassSubjectId(int classSubjectId)
             {
             using (var dbContext = new MyDbContext())
                 {
-                return dbContext.StudentInClass.Count(s => s.ClassSubjectId==classSubjectId);
+                return await dbContext.StudentInClass.CountAsync(s => s.ClassSubjectId==classSubjectId);
                 }
             }
-
         #endregion
-
         }
     }

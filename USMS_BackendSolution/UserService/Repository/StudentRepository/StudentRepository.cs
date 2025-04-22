@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace UserService.Repository.StudentRepository
     {
-    public class StudentRepository:IStudentRepository
+    public class StudentRepository : IStudentRepository
         {
         #region Get All Student
         /// <summary>
@@ -14,22 +14,14 @@ namespace UserService.Repository.StudentRepository
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<List<UserDTO>> GetAllStudent()
+        public async Task<List<User>> GetAllStudent()
             {
             try
                 {
                 using (var dbcontext = new MyDbContext())
                     {
-                    var user = dbcontext.User.Where(x => x.RoleId==5).ToList();
-                    List<UserDTO> userDTOs = new List<UserDTO>();
-                    foreach (var item in user)
-                        {
-                        UserDTO userDTO = new UserDTO();
-                        userDTO.CopyProperties(item);
-                        userDTOs.Add(userDTO);
-                        await dbcontext.SaveChangesAsync();
-                        }
-                    return userDTOs;
+                    var user = await dbcontext.User.Where(x => x.RoleId==5).ToListAsync();
+                    return user;
                     }
                 }
             catch (Exception ex)
@@ -46,16 +38,13 @@ namespace UserService.Repository.StudentRepository
         /// <param name="userDTO"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<bool> AddNewStudent(UserDTO userDTO)
+        public async Task<bool> AddNewStudent(User user)
             {
             try
                 {
                 using (var dbContext = new MyDbContext())
                     {
-                    var teacher = new User();
-                    teacher.CopyProperties(userDTO);
-                    teacher.CreatedAt=DateTime.Now;
-                    dbContext.User.Add(teacher);
+                    await dbContext.User.AddAsync(user);
                     await dbContext.SaveChangesAsync();
                     return true;
                     }
@@ -74,15 +63,13 @@ namespace UserService.Repository.StudentRepository
         /// <param name="userDTO"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<bool> AddNewStudentForStudentTable(StudentTableDTO userDTO)
+        public async Task<bool> AddNewStudentForStudentTable(Student student)
             {
             try
                 {
                 using (var dbContext = new MyDbContext())
                     {
-                    var student = new Student();
-                    student.CopyProperties(userDTO);
-                    dbContext.Student.Add(student);
+                    await dbContext.Student.AddAsync(student);
                     await dbContext.SaveChangesAsync();
                     return true;
                     }
@@ -100,18 +87,18 @@ namespace UserService.Repository.StudentRepository
         /// </summary>
         /// <param name="userDTO"></param>
         /// <returns></returns>
-        public async Task<bool> UpdateStudent(UserDTO userDTO)
+        public async Task<bool> UpdateStudent(User user)
             {
             try
                 {
                 using (var dbContext = new MyDbContext())
                     {
-                    var user = dbContext.User.FirstOrDefault(x => x.UserId==userDTO.UserId);
-                    user.CopyProperties(userDTO);
-                    if (user==null)
+                    var existUser = await GetStudentById(user.UserId);
+                    existUser.CopyProperties(user);
+                    if (existUser==null)
                         return false;
-                    user.UpdatedAt=DateTime.Now;
-                    dbContext.Entry(user).State=EntityState.Modified;
+                    existUser.UpdatedAt=DateTime.Now;
+                    dbContext.Entry(existUser).State=EntityState.Modified;
                     await dbContext.SaveChangesAsync();
                     return true;
                     }
@@ -124,6 +111,11 @@ namespace UserService.Repository.StudentRepository
         #endregion
 
         #region Add List User ( use for Import Excel )
+        /// <summary>
+        /// Add A list of user 
+        /// </summary>
+        /// <param name="users"></param>
+        /// <returns></returns>
         public async Task<bool> AddStudentAsync(List<User> users)
             {
             try
@@ -135,9 +127,9 @@ namespace UserService.Repository.StudentRepository
                     return true;
                     }
                 }
-            catch (Exception)
+            catch (Exception ex)
                 {
-                throw;
+                throw new Exception(ex.Message);
                 }
             }
         #endregion
@@ -160,7 +152,7 @@ namespace UserService.Repository.StudentRepository
                     if (existStudent!=null)
                         existStudent.Term=newTerm;
                     dbContext.Entry(existStudent).State=EntityState.Modified;
-                  await  dbContext.SaveChangesAsync();
+                    await dbContext.SaveChangesAsync();
                     return true;
                     }
                 }
@@ -172,16 +164,19 @@ namespace UserService.Repository.StudentRepository
         #endregion
 
         #region Get Student by Id 
-        public async Task<UserDTO> GetStudentById(string userId)
+        /// <summary>
+        ///  Get Student Data by UserId
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<User> GetStudentById(string userId)
             {
             try
                 {
                 using (var _db = new MyDbContext())
                     {
                     var user = await _db.User.FirstOrDefaultAsync(x => x.UserId==userId);
-                    UserDTO dto = new UserDTO();
-                    dto.CopyProperties(user);
-                    return dto;
+                    return user;
                     }
                 }
             catch (Exception)
@@ -190,5 +185,6 @@ namespace UserService.Repository.StudentRepository
                 }
             }
         #endregion
+
         }
     }

@@ -68,6 +68,33 @@ namespace UserService.Repository.UserRepository
             }
         }
 
+        #region Get User By Email (Login)
+        /// <summary>
+        /// Get User by Email
+        /// </summary>
+        /// <param name="GetUserByEmail"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<UserDTO> GetUserByEmail(string email)
+            {
+            try
+                {
+                using (var _db = new MyDbContext())
+                    {
+                    User? user = await _db.User.FirstOrDefaultAsync(x => x.Email==email);
+                    if (user==null) return null;
+                    UserDTO userDTO = new UserDTO();
+                    userDTO.CopyProperties(user); 
+                    return userDTO;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
         //#region Old
 
         ///// <summary>
@@ -202,5 +229,147 @@ namespace UserService.Repository.UserRepository
         //    }
         //#endregion 
 
+        #region Reset password 
+        /// <summary>
+        /// Reset password for user
+        /// </summary>
+        /// <param name="resetPasswordDTO"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<bool> ResetPassword(ResetPasswordDTO resetPasswordDTO)
+            {
+            try
+                {
+                using (var _db = new MyDbContext())
+                    {
+                    var user = await _db.User.FirstOrDefaultAsync(x => x.UserId==resetPasswordDTO.UserId);
+                    if (user==null) return false;
+                    user.PasswordHash=resetPasswordDTO.newPassword;
+                    _db.Entry(user).State = EntityState.Modified;
+                     await _db.SaveChangesAsync();
+                    return true;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
+        #region Reset password by Email
+        /// <summary>
+        /// Reset password for user
+        /// </summary>
+        /// <param name="resetPasswordDTO"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<bool> ResetPasswordByEmail(ResetPasswordByEmailDTO resetPasswordByEmailDTO)
+            {                               
+            try
+                {
+                using (var _db = new MyDbContext())
+                    {
+                    var user = await _db.User.FirstOrDefaultAsync(x => x.Email==resetPasswordByEmailDTO.Email);
+                    if (user==null) return false;
+                    user.PasswordHash=resetPasswordByEmailDTO.newPassword;
+                    _db.Entry(user).State=EntityState.Modified;
+                    await _db.SaveChangesAsync();
+                    return true;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
+        #region
+        /// <summary>
+        /// Change Users Status 
+        /// </summary>
+        /// <param name="userIds"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<bool> ChangeUserStatusSelected(List<string> userIds, int status)
+            {
+            try
+                {
+                using (var _db = new MyDbContext())
+                    {
+                    var users = await _db.User.Where(x => userIds.Contains(x.UserId)).ToListAsync();
+                    if (!users.Any())
+                        return false;
+                    foreach (var user in users)
+                        {
+                        user.Status=status;
+                        }
+                    await _db.SaveChangesAsync();
+                    return true;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
+        #endregion
+
+
+        #region Check exist personal email
+        /// <summary>
+        ///  Check exist personal email
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<bool> isPersonalEmailExist(string email)
+            {
+            try
+                {
+                using (var _db = new MyDbContext())
+                    {
+                    var user = await _db.User.FirstOrDefaultAsync(x => x.PersonalEmail==email);
+                    if (user!=null)
+                        {
+                        return true;
+                        }
+                    return false;
+                    }
+                }
+            catch (Exception)
+                {
+                throw;
+                }
+            }
+        #endregion
+
+        #region Check exist phone
+        /// <summary>
+        ///  Check exist phone
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<bool> isPhonelExist(string phoneNum)
+            {
+            try
+                {
+                using (var _db = new MyDbContext())
+                    {
+                    var user = await _db.User.FirstOrDefaultAsync(x => x.PhoneNumber==phoneNum);
+                    if (user!=null)
+                        {
+                        return true;
+                        }
+                    return false;
+                    }
+                }
+            catch (Exception)
+                {
+                throw;
+                }
+            }
+        #endregion
         }
     }

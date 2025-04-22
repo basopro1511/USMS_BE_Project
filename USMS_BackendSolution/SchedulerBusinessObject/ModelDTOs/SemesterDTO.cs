@@ -8,10 +8,13 @@ using System.Threading.Tasks;
 
 namespace SchedulerBusinessObject.ModelDTOs
     {
-    public class StudentInExamScheduleDTO
+    public class SemesterDTO
         {
-        public int StudentExamId { get; set; }
-        public int ExamScheduleId { get; set; }
-        public string StudentId { get; set; }
+        public string SemesterId { get; set; }
+        public string SemesterName { get; set; }
+        public DateOnly StartDate { get; set; }
+        public DateOnly EndDate { get; set; }
+        public int Status { get; set; }
+
         }
     }

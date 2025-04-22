@@ -15,22 +15,14 @@ namespace UserService.Repository.StaffRepository
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<List<UserDTO>> GetAllStaff()
+        public async Task<List<User>> GetAllStaff()
             {
             try
                 {
                 using (var dbcontext = new MyDbContext())
                     {
-                    var user = dbcontext.User.Where(x => x.RoleId==2).ToList();
-                    List<UserDTO> userDTOs = new List<UserDTO>();
-                    foreach (var item in user)
-                        {
-                        UserDTO userDTO = new UserDTO();
-                        userDTO.CopyProperties(item);
-                        userDTOs.Add(userDTO);
-                        await dbcontext.SaveChangesAsync();
-                        }
-                    return userDTOs;
+                    var user = await dbcontext.User.Where(x => x.RoleId==2).ToListAsync();
+                    return user;
                     }
                 }
             catch (Exception ex)
@@ -47,16 +39,13 @@ namespace UserService.Repository.StaffRepository
         /// <param name="userDTO"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<bool> AddNewStaff(UserDTO userDTO)
+        public async Task<bool> AddNewStaff(User user)
             {
             try
                 {
                 using (var dbContext = new MyDbContext())
                     {
-                    var teacher = new User();
-                    teacher.CopyProperties(userDTO);
-                    teacher.CreatedAt=DateTime.Now;
-                    dbContext.User.Add(teacher);
+                    await dbContext.User.AddAsync(user);
                     await dbContext.SaveChangesAsync();
                     return true;
                     }
@@ -74,18 +63,18 @@ namespace UserService.Repository.StaffRepository
         /// </summary>
         /// <param name="userDTO"></param>
         /// <returns></returns>
-        public async Task<bool> UpdateStaff(UserDTO userDTO)
+        public async Task<bool> UpdateStaff(User user)
             {
             try
                 {
                 using (var dbContext = new MyDbContext())
                     {
-                    var user = dbContext.User.FirstOrDefault(x => x.UserId==userDTO.UserId);
-                    user.CopyProperties(userDTO);
-                    if (user==null)
+                    var existUser = dbContext.User.FirstOrDefault(x => x.UserId==user.UserId);
+                    existUser.CopyProperties(user);
+                    if (existUser==null)
                         return false;
-                    user.UpdatedAt=DateTime.Now;
-                    dbContext.Entry(user).State=EntityState.Modified;
+                    existUser.UpdatedAt=DateTime.Now;
+                    dbContext.Entry(existUser).State=EntityState.Modified;
                     await dbContext.SaveChangesAsync();
                     return true;
                     }
@@ -103,18 +92,18 @@ namespace UserService.Repository.StaffRepository
         /// </summary>
         /// <param name="userDTO"></param>
         /// <returns></returns>
-        public async Task<bool> UpdatePersonalInformationForStaff(UserDTO userDTO)
+        public async Task<bool> UpdatePersonalInformationForStaff(User user)
             {
             try
                 {
                 using (var dbContext = new MyDbContext())
                     {
-                    var user = dbContext.User.FirstOrDefault(x => x.UserId==userDTO.UserId);
-                    user.CopyProperties(userDTO);
+                    var existUser = dbContext.User.FirstOrDefault(x => x.UserId==user.UserId);
+                    existUser.CopyProperties(user);
                     if (user==null)
                         return false;
-                    user.UpdatedAt=DateTime.Now;
-                    dbContext.Entry(user).State=EntityState.Modified;
+                    existUser.UpdatedAt=DateTime.Now;
+                    dbContext.Entry(existUser).State=EntityState.Modified;
                     await dbContext.SaveChangesAsync();
                     return true;
                     }

@@ -1,158 +1,148 @@
 ﻿using ISUZU_NEXT.Server.Core.Extentions;
 using Microsoft.EntityFrameworkCore;
 using SchedulerBusinessObject.AppDBContext;
-using SchedulerBusinessObject.ModelDTOs;
 using SchedulerBusinessObject.SchedulerModels;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SchedulerService.Repository.SlotRepository
-{
-    public class SlotRepository : ISlotRepository
     {
+    public class SlotRepository : ISlotRepository
+        {
         #region Get all Time Slot
         /// <summary>
         /// Get All Time Slot
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A list of all TimeSlot model</returns>
         /// <exception cref="Exception"></exception>
-        public async Task<List<TimeSlotDTO>> getAllTimeSlot()
-        {
-			try
-			{
-				using (var dbcontext = new MyDbContext())
-				{
-                    List<TimeSlot> timeSlots =await dbcontext.TimeSlot.ToListAsync();
-                    List<TimeSlotDTO> timeSlotDTOs = new List<TimeSlotDTO>(); 
-                    foreach (var timeSlot in timeSlots) { 
-                    TimeSlotDTO timeSlotDTO = new TimeSlotDTO();
-                        timeSlotDTO.CopyProperties(timeSlot);
-                        timeSlotDTOs.Add(timeSlotDTO);
+        public async Task<List<TimeSlot>> GetAllTimeSlot()
+            {
+            try
+                {
+                using (var dbContext = new MyDbContext())
+                    {
+                    List<TimeSlot> timeSlots = await dbContext.TimeSlot.ToListAsync();
+                    return timeSlots;
                     }
-                    return timeSlotDTOs;
-				}
-			}
-			catch (Exception ex)
-			{
-				throw new Exception(ex.Message);
-			}
-        }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message);
+                }
+            }
         #endregion
 
-        #region  Get Time Slot By Id
+        #region Get Time Slot By Id
         /// <summary>
         /// Get Time Slot by Slot ID
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">Slot Id</param>
+        /// <returns>A TimeSlot model corresponding to the given id</returns>
         /// <exception cref="Exception"></exception>
-        public async Task<TimeSlotDTO> GetTimeSlotById(int id)
-        {
+        public async Task<TimeSlot> GetTimeSlotById(int id)
+            {
             try
-            {
-                using (var _db = new MyDbContext())
+                {
+                using (var dbContext = new MyDbContext())
                     {
-                    var timeSlot = _db.TimeSlot.FirstOrDefault(x => x.SlotId==id); 
-                    TimeSlotDTO? timeSlotDTO = new TimeSlotDTO();
-                    timeSlotDTO.CopyProperties(timeSlot);
-                    return timeSlotDTO;
+                    TimeSlot timeSlot = await dbContext.TimeSlot.FirstOrDefaultAsync(x => x.SlotId==id);
+                    return timeSlot;
                     }
-            }
+                }
             catch (Exception ex)
-            {
+                {
                 throw new Exception(ex.Message);
+                }
             }
-        }
         #endregion
 
-        #region  Add new Time Slot
+        #region Add new Time Slot
         /// <summary>
         /// Create new Time Slot
         /// </summary>
-        /// <param name="timeSlotDTO"></param>
-        /// <returns>>true if success</returns>
-        public async Task<bool> AddNewTimeSlot(TimeSlotDTO timeSlotDTO)
-        {
-            try
+        /// <param name="timeSlot">TimeSlot model object</param>
+        /// <returns>true if success</returns>
+        public async Task<bool> AddNewTimeSlot(TimeSlot timeSlot)
             {
-                using (var dbContext = new MyDbContext())
+            try
                 {
-                    var timeSlot = new TimeSlot();
-                    timeSlot.CopyProperties(timeSlotDTO);
-                    timeSlot.Status = 0; // Khi vừa tạo sẽ mặc định trạng thái là vô hiệu hóa
+                using (var dbContext = new MyDbContext())
+                    {
+                    timeSlot.Status=0; // Khi vừa tạo, mặc định trạng thái là vô hiệu hóa
                     await dbContext.TimeSlot.AddAsync(timeSlot);
                     await dbContext.SaveChangesAsync();
                     return true;
+                    }
+                }
+            catch (Exception)
+                {
+                return false;
                 }
             }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
         #endregion
 
-        #region  Update Time Slot
+        #region Update Time Slot
         /// <summary>
         /// Update Time Slot
         /// </summary>
-        /// <param name="timeSlotDTO"></param>
-        /// <returns>>true if success</returns>
-        public async Task<bool> UpdateTimeSlot (TimeSlotDTO timeSlotDTO)
-        {
-            try
+        /// <param name="timeSlot">TimeSlot model object with updated data</param>
+        /// <returns>true if success</returns>
+        public async Task<bool> UpdateTimeSlot(TimeSlot timeSlot)
             {
-                using (var dbContext = new MyDbContext())
+            try
                 {
-                    var existingTimeSlot = GetTimeSlotById(timeSlotDTO.SlotId);
-                    TimeSlot timeSlot = new TimeSlot();
-                    timeSlot.CopyProperties(timeSlotDTO);
-                    if (existingTimeSlot == null)
+                using (var dbContext = new MyDbContext())
                     {
+                    var existingTimeSlot = await dbContext.TimeSlot.FirstOrDefaultAsync(x => x.SlotId==timeSlot.SlotId);
+                    if (existingTimeSlot==null)
+                        {
                         return false;
-                    }
-                    dbContext.Entry(timeSlot).State = EntityState.Modified;
-                await dbContext.SaveChangesAsync();
+                        }
+                    // Cập nhật các thuộc tính từ timeSlot mới vào đối tượng đã có
+                    existingTimeSlot.CopyProperties(timeSlot);
+                    dbContext.Entry(existingTimeSlot).State=EntityState.Modified;
+                    await dbContext.SaveChangesAsync();
                     return true;
+                    }
+                }
+            catch (Exception)
+                {
+                return false;
                 }
             }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
         #endregion
 
         #region Update Time Slot Status
         /// <summary>
         /// Change Time Slot status
         /// </summary>
-        /// <param name="slotId"></param>
-        /// <param name="newStatus"></param>
-        /// <returns></returns>
+        /// <param name="slotId">Slot Id</param>
+        /// <param name="newStatus">New status value</param>
+        /// <returns>true if success</returns>
         /// <exception cref="Exception"></exception>
         public async Task<bool> ChangeTimeSlotStatus(int slotId, int newStatus)
-        {
-            try
             {
-                using (var dbContext = new MyDbContext())
+            try
                 {
-                    var existingTimeSlot =await GetTimeSlotById(slotId);
-                    TimeSlot timeSlot = new TimeSlot();
-                    timeSlot.CopyProperties(existingTimeSlot);
-                    if (existingTimeSlot == null)
+                using (var dbContext = new MyDbContext())
                     {
+                    var existingTimeSlot = await dbContext.TimeSlot.FirstOrDefaultAsync(x => x.SlotId==slotId);
+                    if (existingTimeSlot==null)
+                        {
                         return false;
-                    }
-                    timeSlot.Status = newStatus;
-                    dbContext.Entry(timeSlot).State = EntityState.Modified;
-                 await   dbContext.SaveChangesAsync();
+                        }
+                    existingTimeSlot.Status=newStatus;
+                    dbContext.Entry(existingTimeSlot).State=EntityState.Modified;
+                    await dbContext.SaveChangesAsync();
                     return true;
+                    }
+                }
+            catch (Exception ex)
+                {
+                throw new Exception(ex.Message, ex);
                 }
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message, ex);
-            }
-        }
         #endregion
+        }
     }
-}

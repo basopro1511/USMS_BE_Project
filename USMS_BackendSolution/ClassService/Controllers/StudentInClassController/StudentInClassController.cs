@@ -18,74 +18,99 @@ namespace ClassService.Controllers.StudentInClassController
             }
 
         [HttpGet]
-        public APIResponse GetAllStudentInClass()
+        public async Task<IActionResult> GetAllStudentInClass()
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse=_service.GetAllStudentInClass();
-            return aPIResponse;
+            aPIResponse=await _service.GetAllStudentInClass();
+            return Ok(aPIResponse);
             }
 
         [HttpGet("{id}")]
-        public APIResponse GetAllStudentInClassByClassId(int id)
+        public async Task<IActionResult> GetAllStudentInClassByClassId(int id)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse=_service.GetStudentInClassByClassId(id);
-            return aPIResponse;
+            aPIResponse=await _service.GetStudentInClassByClassId(id);
+            return Ok(aPIResponse);
             }
 
         [HttpPost]
-        public APIResponse AddStudentToClass(StudentInClassDTO studentInClassDTO)
+        public async Task<IActionResult> AddStudentToClass(StudentInClassDTO studentInClassDTO)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse=_service.AddStudentToClass(studentInClassDTO);
-            return aPIResponse;
+            aPIResponse=await _service.AddStudentToClass(studentInClassDTO);
+            return Ok(aPIResponse);
             }
 
         [HttpPost("AddMutipleStudents")]
-        public APIResponse AddMutipleStudentToClass (List<StudentInClassDTO> studentInClassDTOs)
+        public async Task<IActionResult> AddMutipleStudentToClass (List<StudentInClassDTO> studentInClassDTOs)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse=_service.AddMultipleStudentsToClass(studentInClassDTOs);
-            return aPIResponse;
+            aPIResponse=await _service.AddMultipleStudentsToClass(studentInClassDTOs);
+            return Ok(aPIResponse);
             }
 
         [HttpDelete("{id}")]
-        public APIResponse RemoveStudentToClass(int id)
+        public async Task<IActionResult> RemoveStudentToClass(int id)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse=_service.DeleteStudentFromClass(id);
-            return aPIResponse;
+            aPIResponse=await _service.DeleteStudentFromClass(id);
+            return Ok(aPIResponse);
             }
 
         #region Get ClassSubjectIds by Student Id
         [HttpGet("ClassSubject/{id}")]
-        public APIResponse GetClassSubjectByStudentId(string id)
+        public async Task<IActionResult> GetClassSubjectByStudentId(string id)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse=_service.GetClassSubjectId(id);
-            return aPIResponse;
+            aPIResponse=await _service.GetClassSubjectId(id);
+            return Ok(aPIResponse);
             }
         #endregion
 
         #region Get Student Data in Class by ClassId
         [HttpGet("ClassId/{id}")]
-        public APIResponse GetStudentInClassByClassIdWithStudentData(int id)
+        public async Task<IActionResult> GetStudentInClassByClassIdWithStudentData(int id)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse=_service.GetStudentInClassByClassIdWithStudentData(id);
-            return aPIResponse;
+            aPIResponse=await _service.GetStudentInClassByClassIdWithStudentData(id);
+            return Ok(aPIResponse);
             }
         #endregion
 
         #region Get Student Data in Class by ClassId
         [HttpGet("AvailableStudent/{id}")]
-        public APIResponse getAvailableStudent(int id)
+        public async Task<IActionResult> getAvailableStudent(int id)
             {
             APIResponse aPIResponse = new APIResponse();
-            aPIResponse=_service.GetAvailableStudentsForClass(id);
-            return aPIResponse;
+            aPIResponse=await _service.GetAvailableStudentsForClass(id);
+            return Ok(aPIResponse);
             }
         #endregion
+
+        #region Export Data
+        [HttpGet("export")]
+        public async Task<IActionResult> ExportStudentsInClassToExcel([FromQuery] int id)
+            {
+            APIResponse aPIResponse = new APIResponse();
+            var export = await _service.ExportStudentInClassToExcel(id);
+            if (export==null)
+                {
+                aPIResponse.Message="Không có dữ liệu để xuất.";
+                return BadRequest(aPIResponse);
+                }
+            aPIResponse.Result="File đã được tạo và sẵn sàng để tải về.";
+            aPIResponse.Message="Export Thành công";
+            // Trả về tệp Excel trực tiếp
+            var fileBytes = export as byte[];
+            if (fileBytes==null)
+                {
+                aPIResponse.Message="Đã xảy ra lỗi khi tạo tệp Excel.";
+                return StatusCode(500, aPIResponse);
+                }
+            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "DanhSachSinhVienTrongLopp.xlsx");
+            }
+        #endregion
+
         }
     }
 

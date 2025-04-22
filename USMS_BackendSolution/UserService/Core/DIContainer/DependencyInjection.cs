@@ -6,6 +6,7 @@ using UserService.Repository.StaffRepository;
 using UserService.Repository.StudentRepository;
 using UserService.Repository.TeacherRepository;
 using UserService.Repository.UserRepository;
+using UserService.Services.LoginServices;
 using UserService.Services.MajorServices;
 using UserService.Services.StaffServices;
 using UserService.Services.StudentServices;
@@ -32,7 +33,9 @@ namespace Core
             services.AddScoped<StudentService>();
             services.AddScoped<TeacherService>();
             services.AddScoped<StaffService>();
+            services.AddScoped<LoginService>();
             services.AddHttpClient();
+            services.AddAuthorization();
             #endregion
             }
         }
