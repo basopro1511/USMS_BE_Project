@@ -43,8 +43,6 @@ namespace SchedulerBusinessObject.SchedulerModels
         public string? ReplyResponse { get; set; }
         public int Status { get; set; }
         public DateTime RequestDate { get; set; } = DateTime.Now;
-        [ForeignKey(nameof(ScheduleId))]
-        [JsonIgnore]
-        public virtual Schedule? Schedule { get; set; }
+     
         }
     }

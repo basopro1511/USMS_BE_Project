@@ -14,6 +14,32 @@ namespace SchedulerBusinessObject.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "RequestSchedule",
+                columns: table => new
+                {
+                    RequestId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "NVARCHAR(16)", nullable: false),
+                    RequestType = table.Column<int>(type: "int", nullable: false),
+                    ScheduleId = table.Column<int>(type: "int", nullable: false),
+                    AlternativeTeacher = table.Column<string>(type: "NVARCHAR(16)", nullable: true),
+                    OriginalDate = table.Column<DateOnly>(type: "DATE", nullable: false),
+                    OriginalSlotId = table.Column<int>(type: "int", nullable: false),
+                    OriginalRoomId = table.Column<string>(type: "NVARCHAR(6)", nullable: false),
+                    NewDate = table.Column<DateOnly>(type: "DATE", nullable: true),
+                    NewSlotId = table.Column<int>(type: "int", nullable: true),
+                    NewRoomId = table.Column<string>(type: "NVARCHAR(6)", nullable: true),
+                    Reason = table.Column<string>(type: "NVARCHAR(MAX)", nullable: true),
+                    ReplyResponse = table.Column<string>(type: "NVARCHAR(MAX)", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    RequestDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RequestSchedule", x => x.RequestId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Room",
                 columns: table => new
                 {
@@ -73,53 +99,21 @@ namespace SchedulerBusinessObject.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "RequestSchedule",
-                columns: table => new
-                {
-                    RequestId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "NVARCHAR(16)", nullable: false),
-                    RequestType = table.Column<int>(type: "int", nullable: false),
-                    ScheduleId = table.Column<int>(type: "int", nullable: false),
-                    AlternativeTeacher = table.Column<string>(type: "NVARCHAR(16)", nullable: true),
-                    OriginalDate = table.Column<DateOnly>(type: "DATE", nullable: false),
-                    OriginalSlotId = table.Column<int>(type: "int", nullable: false),
-                    OriginalRoomId = table.Column<string>(type: "NVARCHAR(6)", nullable: false),
-                    NewDate = table.Column<DateOnly>(type: "DATE", nullable: true),
-                    NewSlotId = table.Column<int>(type: "int", nullable: true),
-                    NewRoomId = table.Column<string>(type: "NVARCHAR(6)", nullable: true),
-                    Reason = table.Column<string>(type: "NVARCHAR(MAX)", nullable: true),
-                    ReplyResponse = table.Column<string>(type: "NVARCHAR(MAX)", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    RequestDate = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RequestSchedule", x => x.RequestId);
-                    table.ForeignKey(
-                        name: "FK_RequestSchedule_Schedule_ScheduleId",
-                        column: x => x.ScheduleId,
-                        principalTable: "Schedule",
-                        principalColumn: "ScheduleId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
             migrationBuilder.InsertData(
                 table: "Room",
                 columns: new[] { "RoomId", "CreateAt", "Location", "Status", "UpdateAt" },
                 values: new object[,]
                 {
-                    { "G201", new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4632), "Grammar Room 201", 1, new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4644) },
-                    { "G202", new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4647), "Grammar Room 202", 1, new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4648) },
-                    { "G203", new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4650), "Grammar Room 203", 1, new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4651) },
-                    { "G204", new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4653), "Grammar Room 204", 1, new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4653) },
-                    { "G205", new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4655), "Grammar Room 205", 1, new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4656) },
-                    { "G301", new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4658), "Grammar Room 301", 1, new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4658) },
-                    { "G302", new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4660), "Grammar Room 302", 1, new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4661) },
-                    { "G303", new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4662), "Grammar Room 303", 1, new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4663) },
-                    { "G304", new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4664), "Grammar Room 304", 1, new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4665) },
-                    { "G305", new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4666), "Grammar Room 305", 1, new DateTime(2025, 4, 20, 3, 7, 17, 37, DateTimeKind.Local).AddTicks(4667) }
+                    { "G201", new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6127), "Grammar Room 201", 1, new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6136) },
+                    { "G202", new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6138), "Grammar Room 202", 1, new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6138) },
+                    { "G203", new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6139), "Grammar Room 203", 1, new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6140) },
+                    { "G204", new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6141), "Grammar Room 204", 1, new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6141) },
+                    { "G205", new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6143), "Grammar Room 205", 1, new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6143) },
+                    { "G301", new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6144), "Grammar Room 301", 1, new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6145) },
+                    { "G302", new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6175), "Grammar Room 302", 1, new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6176) },
+                    { "G303", new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6177), "Grammar Room 303", 1, new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6177) },
+                    { "G304", new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6178), "Grammar Room 304", 1, new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6179) },
+                    { "G305", new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6180), "Grammar Room 305", 1, new DateTime(2025, 4, 21, 21, 35, 55, 398, DateTimeKind.Local).AddTicks(6181) }
                 });
 
             migrationBuilder.InsertData(
@@ -133,11 +127,6 @@ namespace SchedulerBusinessObject.Migrations
                     { 4, new TimeOnly(17, 45, 0), new TimeOnly(15, 30, 0), 1 },
                     { 5, new TimeOnly(20, 15, 0), new TimeOnly(18, 0, 0), 1 }
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RequestSchedule_ScheduleId",
-                table: "RequestSchedule",
-                column: "ScheduleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Schedule_RoomId",

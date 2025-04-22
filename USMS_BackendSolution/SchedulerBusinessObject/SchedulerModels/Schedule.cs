@@ -35,8 +35,6 @@ namespace SchedulerBusinessObject.SchedulerModels
         public int SlotNoInSubject { get; set; }
         public virtual TimeSlot? Slot { get; set; }
         public virtual Room? Room { get; set; }
-        [JsonIgnore]
-        public virtual ICollection<RequestSchedule> RequestSchedules { get; set; }
-            = new List<RequestSchedule>();
+
         }
     }
